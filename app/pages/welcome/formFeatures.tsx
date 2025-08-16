@@ -104,14 +104,6 @@ function FormFeatures() {
           "grid gap-4",
           "grid-cols-1 md:grid-cols-2 lg:grid-cols-4"
         )}
-        loaderFallback={
-          <div className="grid gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-4">
-            <Skeleton className="h-12 rounded-md" />
-            <Skeleton className="h-12 rounded-md" />
-            <Skeleton className="h-12 rounded-md" />
-            <Skeleton className="h-12 rounded-md" />
-          </div>
-        }
         fields={fields}
         schema={schema}
         onSubmit={onSubmit}
