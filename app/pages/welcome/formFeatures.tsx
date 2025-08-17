@@ -1,3 +1,4 @@
+import { t } from "i18next";
 import { memo, useCallback } from "react";
 import {
   Form,
@@ -5,6 +6,7 @@ import {
   useFieldsState,
   type Field,
 } from "react-form-krafter";
+import { useTranslation } from "react-i18next";
 import { z } from "zod";
 import KrafterRegister from "~/components/internal/krafter/register";
 import { Button } from "~/components/ui/button";
@@ -12,14 +14,11 @@ import { Skeleton } from "~/components/ui/skeleton";
 import { cn } from "~/lib/utils";
 
 const schema = z.object({
-  name: z.string().min(3, "Name must be at least 3 characters long"),
+  name: z.string().min(3, t("zod:errors.required")),
   // surname: z.string().min(3, "Surname must be at least 3 characters long"),
-  age: z
-    .number()
-    .min(18, "Age must be at least 18")
-    .max(100, "Age must be less than 100"),
+  age: z.number().min(18).max(100, "Age must be less than 100"),
   birthDate: z
-    .date()
+    .date("Birth date must be a valid date")
     .refine(
       (date) => date instanceof Date && !isNaN(date.getTime()),
       "Invalid date"
@@ -96,6 +95,7 @@ function FormFeatures() {
     },
     []
   );
+  let { t } = useTranslation("zod");
 
   return (
     <KrafterRegister>
@@ -109,7 +109,7 @@ function FormFeatures() {
         onSubmit={onSubmit}
       >
         <Submit />
-
+        {t("errors.required")}
         <FormInfo />
         <FormErrors />
       </Form>
