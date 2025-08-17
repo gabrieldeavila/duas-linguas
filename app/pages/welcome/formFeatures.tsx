@@ -10,7 +10,6 @@ import { useTranslation } from "react-i18next";
 import { z } from "zod";
 import KrafterRegister from "~/components/internal/krafter/register";
 import { Button } from "~/components/ui/button";
-import { Skeleton } from "~/components/ui/skeleton";
 import { cn } from "~/lib/utils";
 
 const schema = z.object({
@@ -95,7 +94,7 @@ function FormFeatures() {
     },
     []
   );
-  let { t } = useTranslation("zod");
+  const { t } = useTranslation("zod");
 
   return (
     <KrafterRegister>

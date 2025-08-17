@@ -1,8 +1,7 @@
+import { useTranslation } from "react-i18next";
 import { CallToAction } from "~/components/internal/cta/cta";
 import { Button } from "~/components/ui/button";
 import { cn } from "~/lib/utils";
-import FormFeatures from "./formFeatures";
-import { useTranslation } from "react-i18next";
 
 export function meta() {
   return [
@@ -12,7 +11,7 @@ export function meta() {
 }
 
 export default function Welcome() {
-  let { t } = useTranslation("notFound");
+  const { t } = useTranslation("notFound");
 
   return (
     <div className="flex flex-col items-center w-full">
@@ -58,8 +57,6 @@ export default function Welcome() {
             </p>
           </div>
         </div>
-
-        <FormFeatures />
 
         <CallToAction />
       </div>
