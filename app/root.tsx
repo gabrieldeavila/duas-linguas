@@ -8,18 +8,16 @@ import {
   ScrollRestoration,
 } from "react-router";
 
-import type { Route } from "./+types/root";
-import "./app.css";
-import { Footer } from "./components/internal/footer/footer";
+import { useTranslation } from "react-i18next";
 import { useChangeLanguage } from "remix-i18next/react";
-import Navbar from "./components/internal/navbar/navbar";
-import { ThemeProvider } from "./components/theme-provider";
 import {
   getLocale,
   i18nextMiddleware,
   localeCookie,
 } from "~/middleware/i18next";
-import { useTranslation } from "react-i18next";
+import type { Route } from "./+types/root";
+import "./app.css";
+import { ThemeProvider } from "./components/theme-provider";
 
 export const unstable_middleware = [i18nextMiddleware];
 
@@ -37,7 +35,7 @@ export const links: Route.LinksFunction = () => [
 ];
 
 export async function loader({ context }: Route.LoaderArgs) {
-  let locale = getLocale(context);
+  const locale = getLocale(context);
   return data(
     { locale },
     { headers: { "Set-Cookie": await localeCookie.serialize(locale) } }
@@ -57,9 +55,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
           <Links />
         </head>
         <body className="flex min-h-screen flex-col">
-          <Navbar />
-          <main className="flex-1 px-4 pt-20">{children}</main>
-          <Footer />
+          {children}
           <ScrollRestoration />
           <Scripts />
         </body>

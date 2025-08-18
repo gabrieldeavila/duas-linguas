@@ -11,7 +11,7 @@ export function meta() {
 }
 
 export default function Welcome() {
-  const { t } = useTranslation("notFound");
+  const { t } = useTranslation("welcome");
 
   return (
     <div className="flex flex-col items-center w-full">
@@ -24,7 +24,6 @@ export default function Welcome() {
             )}
           >
             Every great product starts with a well-crafted form.
-            {t("title")}
           </h1>
 
           <h3
