@@ -1,7 +1,10 @@
+import { useTranslation } from "react-i18next";
 import { Link } from "react-router";
 import { cn } from "~/lib/utils";
 
 export default function Header() {
+  const { t } = useTranslation("landing");
+
   return (
     <header className="z-30 mt-2 w-full md:mt-5">
       <div className="mx-auto max-w-6xl px-4 sm:px-6">
@@ -22,7 +25,7 @@ export default function Header() {
                 )}
                 style={{ backgroundColor: "#e9e5dc" }}
               >
-                <img src="/logo.png" alt="Logo" className="h-8 w-8" />
+                <img src="/logo.png" alt={t("logo")} className="h-8 w-8" />
               </div>
             </Link>
           </div>
@@ -38,7 +41,7 @@ export default function Header() {
                   "btn-sm relative p-2"
                 )}
               >
-                Sign In
+                {t("signIn")}
               </Link>
             </li>
             <li>
@@ -50,7 +53,7 @@ export default function Header() {
                   "btn-sm relative p-2"
                 )}
               >
-                Register
+                {t("signUp")}
               </Link>
             </li>
           </ul>
