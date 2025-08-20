@@ -60,4 +60,5 @@ export default {
         "Practice and read anywhere, even without an internet connection",
     },
   },
+  cta: "Join the Scroll-to-Fluency platform",
 };

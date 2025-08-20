@@ -1,4 +1,6 @@
+import Cta from "./components/cta";
 import Features from "./components/features";
+import Footer from "./components/footer";
 import Header from "./components/header";
 import HeroHome from "./components/hero";
 import Workflows from "./components/workflow";
@@ -17,6 +19,8 @@ function Home() {
       <HeroHome />
       <Workflows />
       <Features />
+      <Cta />
+      <Footer />
     </>
   );
 }
