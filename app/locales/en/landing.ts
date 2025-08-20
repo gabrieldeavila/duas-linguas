@@ -25,4 +25,39 @@ export default {
     description:
       "Enjoy a smooth, feed-like interface to read and practice effortlessly in two languages.",
   },
+  features: {
+    title: "Smart Reading Tools",
+    subtitle: "Built for language learners",
+    description:
+      "Scroll, read, and answer questions with intuitive tools that make learning in two languages effortless.",
+    parallel: {
+      title: "Parallel Reading",
+      description: "Compare languages and improve naturally as you scroll.",
+    },
+    quizzes: {
+      title: "Interactive Quizzes",
+      description:
+        "Reinforce your vocabulary and grammar with short questions after each excerpt.",
+    },
+    progress: {
+      title: "Track Your Progress",
+      description:
+        "See how your skills improve over time, scroll by scroll, book by book.",
+    },
+    difficulty: {
+      title: "Adjustable Difficulty",
+      description:
+        "Adjust reading levels and questions to match your fluency and challenge yourself",
+    },
+    immersive: {
+      title: "Immersive Scroll",
+      description:
+        "Experience a new way to learn by scrolling through content that adapts to your language level.",
+    },
+    offline: {
+      title: "Offline Access",
+      description:
+        "Practice and read anywhere, even without an internet connection",
+    },
+  },
 };

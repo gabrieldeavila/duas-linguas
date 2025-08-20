@@ -1,3 +1,4 @@
+import Features from "./components/features";
 import Header from "./components/header";
 import HeroHome from "./components/hero";
 import Workflows from "./components/workflow";
@@ -15,6 +16,7 @@ function Home() {
       <Header />
       <HeroHome />
       <Workflows />
+      <Features />
     </>
   );
 }
