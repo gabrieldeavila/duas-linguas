@@ -1,4 +1,5 @@
 import type { Config } from "@react-router/dev/config";
+import { vercelPreset } from '@vercel/react-router/vite';
 
 declare module "react-router" {
   interface Future {
@@ -16,4 +17,5 @@ export default {
     unstable_splitRouteModules: false,
     unstable_viteEnvironmentApi: false,
   },
+  presets: [vercelPreset()],
 } satisfies Config;
