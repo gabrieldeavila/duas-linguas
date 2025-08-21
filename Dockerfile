@@ -1,26 +1,25 @@
-FROM node:22-alpine AS development-dependencies-env
-RUN corepack enable && corepack prepare pnpm@latest --activate
-COPY . /app
+# 1) Dependencies
+FROM node:22-alpine AS deps
+RUN npm i -g pnpm
 WORKDIR /app
+COPY package.json pnpm-lock.yaml ./
 RUN pnpm install --frozen-lockfile
 
-FROM node:22-alpine AS production-dependencies-env
-RUN corepack enable && corepack prepare pnpm@latest --activate
-COPY ./package.json ./pnpm-lock.yaml /app/
+# 2) Build
+FROM node:22-alpine AS build
+RUN npm i -g pnpm
 WORKDIR /app
-RUN pnpm install --prod --frozen-lockfile
+COPY . .
+COPY --from=deps /app/node_modules ./node_modules
+RUN pnpm run build 
 
-FROM node:22-alpine AS build-env
-RUN corepack enable && corepack prepare pnpm@latest --activate
-COPY . /app/
-COPY --from=development-dependencies-env /app/node_modules /app/node_modules
+# 3) Runtime
+FROM node:22-alpine AS runner
+RUN npm i -g pnpm
 WORKDIR /app
-RUN pnpm run build
-
-FROM node:22-alpine
-RUN corepack enable && corepack prepare pnpm@latest --activate
-COPY ./package.json ./pnpm-lock.yaml /app/
-COPY --from=production-dependencies-env /app/node_modules /app/node_modules
-COPY --from=build-env /app/build /app/build
-WORKDIR /app
-CMD ["pnpm", "run", "start"]
+ENV NODE_ENV=production
+COPY package.json pnpm-lock.yaml ./
+COPY --from=deps /app/node_modules ./node_modules
+COPY --from=build /app/build ./build
+EXPOSE 3000
+CMD ["pnpm", "start"] 
