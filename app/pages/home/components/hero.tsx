@@ -11,7 +11,7 @@ export default function HeroHome() {
         {/* Hero content */}
         <div className="py-12 md:py-20">
           {/* Section header */}
-          <div className="pb-12 text-center md:pb-20">
+          <div className="text-center">
             <h1
               className="animate-[gradient_6s_linear_infinite] bg-[linear-gradient(to_right,var(--foreground),var(--sidebar-border),var(--sidebar-primary),var(--sidebar-ring),var(--secondary-foreground))] bg-[length:200%_auto] bg-clip-text pb-5 font-nacelle text-4xl font-semibold text-transparent md:text-5xl"
               data-aos="fade-up"
@@ -45,6 +45,8 @@ export default function HeroHome() {
                   </Link>
                 </div>
               </div>
+
+              <img src="/images/dragonHero.png" className="mt-10 rounded-md" />
             </div>
           </div>
         </div>

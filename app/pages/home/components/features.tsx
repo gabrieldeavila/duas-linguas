@@ -1,4 +1,11 @@
-import { LibraryBig, Mouse, PenIcon, Settings, Target, WifiOff } from "lucide-react";
+import {
+  LibraryBig,
+  Mouse,
+  PenIcon,
+  Settings,
+  Target,
+  WifiOff,
+} from "lucide-react";
 import { useTranslation } from "react-i18next";
 
 export default function Features() {
@@ -47,6 +54,11 @@ export default function Features() {
               height={384}
               alt="Features"
             /> */}
+            <img
+              src="/images/dragonFeatures.png"
+              className="w-full max-h-96 object-cover object-[center_70%] rounded-md"
+              alt="Features"
+            />
           </div>
           {/* Items */}
           <div className="mx-auto grid max-w-sm gap-12 sm:max-w-none sm:grid-cols-2 md:gap-x-14 md:gap-y-16 lg:grid-cols-3">
