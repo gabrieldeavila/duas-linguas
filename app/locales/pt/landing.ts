@@ -2,63 +2,63 @@ export default {
   signIn: "Entrar",
   signUp: "Registrar",
   logo: "Logo",
-  header: "Toda a diversão de rolar, todo o valor do aprendizado.",
+  header: "Toda a diversão de explorar, todo o valor do aprendizado.",
   subtitle:
-    "Transforme histórias atemporais no seu professor de idiomas — leia, role e pratique enquanto aproveita os maiores livros do mundo.",
+    "Leia trechos de livros que você vai adorar e pratique idiomas de forma divertida.",
   tryIt: "Experimente agora",
-  tailored: "Leia, Role, Aprimore",
-  fluency: "Role até a fluência",
+  tailored: "Leia, Explore, Aprimore",
+  fluency: "Percorra até a fluência",
   fluencyDescription:
-    "Desfrute de uma interface simples e elegante que transforma a leitura de trechos em uma experiência envolvente de aprendizado de idiomas.",
+    "Uma interface simples e agradável que transforma a leitura em prática de idiomas divertida e fácil.",
   spotlightImmersive: {
     title: "Leitura Imersiva",
     description:
-      "Role por trechos de livros clássicos e aprenda idiomas de forma natural.",
+      "Explore trechos de livros e aprenda idiomas de forma natural e divertida.",
   },
   spotlightInteractive: {
     title: "Prática Interativa",
     description:
-      "Responda perguntas rápidas para reforçar seu vocabulário e gramática.",
+      "Responda perguntas rápidas para reforçar vocabulário e gramática de forma leve.",
   },
   spotlightExperience: {
-    title: "Experiência Fluida",
+    title: "Experiência Suave",
     description:
-      "Aproveite uma interface suave, em formato de feed, para ler e praticar sem esforço em duas línguas.",
+      "Leia e pratique sem esforço com uma interface fluida em formato de feed.",
   },
   features: {
     title: "Ferramentas Inteligentes de Leitura",
-    subtitle: "Feito para aprendizes de idiomas",
+    subtitle: "Feito para quem quer aprender idiomas se divertindo",
     description:
-      "Role, leia e responda perguntas com ferramentas intuitivas que tornam o aprendizado em duas línguas fácil.",
+      "Leia, explore e responda perguntas com ferramentas que tornam o aprendizado fácil e agradável.",
     parallel: {
-      title: "Leitura Paralela",
-      description: "Compare idiomas e melhore naturalmente enquanto rola.",
+      title: "Leitura Lado a Lado",
+      description: "Compare idiomas enquanto lê e aprenda de forma natural.",
     },
     quizzes: {
-      title: "Quizzes Interativos",
+      title: "Quizzes Rápidos",
       description:
-        "Reforce seu vocabulário e gramática com perguntas curtas após cada trecho.",
+        "Revise vocabulário e gramática com perguntas curtas após cada trecho.",
     },
     progress: {
-      title: "Acompanhe Seu Progresso",
+      title: "Acompanhe sua evolução",
       description:
-        "Veja como suas habilidades melhoram ao longo do tempo, trecho a trecho, livro a livro.",
+        "Veja como suas habilidades melhoram trecho a trecho, livro a livro.",
     },
     difficulty: {
-      title: "Dificuldade Ajustável",
+      title: "Nível Flexível",
       description:
-        "Ajuste os níveis de leitura e perguntas para corresponder à sua fluência e desafie-se.",
+        "Ajuste a dificuldade de leitura e perguntas de acordo com seu nível e se desafie.",
     },
     immersive: {
-      title: "Rolagem Imersiva",
+      title: "Exploração Divertida",
       description:
-        "Experimente uma nova forma de aprender rolando por conteúdos que se adaptam ao seu nível de idioma.",
+        "Aprenda de forma envolvente percorrendo conteúdos que se adaptam ao seu ritmo.",
     },
     offline: {
-      title: "Acesso Offline",
+      title: "Leia Offline",
       description:
-        "Pratique e leia em qualquer lugar, mesmo sem conexão com a internet.",
+        "Pratique e explore livros em qualquer lugar, mesmo sem internet.",
     },
   },
-  cta: "Junte-se à plataforma Scroll-to-Fluency",
+  cta: "Junte-se à plataforma do Duas Linguas",
 };
