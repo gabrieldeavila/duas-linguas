@@ -17,7 +17,7 @@ export default function Footer() {
         </div>
         <div className="grid grid-cols-2 justify-between gap-12 py-8 sm:grid-rows-[auto_auto] md:grid-cols-4 md:grid-rows-[auto_auto] md:py-12 lg:grid-cols-[repeat(4,minmax(0,140px))_1fr] lg:grid-rows-1 xl:gap-20">
           {/* 1st block */}
-          <div className="space-y-2">
+          {/* <div className="space-y-2">
             <h3 className="text-sm font-medium text-[var(--foreground)]">Product</h3>
             <ul className="space-y-2 text-sm">
               <li>
@@ -69,9 +69,9 @@ export default function Footer() {
                 </a>
               </li>
             </ul>
-          </div>
+          </div> */}
           {/* 2nd block */}
-          <div className="space-y-2">
+          {/* <div className="space-y-2">
             <h3 className="text-sm font-medium text-[var(--foreground)]">Company</h3>
             <ul className="space-y-2 text-sm">
               <li>
@@ -115,9 +115,9 @@ export default function Footer() {
                 </a>
               </li>
             </ul>
-          </div>
+          </div> */}
           {/* 3rd block */}
-          <div className="space-y-2">
+          {/* <div className="space-y-2">
             <h3 className="text-sm font-medium text-[var(--foreground)]">Resources</h3>
             <ul className="space-y-2 text-sm">
               <li>
@@ -145,9 +145,9 @@ export default function Footer() {
                 </a>
               </li>
             </ul>
-          </div>
+          </div> */}
           {/* 4th block */}
-          <div className="space-y-2">
+          {/* <div className="space-y-2">
             <h3 className="text-sm font-medium text-[var(--foreground)]">
               Content Library
             </h3>
@@ -193,22 +193,18 @@ export default function Footer() {
                 </a>
               </li>
             </ul>
-          </div>
+          </div> */}
           {/* 5th block */}
-          <div className="col-span-2 md:col-span-4 lg:col-span-1 lg:text-right">
+          {/* <div className="col-span-2 md:col-span-4 lg:col-span-1 lg:text-right"> */}
+          <div className="flex w-64">
             <div className="mb-3"></div>
             <div className="text-sm">
-              <p className="mb-3 text-[var(--muted-foreground)]">
+              <div className="mb-3 text-[var(--muted-foreground)]">
                 © Dissolutus
                 <span className="text-[var(--muted)]"> · </span>
-                <a
-                  className="text-[var(--muted-foreground)] transition hover:text-[var(--sidebar-ring)]"
-                  href="#0"
-                >
-                  Terms
-                </a>
-              </p>
-              <ul className="inline-flex gap-1">
+                Duas Linguas
+              </div>
+              {/* <ul className="inline-flex gap-1">
                 <li>
                   <a
                     className="flex items-center justify-center text-[var(--sidebar-ring)] transition hover:text-[var(--sidebar-primary)]"
@@ -254,7 +250,7 @@ export default function Footer() {
                     </svg>
                   </a>
                 </li>
-              </ul>
+              </ul> */}
             </div>
           </div>
         </div>
