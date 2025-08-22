@@ -38,6 +38,7 @@ export default function Header() {
                 className={cn(
                   "bg-background",
                   "rounded-lg",
+                  "whitespace-nowrap",
                   "btn-sm relative p-2"
                 )}
               >
@@ -50,7 +51,8 @@ export default function Header() {
                 className={cn(
                   "bg-primary",
                   "rounded-lg",
-                  "btn-sm relative p-2"
+                  "btn-sm relative p-2",
+                  "whitespace-nowrap"
                 )}
               >
                 {t("signUp")}
