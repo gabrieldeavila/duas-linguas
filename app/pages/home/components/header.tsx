@@ -1,5 +1,6 @@
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router";
+import Logo from "~/components/logo";
 import { cn } from "~/lib/utils";
 
 export default function Header() {
@@ -25,7 +26,7 @@ export default function Header() {
                 )}
                 style={{ backgroundColor: "#e9e5dc" }}
               >
-                <img src="/logo.png" alt={t("logo")} className="h-8 w-8" />
+                <Logo />
               </div>
             </Link>
           </div>
