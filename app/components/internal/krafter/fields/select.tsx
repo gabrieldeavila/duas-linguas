@@ -19,7 +19,7 @@ const SelectField: FC<RegisterFieldRenderProps<Date>> = memo(
 
     return (
       <div className={cn("flex flex-col gap-2", field.wrapperClassName)}>
-        <Label htmlFor={field.name}>{t(field.label)}</Label>
+        <Label htmlFor={field.name}>{t(field.label as never)}</Label>
 
         <Select
           value={field.value?.toString() || ""}
@@ -38,10 +38,10 @@ const SelectField: FC<RegisterFieldRenderProps<Date>> = memo(
           </SelectTrigger>
           <SelectContent>
             <SelectGroup>
-              <SelectLabel>{t(field.label)}</SelectLabel>
+              <SelectLabel>{t(field.label as never)}</SelectLabel>
               {field.options?.map((option) => (
                 <SelectItem key={option.value} value={option.value.toString()}>
-                  {t(option.label)}
+                  {t(option.label as never)}
                 </SelectItem>
               ))}
             </SelectGroup>

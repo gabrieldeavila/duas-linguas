@@ -11,7 +11,7 @@ const DatePickerField: FC<RegisterFieldRenderProps<Date>> = memo(
 
     return (
       <div className={cn("flex flex-col gap-2", field.wrapperClassName)}>
-        <Label htmlFor={field.name}>{t(field.label)}</Label>
+        <Label htmlFor={field.name}>{t(field.label as never)}</Label>
 
         <DatePicker
           id={field.name}

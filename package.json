@@ -31,7 +31,7 @@
     "react": "^19.1.0",
     "react-day-picker": "^9.8.1",
     "react-dom": "^19.1.0",
-    "react-form-krafter": "^0.0.62",
+    "react-form-krafter": "^0.0.67",
     "react-i18next": "^15.6.1",
     "react-router": "^7.7.1",
     "tailwind-merge": "^3.3.1",
@@ -48,13 +48,13 @@
     "eslint": "^9.29.0",
     "eslint-plugin-react-hooks": "^5.2.0",
     "eslint-plugin-react-refresh": "^0.4.20",
+    "globals": "^16.2.0",
     "remix-i18next": "^7.2.1",
     "tailwindcss": "^4.1.11",
     "tw-animate-css": "^1.3.6",
     "typescript": "^5.8.3",
     "typescript-eslint": "^8.34.1",
     "vite": "^6.3.3",
-    "vite-tsconfig-paths": "^5.1.4",
-    "globals": "^16.2.0"
+    "vite-tsconfig-paths": "^5.1.4"
   }
 }

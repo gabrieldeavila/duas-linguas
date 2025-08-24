@@ -21,7 +21,7 @@ const FieldBase = memo(
     onFieldChange: (value: unknown) => string | number;
   }) => {
     const { t } = useTranslation("fields");
-    
+
     const inputProps = useMemo(() => {
       const defaultValue =
         field.initialValue == null
@@ -47,11 +47,11 @@ const FieldBase = memo(
 
     return (
       <div className={cn("flex flex-col gap-2", field.wrapperClassName)}>
-        <Label htmlFor={field.name}>{t(field.label)}</Label>
+        <Label htmlFor={field.name}>{t(field.label as never)}</Label>
 
         <Input
           type={type}
-          placeholder={t(field.placeholder)}
+          placeholder={t(field.placeholder as never)}
           id={field.name}
           name={field.name}
           required={field.required}
