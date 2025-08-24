@@ -1,4 +1,3 @@
-
 import { lazy, type ComponentType } from "react";
 import {
   Register,
@@ -31,6 +30,18 @@ const COMPONENTS: RegisterComponent<FieldsValue>[] = [
   {
     type: "select",
     render: lazy(() => import("./fields/select")) as ComponentType<
+      RegisterFieldRenderProps<FieldsValue>
+    >,
+  },
+  {
+    type: "password",
+    render: lazy(() => import("./fields/password")) as ComponentType<
+      RegisterFieldRenderProps<FieldsValue>
+    >,
+  },
+  {
+    type: "email",
+    render: lazy(() => import("./fields/email")) as ComponentType<
       RegisterFieldRenderProps<FieldsValue>
     >,
   },

@@ -3,5 +3,12 @@ import notFound from "./not-found";
 import translation from "./translation";
 import zod from "./zod";
 import landing from "./landing";
+import fields from "./fields";
 
-export default { notFound, landing, translation, zod } satisfies Resource;
+export default {
+  notFound,
+  landing,
+  translation,
+  zod,
+  fields,
+} satisfies Resource;

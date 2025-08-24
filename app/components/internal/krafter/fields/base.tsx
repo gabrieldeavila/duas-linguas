@@ -1,5 +1,6 @@
 import { memo, useMemo } from "react";
 import type { FieldMethods, RegisterField } from "react-form-krafter";
+import { useTranslation } from "react-i18next";
 import { Input } from "~/components/ui/input";
 import { Label } from "~/components/ui/label";
 import { cn } from "~/lib/utils";
@@ -19,6 +20,8 @@ const FieldBase = memo(
   }: FieldBaseProps & {
     onFieldChange: (value: unknown) => string | number;
   }) => {
+    const { t } = useTranslation("fields");
+    
     const inputProps = useMemo(() => {
       const defaultValue =
         field.initialValue == null
@@ -44,11 +47,11 @@ const FieldBase = memo(
 
     return (
       <div className={cn("flex flex-col gap-2", field.wrapperClassName)}>
-        <Label htmlFor={field.name}>{field.label}</Label>
+        <Label htmlFor={field.name}>{t(field.label)}</Label>
 
         <Input
           type={type}
-          placeholder={field.placeholder}
+          placeholder={t(field.placeholder)}
           id={field.name}
           name={field.name}
           required={field.required}

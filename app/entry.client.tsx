@@ -18,6 +18,8 @@ async function main() {
       backend: { loadPath: "/api/locales/{{lng}}/{{ns}}" },
     });
 
+  await i18next.loadNamespaces("zod");
+
   z.config({
     customError: (issue) => {
       const message = i18next.t(`zod:errors.${issue.code}`, {

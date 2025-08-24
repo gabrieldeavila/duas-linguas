@@ -2,7 +2,6 @@ import { memo, type FC } from "react";
 import type { RegisterFieldRenderProps } from "react-form-krafter";
 import { Label } from "~/components/ui/label";
 import { cn } from "~/lib/utils";
-
 import {
   Select,
   SelectContent,
@@ -12,12 +11,15 @@ import {
   SelectTrigger,
   SelectValue,
 } from "~/components/ui/select";
+import { useTranslation } from "react-i18next";
 
 const SelectField: FC<RegisterFieldRenderProps<Date>> = memo(
   ({ methods, field }: RegisterFieldRenderProps<Date>) => {
+    const { t } = useTranslation("fields");
+
     return (
       <div className={cn("flex flex-col gap-2", field.wrapperClassName)}>
-        <Label htmlFor={field.name}>{field.label}</Label>
+        <Label htmlFor={field.name}>{t(field.label)}</Label>
 
         <Select
           value={field.value?.toString() || ""}
@@ -36,10 +38,10 @@ const SelectField: FC<RegisterFieldRenderProps<Date>> = memo(
           </SelectTrigger>
           <SelectContent>
             <SelectGroup>
-              <SelectLabel>{field.label}</SelectLabel>
+              <SelectLabel>{t(field.label)}</SelectLabel>
               {field.options?.map((option) => (
                 <SelectItem key={option.value} value={option.value.toString()}>
-                  {option.label}
+                  {t(option.label)}
                 </SelectItem>
               ))}
             </SelectGroup>

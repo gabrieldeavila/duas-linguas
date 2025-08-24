@@ -9,4 +9,6 @@ export default [
     route("docs", "pages/platform/docs/index.tsx"),
     route("docs/:id", "pages/platform/docs/[id].tsx"),
   ]),
+  route("signin", "pages/signin/index.tsx"),
+  route("signup", "pages/signup/index.tsx"),
 ] satisfies RouteConfig;
