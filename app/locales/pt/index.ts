@@ -4,6 +4,7 @@ import translation from "./translation";
 import zod from "./zod";
 import landing from "./landing";
 import fields from "./fields";
+import login from "./login";
 
 export default {
   notFound,
@@ -11,4 +12,5 @@ export default {
   landing,
   zod,
   fields,
+  login,
 } satisfies Resource;

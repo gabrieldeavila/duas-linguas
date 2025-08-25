@@ -6,10 +6,7 @@ import HeroHome from "./components/hero";
 import Workflows from "./components/workflow";
 
 export function meta() {
-  return [
-    { title: "Duas Linguas" },
-    { name: "description", content: "Welcome to Duas Linguas" },
-  ];
+  return [{ title: "Duas Linguas" }];
 }
 
 function Home() {

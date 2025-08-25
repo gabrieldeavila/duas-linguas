@@ -1,5 +1,8 @@
+import i18next from "i18next";
 import { useRef } from "react";
 import { Form, type Field, type FormApi } from "react-form-krafter";
+import { Trans, useTranslation } from "react-i18next";
+import { Link } from "react-router";
 import z from "zod";
 import KrafterRegister from "~/components/internal/krafter/register";
 import { Button } from "~/components/ui/button";
@@ -54,8 +57,17 @@ const schema = z.object({
 type Schema = typeof schema;
 type Validator = z.infer<Schema>;
 
+export function meta() {
+  return [
+    { title: i18next.t("login:signUp.title") },
+    { name: "description", content: i18next.t("login:signUp.description") },
+  ];
+}
+
 function SignUp({ className, ...props }: React.ComponentProps<"div">) {
   const formApi = useRef<FormApi<Validator> | null>(null);
+
+  const { t } = useTranslation("login");
 
   return (
     <div className="flex min-h-svh w-full items-center justify-center p-6 md:p-10">
@@ -63,10 +75,8 @@ function SignUp({ className, ...props }: React.ComponentProps<"div">) {
         <div className={cn("flex flex-col gap-6", className)} {...props}>
           <Card>
             <CardHeader>
-              <CardTitle>Create your account</CardTitle>
-              <CardDescription>
-                Enter your details below to create a new account
-              </CardDescription>
+              <CardTitle>{t("signUp.headline")}</CardTitle>
+              <CardDescription>{t("signUp.subheading")}</CardDescription>
             </CardHeader>
             <CardContent>
               <KrafterRegister>
@@ -79,8 +89,8 @@ function SignUp({ className, ...props }: React.ComponentProps<"div">) {
                     console.log(
                       "data",
                       data,
-                      formApi.current.fieldsInfo,
-                      formApi.current.fieldsInfo.errors
+                      formApi.current?.fieldsInfo,
+                      formApi.current?.fieldsInfo.errors
                     );
                   }}
                   onUpdate={(data) => {
@@ -92,7 +102,6 @@ function SignUp({ className, ...props }: React.ComponentProps<"div">) {
                       const isValid =
                         data.currentState.confirm_password ===
                         data.currentState.password;
-                      console.log("isValid", isValid);
 
                       formApi.current.setError(
                         "confirm_password",
@@ -102,15 +111,21 @@ function SignUp({ className, ...props }: React.ComponentProps<"div">) {
                   }}
                 >
                   <div className="flex flex-col gap-3">
-                    <Button type="submit">Submit</Button>
+                    <Button type="submit">{t("signUp.button")}</Button>
                   </div>
                 </Form>
 
                 <div className="mt-4 text-center text-sm">
-                  Already have an account?{" "}
-                  <a href="/signin" className="underline underline-offset-4">
-                    Login
-                  </a>
+                  <Trans
+                    t={t}
+                    keyParams="a"
+                    i18nKey="signUp.alreadyHaveAccount"
+                  >
+                    <Link
+                      to="/signin"
+                      className="underline underline-offset-4"
+                    />
+                  </Trans>
                 </div>
               </KrafterRegister>
             </CardContent>
