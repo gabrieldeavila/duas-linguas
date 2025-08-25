@@ -1,3 +1,5 @@
+import { Link } from "react-router";
+
 export default function Footer() {
   return (
     <footer>
@@ -15,7 +17,7 @@ export default function Footer() {
             alt="Footer illustration"
           /> */}
         </div>
-        <div className="grid grid-cols-2 justify-between gap-12 py-8 sm:grid-rows-[auto_auto] md:grid-cols-4 md:grid-rows-[auto_auto] md:py-12 lg:grid-cols-[repeat(4,minmax(0,140px))_1fr] lg:grid-rows-1 xl:gap-20">
+        <div className="grid grid-cols-2 justify-between gap-12 pt-8 sm:grid-rows-[auto_auto] md:grid-cols-4 md:grid-rows-[auto_auto] md:pt-12 lg:grid-cols-[repeat(4,minmax(0,140px))_1fr] lg:grid-rows-1 xl:gap-20">
           {/* 1st block */}
           {/* <div className="space-y-2">
             <h3 className="text-sm font-medium text-[var(--foreground)]">Product</h3>
@@ -253,6 +255,11 @@ export default function Footer() {
               </ul> */}
             </div>
           </div>
+        </div>
+        <div className="pb-8 md:pb-12 text-sm flex gap-4">
+          {/* changes the language */}
+          <Link to="/?lng=pt" className="underline">Português (BR)</Link>
+          <Link to="/?lng=en" className="underline">English (US)</Link>
         </div>
       </div>
     </footer>
