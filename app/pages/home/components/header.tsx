@@ -1,6 +1,7 @@
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router";
 import Logo from "~/components/logo";
+import { ModeToggle } from "~/components/mode-toggle";
 import { cn } from "~/lib/utils";
 
 export default function Header() {
@@ -60,6 +61,7 @@ export default function Header() {
               </Link>
             </li>
           </ul>
+          <ModeToggle className="hidden lg:flex" />
         </div>
       </div>
     </header>
