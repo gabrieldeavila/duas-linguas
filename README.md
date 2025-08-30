@@ -9,6 +9,8 @@ And our back-end will be powered by Supabase, a hosted backend-as-a-service plat
 
 Every lesson will be documented on the folder `lessons`.
 
+Each lesson should have a tag, so you can easily find it later.
+
 I recommend starting with the first lesson and following along.
 
 But before you begin, I recommend cloning the repository:
