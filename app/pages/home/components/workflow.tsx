@@ -49,7 +49,7 @@ const Card = ({
       className="group/card relative h-full overflow-hidden rounded-2xl bg-border p-px before:pointer-events-none before:absolute before:-left-40 before:-top-40 before:z-10 before:h-80 before:w-80 before:translate-x-[var(--mouse-x)] before:translate-y-[var(--mouse-y)] before:rounded-full before:bg-[var(--sidebar-ring)] before:opacity-0 before:blur-3xl before:transition-opacity before:duration-500 after:pointer-events-none after:absolute after:-left-48 after:-top-48 after:z-30 after:h-64 after:w-64 after:translate-x-[var(--mouse-x)] after:translate-y-[var(--mouse-y)] after:rounded-full after:bg-[var(--ring)] after:opacity-0 after:blur-3xl after:transition-opacity after:duration-500 hover:after:opacity-20 group-hover:before:opacity-100"
       href="#0"
     >
-      <div className="relative z-20 h-full overflow-hidden rounded-[inherit] bg-muted after:absolute after:inset-0 after:bg-linear-to-br after:from-secondary after:via-muted/25 after:to-secondary/50">
+      <div className="relative z-20 h-full overflow-hidden rounded-[inherit] bg-muted after:absolute after:inset-0  after:from-primary-foreground/25 after:via-muted/25 after:to-secondary/50">
         {/* Arrow */}
         <div
           className="absolute right-6 top-6 flex h-8 w-8 items-center justify-center rounded-full border border-[var(--border)] bg-[var(--sidebar-primary)] text-primary opacity-0 transition-opacity group-hover/card:opacity-100"
