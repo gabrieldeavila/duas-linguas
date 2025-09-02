@@ -1,5 +1,5 @@
 import i18next from "i18next";
-import { useRef } from "react";
+import { useCallback, useRef } from "react";
 import { Form, type Field, type FormApi } from "react-form-krafter";
 import { Trans, useTranslation } from "react-i18next";
 import { Link } from "react-router";
@@ -13,6 +13,7 @@ import {
   CardHeader,
   CardTitle,
 } from "~/components/ui/card";
+import { supabase } from "~/lib/supabase";
 import { cn } from "~/lib/utils";
 
 const SIGNUP_FIELDS: Field[] = [
@@ -69,6 +70,19 @@ function SignUp({ className, ...props }: React.ComponentProps<"div">) {
 
   const { t } = useTranslation("login");
 
+  const signUpNewUser = useCallback(async (email: string, password: string) => {
+    const { data, error } = await supabase.auth.signUp({
+      email,
+      password,
+    });
+
+    if (error) {
+      console.error("Error signing up:", error.message);
+    } else {
+      console.log("Sign up successful:", data);
+    }
+  }, []);
+
   return (
     <div className="flex min-h-svh w-full items-center justify-center p-6 md:p-10">
       <div className="w-full max-w-sm">
@@ -86,12 +100,14 @@ function SignUp({ className, ...props }: React.ComponentProps<"div">) {
                   schema={schema}
                   formApi={formApi}
                   onSubmit={async (data) => {
-                    console.log(
-                      "data",
-                      data,
-                      formApi.current?.fieldsInfo,
-                      formApi.current?.fieldsInfo.errors
-                    );
+                    if (data?.success) {
+                      await signUpNewUser(
+                        data.state.email,
+                        data.state.password
+                      );
+                    } else {
+                      alert("Sign up failed. Please try again.");
+                    }
                   }}
                   onUpdate={(data) => {
                     if (formApi.current === null) return;

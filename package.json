@@ -19,6 +19,7 @@
     "@radix-ui/react-slot": "^1.2.3",
     "@react-router/node": "^7.7.1",
     "@react-router/serve": "^7.7.1",
+    "@supabase/supabase-js": "^2.56.1",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "date-fns": "^4.1.0",
@@ -27,6 +28,7 @@
     "i18next-fetch-backend": "^6.0.0",
     "isbot": "^5.1.27",
     "lucide-react": "^0.525.0",
+    "next-themes": "^0.4.6",
     "pretty-cache-header": "^1.0.0",
     "react": "^19.1.0",
     "react-day-picker": "^9.8.1",
@@ -34,6 +36,7 @@
     "react-form-krafter": "^0.0.67",
     "react-i18next": "^15.6.1",
     "react-router": "^7.7.1",
+    "sonner": "^2.0.7",
     "tailwind-merge": "^3.3.1",
     "zod": "^4.0.10",
     "zod-i18n-map": "^2.27.0"

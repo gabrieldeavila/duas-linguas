@@ -1,8 +1,9 @@
 import i18next from "i18next";
-import { useRef } from "react";
+import { useCallback, useRef } from "react";
 import { Form, type Field, type FormApi } from "react-form-krafter";
 import { Trans, useTranslation } from "react-i18next";
 import { Link } from "react-router";
+import { toast } from "sonner";
 import z from "zod";
 import KrafterRegister from "~/components/internal/krafter/register";
 import { Button } from "~/components/ui/button";
@@ -13,6 +14,7 @@ import {
   CardHeader,
   CardTitle,
 } from "~/components/ui/card";
+import { supabase } from "~/lib/supabase";
 import { cn } from "~/lib/utils";
 
 export function meta() {
@@ -58,6 +60,26 @@ function SignIn({ className, ...props }: React.ComponentProps<"div">) {
 
   const { t } = useTranslation("login");
 
+  const signInUser = useCallback(
+    async (email: string, password: string) => {
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
+
+      if (error) {
+        const errorMessage = t(`errors.${error.code}`);
+        const showError =
+          errorMessage === error.code ? t("errors.bad_json") : errorMessage;
+
+        toast.error(showError);
+      } else {
+        console.log("Sign up successful:", data);
+      }
+    },
+    [t]
+  );
+
   return (
     <div className="flex min-h-svh w-full items-center justify-center p-6 md:p-10">
       <div className="w-full max-w-sm">
@@ -75,12 +97,11 @@ function SignIn({ className, ...props }: React.ComponentProps<"div">) {
                   schema={schema}
                   formApi={formApi}
                   onSubmit={async (data) => {
-                    console.log(
-                      "data",
-                      data,
-                      formApi.current?.fieldsInfo,
-                      formApi.current?.fieldsInfo.errors
-                    );
+                    if (data?.success) {
+                      await signInUser(data.state.email, data.state.password);
+                    } else {
+                      alert("Sign in failed. Please try again.");
+                    }
                   }}
                 >
                   <div className="flex flex-col gap-3">

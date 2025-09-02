@@ -18,6 +18,7 @@ import {
 import type { Route } from "./+types/root";
 import "./app.css";
 import { ThemeProvider } from "./components/theme-provider";
+import { Toaster } from "~/components/ui/sonner"
 
 export const unstable_middleware = [i18nextMiddleware];
 
@@ -56,6 +57,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
         </head>
         <body className="flex min-h-screen flex-col">
           {children}
+          <Toaster />
           <ScrollRestoration />
           <Scripts />
         </body>
