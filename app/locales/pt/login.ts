@@ -14,5 +14,6 @@ export default {
     subheading: "Digite seu e-mail abaixo para criar uma nova conta",
     button: "Cadastrar",
     alreadyHaveAccount: "Já tem uma conta? <0>Entrar</0>",
+    passwordsDoNotMatch: "As senhas não coincidem"
   },
 };

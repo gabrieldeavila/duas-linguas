@@ -3,6 +3,7 @@ import { useCallback, useRef } from "react";
 import { Form, type Field, type FormApi } from "react-form-krafter";
 import { Trans, useTranslation } from "react-i18next";
 import { Link } from "react-router";
+import { toast } from "sonner";
 import z from "zod";
 import KrafterRegister from "~/components/internal/krafter/register";
 import { Button } from "~/components/ui/button";
@@ -68,20 +69,27 @@ export function meta() {
 function SignUp({ className, ...props }: React.ComponentProps<"div">) {
   const formApi = useRef<FormApi<Validator> | null>(null);
 
-  const { t } = useTranslation("login");
+  const { t, i18n } = useTranslation("login");
 
-  const signUpNewUser = useCallback(async (email: string, password: string) => {
-    const { data, error } = await supabase.auth.signUp({
-      email,
-      password,
-    });
+  const signUpNewUser = useCallback(
+    async (email: string, password: string) => {
+      const { data, error } = await supabase.auth.signUp({
+        email,
+        password,
+      });
 
-    if (error) {
-      console.error("Error signing up:", error.message);
-    } else {
-      console.log("Sign up successful:", data);
-    }
-  }, []);
+      if (error) {
+        const errorMessage = i18n.exists(`login:errors.${error.code}`)
+          ? t(`errors.${error.code}` as never)
+          : t("errors.bad_json");
+
+        toast.error(errorMessage);
+      } else {
+        console.log("Sign up successful:", data);
+      }
+    },
+    [i18n, t]
+  );
 
   return (
     <div className="flex min-h-svh w-full items-center justify-center p-6 md:p-10">
@@ -106,7 +114,7 @@ function SignUp({ className, ...props }: React.ComponentProps<"div">) {
                         data.state.password
                       );
                     } else {
-                      alert("Sign up failed. Please try again.");
+                      toast.error(t("errors.bad_json"));
                     }
                   }}
                   onUpdate={(data) => {
@@ -121,7 +129,7 @@ function SignUp({ className, ...props }: React.ComponentProps<"div">) {
 
                       formApi.current.setError(
                         "confirm_password",
-                        isValid ? null : "Passwords do not match"
+                        isValid ? null : t("signUp.passwordsDoNotMatch")
                       );
                     }
                   }}

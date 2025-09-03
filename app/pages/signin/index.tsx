@@ -58,7 +58,7 @@ type Validator = z.infer<Schema>;
 function SignIn({ className, ...props }: React.ComponentProps<"div">) {
   const formApi = useRef<FormApi<Validator> | null>(null);
 
-  const { t } = useTranslation("login");
+  const { t, i18n } = useTranslation("login");
 
   const signInUser = useCallback(
     async (email: string, password: string) => {
@@ -68,16 +68,16 @@ function SignIn({ className, ...props }: React.ComponentProps<"div">) {
       });
 
       if (error) {
-        const errorMessage = t(`errors.${error.code}`);
-        const showError =
-          errorMessage === error.code ? t("errors.bad_json") : errorMessage;
+        const errorMessage = i18n.exists(`login:errors.${error.code}`)
+          ? t(`errors.${error.code}` as never)
+          : t("errors.bad_json");
 
-        toast.error(showError);
+        toast.error(errorMessage);
       } else {
         console.log("Sign up successful:", data);
       }
     },
-    [t]
+    [i18n, t]
   );
 
   return (

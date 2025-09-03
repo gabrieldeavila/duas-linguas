@@ -14,6 +14,7 @@ export default {
     subheading: "Enter your email below to create a new account",
     button: "Sign Up",
     alreadyHaveAccount: "Already have an account? <0>Sign in</0>",
+    passwordsDoNotMatch: "Passwords do not match"
   },
   errors: {
     bad_json: "Something went wrong. Please try again later.",
