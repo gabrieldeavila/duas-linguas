@@ -2,7 +2,7 @@ import i18next from "i18next";
 import { useCallback, useRef } from "react";
 import { Form, type Field, type FormApi } from "react-form-krafter";
 import { Trans, useTranslation } from "react-i18next";
-import { Link } from "react-router";
+import { Link, useNavigate } from "react-router";
 import { toast } from "sonner";
 import z from "zod";
 import KrafterRegister from "~/components/internal/krafter/register";
@@ -60,9 +60,11 @@ function SignIn({ className, ...props }: React.ComponentProps<"div">) {
 
   const { t, i18n } = useTranslation("login");
 
+  const navigate = useNavigate();
+
   const signInUser = useCallback(
     async (email: string, password: string) => {
-      const { data, error } = await supabase.auth.signInWithPassword({
+      const { error } = await supabase.auth.signInWithPassword({
         email,
         password,
       });
@@ -74,10 +76,10 @@ function SignIn({ className, ...props }: React.ComponentProps<"div">) {
 
         toast.error(errorMessage);
       } else {
-        console.log("Sign up successful:", data);
+        navigate("/dashboard");
       }
     },
-    [i18n, t]
+    [i18n, navigate, t]
   );
 
   return (
