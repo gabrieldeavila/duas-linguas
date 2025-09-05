@@ -1,4 +1,3 @@
-
 export function meta() {
   return [
     { title: "Dashboard" },
@@ -7,7 +6,7 @@ export function meta() {
 }
 
 function Dashboard() {
-  return <div>Dashboard</div>;
+  return "Welcome";
 }
 
 export default Dashboard;

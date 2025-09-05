@@ -88,6 +88,8 @@ body {
 
   --animate-shine: shine 5s ease-in-out 500ms infinite;
   --animate-gradient: gradient 6s linear infinite;
+  --sidebar:
+    hsl(0 0% 98%);
 }
 
 @keyframes shine {
@@ -146,6 +148,8 @@ body {
   --sidebar-accent-foreground: hsl(0, 0%, 100%);
   --sidebar-border: hsl(3, 25%, 25%);
   --sidebar-ring: hsl(353, 74%, 54%);
+  --sidebar:
+    hsl(240 5.9% 10%);
 }
 @layer base {
   * {
