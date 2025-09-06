@@ -1,8 +1,10 @@
 import type { Session } from "@supabase/supabase-js";
 import { createContext, useContext, useEffect, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Link } from "react-router";
 import { Skeleton } from "~/components/ui/skeleton";
 import { supabase } from "~/lib/supabase";
+import { cn } from "~/lib/utils";
 import type { SupabaseAuthProviderType } from "~/types/internal.types";
 
 const SupabaseAuthProviderContext =
@@ -13,6 +15,8 @@ export const SupabaseAuthProvider = ({
 }: {
   children: React.ReactNode;
 }) => {
+  const { t } = useTranslation("general");
+
   const [session, setSession] = useState<Session | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -47,9 +51,21 @@ export const SupabaseAuthProvider = ({
 
   if (!session?.user) {
     return (
-      <div>
-        Please sign in to continue.
-        <Link to="/signin">Sign In</Link>
+      <div className="h-dvh w-dvw flex items-center justify-center flex-col gap-4">
+        <p>{t("mustSignIn")}</p>
+        <div>
+          <Link
+            className={cn(
+              "bg-primary",
+              "rounded-lg",
+              "btn-sm relative p-2",
+              "whitespace-nowrap"
+            )}
+            to="/signin"
+          >
+            {t("signIn")}
+          </Link>
+        </div>
       </div>
     );
   }
@@ -69,4 +85,24 @@ export const useSession = () => {
     );
   }
   return context.session;
+};
+
+export const useUser = () => {
+  const context = useContext(SupabaseAuthProviderContext);
+  if (context === null) {
+    throw new Error(
+      "useUser must be used within a SupabaseAuthProviderContext"
+    );
+  }
+  return context.session?.user;
+};
+
+export const useSupabase = () => {
+  const context = useContext(SupabaseAuthProviderContext);
+  if (context === null) {
+    throw new Error(
+      "useSupabase must be used within a SupabaseAuthProviderContext"
+    );
+  }
+  return context.supabase;
 };
