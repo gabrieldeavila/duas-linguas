@@ -7,12 +7,19 @@ We will create a context that watches the user's authentication state and update
 If he logs out, we want to reset the client to avoid any unauthorized access.
 
 ```tsx
-import { createContext, useContext, useState, useEffect } from "react";
-import { createClient, SupabaseClient } from "@supabase/supabase-js";
-import type { Session } from "@supabase/supabase-js";
+import { createContext, useContext, useEffect, useMemo, useState } from "react";
 import { Link } from "react-router";
+import { supabase } from "~/lib/supabase";
+import type { SupabaseAuthProviderType } from "~/types/internal.types";
+import type { Session, SupabaseClient } from "@supabase/supabase-js";
 
-const SupabaseAuthProviderContext = createContext<SupabaseClient | null>(null);
+const SupabaseAuthProviderContext =
+  createContext<SupabaseAuthProviderType | null>(null);
+
+export type SupabaseAuthProviderType = {
+  supabase: SupabaseClient;
+  session: Session | null;
+};
 
 export const SupabaseAuthProvider = ({
   children,
@@ -53,7 +60,7 @@ export const SupabaseAuthProvider = ({
   }
 
   return (
-    <SupabaseAuthProviderContext.Provider value={supabase}>
+    <SupabaseAuthProviderContext.Provider value={value}>
       {children}
     </SupabaseAuthProviderContext.Provider>
   );
@@ -80,18 +87,79 @@ export const useSession = () => {
 };
 ```
 
-## 2. Wrap your application with the provider
+## 2. Create a Layout
 
-You might only want to wrap the part of your application that requires authentication.
+The layout will include the `SupabaseAuthProvider`. This will ensure that all components within the layout have access to the Supabase client and the user's session.
+
+Create a new file: `app/auth/layout.tsx`.
+
+I already included a sidebar component in the layout.
 
 ```tsx
-import { SupabaseAuthProvider } from "./SupabaseAuthProvider";
+import { Outlet } from "react-router";
+import { AppSidebar } from "~/components/internal/sidebar/app-sidebar";
+import { ToggleSidebar } from "~/components/internal/sidebar/toggleSidebar";
+import { SupabaseAuthProvider } from "~/components/internal/supabaseAuth";
+import { SidebarInset, SidebarProvider } from "~/components/ui/sidebar";
+import { cn } from "~/lib/utils";
 
-function App() {
+function Layout() {
   return (
     <SupabaseAuthProvider>
-      <YourProtectedComponent />
+      <SidebarProvider>
+        <AppSidebar />
+
+        <SidebarInset>
+          <div
+            className={cn(
+              "group-data-[view=desktop]/sidebar-wrapper:hidden",
+              "px-2 w-fit"
+            )}
+          >
+            <ToggleSidebar />
+          </div>
+
+          <div className="px-4 sm:py-4">
+            <Outlet />
+          </div>
+        </SidebarInset>
+      </SidebarProvider>
     </SupabaseAuthProvider>
   );
 }
+
+export default Layout;
 ```
+## 3. Add routes to the layout
+We can now say which routes require authentication and which do not.
+
+Go to the `app/routes.tsx` file and update it as follows:
+
+```tsx
+import {
+  type RouteConfig,
+  index,
+  layout,
+  route,
+} from "@react-router/dev/routes";
+
+export default [
+  route("api/locales/:lng/:ns", "./api/locales.ts"),
+
+  index("pages/home/index.tsx"),
+  route("developer", "pages/developer/index.tsx"),
+  route("platform", "pages/platform/index.tsx", [
+    route("docs", "pages/platform/docs/index.tsx"),
+    route("docs/:id", "pages/platform/docs/[id].tsx"),
+  ]),
+  route("signin", "pages/signin/index.tsx"),
+  route("signup", "pages/signup/index.tsx"),
+
+  layout("auth/layout.tsx", [
+    route("dashboard", "pages/dashboard/index.tsx"),
+  ]),
+] satisfies RouteConfig;
+
+```
+
+For every route that requires authentication, we add it inside the `layout` parameter.
