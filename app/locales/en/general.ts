@@ -2,5 +2,6 @@ export default {
   system: "System",
   dark: "Dark",
   light: "Light",
-  toggle_theme: "Toggle theme"
+  toggle_theme: "Toggle theme",
+  toggleSidebar: "Toggle Sidebar"
 };

@@ -1,6 +1,7 @@
 import type { Session } from "@supabase/supabase-js";
 import { createContext, useContext, useEffect, useMemo, useState } from "react";
 import { Link } from "react-router";
+import { Skeleton } from "~/components/ui/skeleton";
 import { supabase } from "~/lib/supabase";
 import type { SupabaseAuthProviderType } from "~/types/internal.types";
 
@@ -33,7 +34,15 @@ export const SupabaseAuthProvider = ({
   const value = useMemo(() => ({ supabase, session }), [session]);
 
   if (isLoading) {
-    return <div>Loading...</div>;
+    return (
+      <div className="h-dvh w-dvw flex flex-wrap gap-3.5">
+        <Skeleton className="h-full w-[50px]" />
+        <div className="flex flex-col grow pt-2 pr-2 gap-2">
+          <Skeleton className="h-[200px] w-full rounded-md" />
+          <Skeleton className="h-[200px] w-full rounded-md" />
+        </div>
+      </div>
+    );
   }
 
   if (!session?.user) {
