@@ -2,16 +2,11 @@
 
 In this lesson, we will create roles and permissions for our users.
 
+## Prerequisites
+- You need to have the supabase CLI installed. If you haven't done so, follow the instructions [here](https://supabase.com/docs/guides/cli).
+
+
 ## 1. Creating Migrations
-We need to have supabase installed, global or locally.
-```bash
-pnpm install -g supabase
-
-or
-
-pnpm install supabase
-```
-
 To create a migration, run the following command:
 
 ```bash
@@ -44,6 +39,8 @@ create table public.user_roles (
   role      app_role not null,
   unique (user_id, role)
 );
+
+alter table public.user_roles enable row level security;
 ```
 
 ```sql
@@ -113,7 +110,50 @@ create table public.role_permissions (
   permission   app_permission not null,
   unique (role, permission)
 );
+
+create or replace function public.authorize(
+  requested_permission app_permission
+)
+returns boolean as $$
+declare
+  bind_permissions int;
+  user_role public.app_role;
+begin
+  -- Fetch user role once and store it to reduce number of calls
+  select (auth.jwt() ->> 'user_role')::public.app_role into user_role;
+  select count(*)
+  into bind_permissions
+  from public.role_permissions
+  where role_permissions.permission = requested_permission
+    and role_permissions.role = user_role;
+  return bind_permissions > 0;
+end;
+$$ language plpgsql stable security definer set search_path = '';
+
+
+create policy "Allow auth admin to read role permissions" ON public.role_permissions
+as permissive for select
+to supabase_auth_admin;
+
 ```
+
+## 5. Running Migrations
+To run the migration, use the following command:
+
+```bash
+supabase db push
+```
+
+## 6. Acessing the Custom Claims in Your Application
+- Your config.toml should have the following configuration:
+
+```toml
+[auth.hook.custom_access_token] 
+enabled = true
+uri = "pg-functions://postgres/public/custom_access_token_hook"
+```
+
+When deploying to production, go to `Authentication > Hooks (Beta)` and add the `custom_access_token_hook` function.
 
 ## 4. Assigning Roles to Users
 
@@ -132,11 +172,4 @@ const { subscription: authListener } = supabase.auth.onAuthStateChange(
     }
   }
 );
-```
-  
-## 5. Running Migrations
-To run the migration, use the following command:
-
-```bash
-supabase db push
 ```
