@@ -1,0 +1,37 @@
+project_id = "duaslinguas - supabase"
+
+[api]
+enabled = true
+port = 55431
+
+[auth.hook.custom_access_token] 
+enabled = true
+uri = "pg-functions://postgres/public/custom_access_token_hook"
+
+[db]
+port = 55432
+shadow_port = 55430
+major_version = 17
+
+[db.pooler]
+enabled = false
+port = 55439
+
+[studio]
+enabled = true
+port = 55433
+api_url = "http://127.0.0.1"
+
+[inbucket]
+enabled = true
+port = 55434
+# smtp_port = 55435
+# pop3_port = 55436
+
+[analytics]
+enabled = true
+port = 55437
+
+[edge_runtime]
+enabled = true
+inspector_port = 8183
