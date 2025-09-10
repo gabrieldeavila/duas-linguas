@@ -6,6 +6,7 @@ import { Skeleton } from "~/components/ui/skeleton";
 import { supabase } from "~/lib/supabase";
 import { cn } from "~/lib/utils";
 import type { SupabaseAuthProviderType } from "~/types/internal.types";
+import { jwtDecode } from 'jwt-decode'
 
 const SupabaseAuthProviderContext =
   createContext<SupabaseAuthProviderType | null>(null);
@@ -29,6 +30,13 @@ export const SupabaseAuthProvider = ({
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((_event, session) => {
+
+      if (session) {
+        const jwt = jwtDecode(session.access_token);
+        const userRole = jwt.user_role;
+        console.log(jwt, userRole);
+      }
+
       setSession(session);
     });
 
