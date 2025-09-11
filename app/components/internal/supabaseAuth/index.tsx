@@ -6,7 +6,7 @@ import { Skeleton } from "~/components/ui/skeleton";
 import { supabase } from "~/lib/supabase";
 import { cn } from "~/lib/utils";
 import type { SupabaseAuthProviderType } from "~/types/internal.types";
-import { jwtDecode } from 'jwt-decode'
+import { jwtDecode } from "jwt-decode";
 
 const SupabaseAuthProviderContext =
   createContext<SupabaseAuthProviderType | null>(null);
@@ -20,6 +20,7 @@ export const SupabaseAuthProvider = ({
 
   const [session, setSession] = useState<Session | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [isAdmin, setIsAdmin] = useState(false);
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -30,11 +31,11 @@ export const SupabaseAuthProvider = ({
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((_event, session) => {
-
       if (session) {
-        const jwt = jwtDecode(session.access_token);
+        const jwt = jwtDecode<{ user_role: string }>(session.access_token);
         const userRole = jwt.user_role;
-        console.log(jwt, userRole);
+
+        setIsAdmin(userRole === "admin");
       }
 
       setSession(session);
@@ -43,7 +44,10 @@ export const SupabaseAuthProvider = ({
     return () => subscription.unsubscribe();
   }, []);
 
-  const value = useMemo(() => ({ supabase, session }), [session]);
+  const value = useMemo(
+    () => ({ supabase, session, isAdmin }),
+    [session, isAdmin]
+  );
 
   if (isLoading) {
     return (
@@ -113,4 +117,15 @@ export const useSupabase = () => {
     );
   }
   return context.supabase;
+};
+
+export const useIsAdmin = () => {
+  const context = useContext(SupabaseAuthProviderContext);
+  if (context === null) {
+    throw new Error(
+      "useIsAdmin must be used within a SupabaseAuthProviderContext"
+    );
+  }
+
+  return context.isAdmin;
 };

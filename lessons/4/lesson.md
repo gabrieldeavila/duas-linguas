@@ -137,14 +137,16 @@ to supabase_auth_admin;
 
 ```
 
-## 5. Running Migrations
+## 4. Running Migrations
 To run the migration, use the following command:
 
 ```bash
 supabase db push
+
+supabase db reset
 ```
 
-## 6. Acessing the Custom Claims in Your Application
+## 5. Accessing the Custom Claims in Your Application
 - Your config.toml should have the following configuration:
 
 ```toml
@@ -153,9 +155,10 @@ enabled = true
 uri = "pg-functions://postgres/public/custom_access_token_hook"
 ```
 
+
 When deploying to production, go to `Authentication > Hooks (Beta)` and add the `custom_access_token_hook` function.
 
-## 4. Assigning Roles to Users
+## 6. Assigning Roles to Users
 
 Once we have the roles and permissions tables, we can check for the user's role in our application.
 

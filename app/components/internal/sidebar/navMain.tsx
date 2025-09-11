@@ -8,9 +8,11 @@ import {
   SidebarMenu,
   SidebarMenuButton,
 } from "~/components/ui/sidebar";
+import { useIsAdmin } from "../supabaseAuth";
 
 export function NavMain() {
   const { t } = useTranslation("general");
+  const isAdmin = useIsAdmin();
 
   return (
     <SidebarGroup>
@@ -25,10 +27,12 @@ export function NavMain() {
           <span>{t("home")}</span>
         </SidebarMenuButton>
 
-        <SidebarMenuButton tooltip="Admin" customComp={Link} to="/admin">
-          <Shield />
-          <span>Admin</span>
-        </SidebarMenuButton>
+        {isAdmin && (
+          <SidebarMenuButton tooltip="Admin" customComp={Link} to="/admin">
+            <Shield />
+            <span>Admin</span>
+          </SidebarMenuButton>
+        )}
       </SidebarMenu>
     </SidebarGroup>
   );
