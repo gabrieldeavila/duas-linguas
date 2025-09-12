@@ -5,8 +5,8 @@ import { Link } from "react-router";
 import { Skeleton } from "~/components/ui/skeleton";
 import { supabase } from "~/lib/supabase";
 import { cn } from "~/lib/utils";
-import type { SupabaseAuthProviderType } from "~/types/internal.types";
 import { jwtDecode } from "jwt-decode";
+import type { SupabaseAuthProviderType } from "~/types";
 
 const SupabaseAuthProviderContext =
   createContext<SupabaseAuthProviderType | null>(null);
