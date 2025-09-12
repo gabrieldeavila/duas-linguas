@@ -19,5 +19,9 @@ export default [
 
   layout("auth/layout.tsx", [
     route("dashboard", "pages/dashboard/index.tsx"),
+    layout("auth/admin.tsx", [
+      route("admin", "pages/admin/index.tsx"),
+      // add more admin routes here
+    ]),
   ]),
 ] satisfies RouteConfig;
