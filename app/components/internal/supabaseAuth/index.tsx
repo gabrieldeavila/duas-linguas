@@ -1,5 +1,12 @@
 import type { Session } from "@supabase/supabase-js";
-import { createContext, useContext, useEffect, useMemo, useState } from "react";
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router";
 import { Skeleton } from "~/components/ui/skeleton";
@@ -22,27 +29,40 @@ export const SupabaseAuthProvider = ({
   const [isLoading, setIsLoading] = useState(true);
   const [isAdmin, setIsAdmin] = useState(false);
 
+  const getUserRole = useCallback((session: Session) => {
+    try {
+      const jwt = jwtDecode<{ user_role: string }>(session.access_token);
+      return jwt.user_role;
+    } catch {
+      return null;
+    }
+  }, []);
+
+  const updateUserRole = useCallback(
+    (session: Session) => {
+      const userRole = getUserRole(session);
+      setIsAdmin(userRole === "admin");
+    },
+    [getUserRole]
+  );
+
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session);
+      updateUserRole(session!);
       setIsLoading(false);
     });
 
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((_event, session) => {
-      if (session) {
-        const jwt = jwtDecode<{ user_role: string }>(session.access_token);
-        const userRole = jwt.user_role;
-
-        setIsAdmin(userRole === "admin");
-      }
+      updateUserRole(session!);
 
       setSession(session);
     });
 
     return () => subscription.unsubscribe();
-  }, []);
+  }, [updateUserRole]);
 
   const value = useMemo(
     () => ({ supabase, session, isAdmin }),
