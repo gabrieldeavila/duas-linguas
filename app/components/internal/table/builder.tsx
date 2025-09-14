@@ -1,11 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { useSupabase } from "../supabaseAuth";
-import type {
-  TableBuilderProps,
-  TableName,
-  TableRowProps,
-} from "~/types/table.types";
-import { PaginationBuilder } from "../pagination/builder";
+import { LinkButton } from "~/components/ui/button";
 import { Skeleton } from "~/components/ui/skeleton";
 import {
   Table,
@@ -15,6 +9,14 @@ import {
   TableHeader,
   TableRow,
 } from "~/components/ui/table";
+import type {
+  TableBuilderProps,
+  TableName,
+  TableRowProps,
+} from "~/types/table.types";
+import { PaginationBuilder } from "../pagination/builder";
+import { useSupabase } from "../supabaseAuth";
+import { useTranslation } from "react-i18next";
 
 const LIMIT_PER_PAGE = 20;
 
@@ -22,6 +24,7 @@ function TableBuilder<T extends TableName>({
   columns,
   tableName,
 }: TableBuilderProps<T>) {
+  const { t } = useTranslation("general");
   const supabase = useSupabase();
   const isFetching = useRef(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -98,6 +101,15 @@ function TableBuilder<T extends TableName>({
 
   return (
     <div className="flex flex-col gap-2">
+      <div className="flex items-center justify-between">
+        <h1 className="text-2xl font-bold capitalize">
+          {t(`pages.admin.${tableName}.title` as never)}
+        </h1>
+        <LinkButton to={`/admin/${tableName}/new`}>
+          {t(`pages.admin.${tableName}.buttonAddText` as never)}
+        </LinkButton>
+      </div>
+
       <div className="overflow-hidden rounded-md border">
         {isLoading ? (
           <div>

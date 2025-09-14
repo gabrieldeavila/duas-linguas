@@ -123,6 +123,7 @@ function Calendar({
         hidden: cn("invisible", defaultClassNames.hidden),
         ...classNames,
       }}
+      startMonth={new Date(1500, 0)}
       components={{
         Root: ({ className, rootRef, ...props }) => {
           return (

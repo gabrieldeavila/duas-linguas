@@ -14,4 +14,12 @@ export default {
   previous: "Previous",
   cancel: "Cancel",
   more_pages: "More pages",
+  pages: {
+    admin: {
+      books: {
+        title: "Books",
+        buttonAddText: "Add New Book",
+      },
+    },
+  },
 };

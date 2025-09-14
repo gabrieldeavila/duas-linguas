@@ -6,6 +6,7 @@ import landing from "./landing";
 import fields from "./fields";
 import login from "./login";
 import general from "./general";
+import pages from "./pages";
 
 export default {
   notFound,
@@ -14,5 +15,6 @@ export default {
   zod,
   fields,
   login,
-  general
+  general,
+  pages,
 } satisfies Resource;

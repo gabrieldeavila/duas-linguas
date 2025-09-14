@@ -22,7 +22,7 @@ export default [
     layout("auth/admin.tsx", [
       route("admin", "pages/admin/index.tsx"),
       route("admin/books", "pages/admin/books/index.tsx"),
-      // add more admin routes here
+      route("admin/books/new", "pages/admin/books/new.tsx"),
     ]),
   ]),
 ] satisfies RouteConfig;

@@ -11,4 +11,43 @@ export default {
     placeholder: "Confirm your password",
     label: "Confirm Password",
   },
+  title: {
+    placeholder: "Enter the book title",
+    label: "Title",
+  },
+  author: {
+    placeholder: "Enter the author's name",
+    label: "Author",
+  },
+  description: {
+    placeholder: "Enter a brief description of the book",
+    label: "Description",
+  },
+  published_date: {
+    placeholder: "Enter the published date",
+    label: "Published Date",
+  },
+  cover_image_url: {
+    placeholder: "Enter the cover image URL",
+    label: "Cover Image URL",
+  },
+  language: {
+    placeholder: "Enter the language",
+    label: "Language",
+  },
+  difficulty_level: {
+    placeholder: "Select the difficulty level",
+    label: "Difficulty Level",
+    beginner: "Beginner",
+    intermediate: "Intermediate",
+    advanced: "Advanced",
+  },
+  chapter_start: {
+    placeholder: "Enter the starting chapter",
+    label: "Chapter Start",
+  },
+  chapter_end: {
+    placeholder: "Enter the ending chapter",
+    label: "Chapter End",
+  },
 };

@@ -1,5 +1,9 @@
 CREATE TYPE PUBLIC.difficulty_level AS ENUM ('beginner', 'intermediate', 'advanced');
 
+CREATE TYPE PUBLIC.language AS ENUM ('en', 'es', 'pt');
+
+CREATE TYPE PUBLIC.status AS ENUM ('preparing', 'processing', 'done', 'error');
+
 CREATE TABLE IF NOT EXISTS books (
   id UUID PRIMARY KEY DEFAULT GEN_RANDOM_UUID(),
   title TEXT NOT NULL,
@@ -7,7 +11,11 @@ CREATE TABLE IF NOT EXISTS books (
   author TEXT NOT NULL,
   published_date DATE,
   cover_image_url TEXT,
-  language TEXT NOT NULL,
+  status PUBLIC.status NOT NULL DEFAULT 'preparing',
+  language PUBLIC.language NOT NULL,
+  error_message TEXT,
+  chapter_start INT DEFAULT 1 NOT NULL,
+  chapter_end INT DEFAULT 5 NOT NULL,
   difficulty_level PUBLIC.difficulty_level NOT NULL,
   created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
@@ -31,6 +39,8 @@ CREATE TABLE IF NOT EXISTS chapters (
   book_id UUID NOT NULL REFERENCES books(id) ON DELETE CASCADE,
   title TEXT NOT NULL,
   number INT,
+  status PUBLIC.status NOT NULL DEFAULT 'preparing',
+  error_message TEXT,
   difficulty_level PUBLIC.difficulty_level,
   created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
@@ -46,6 +56,10 @@ CREATE TABLE IF NOT EXISTS excerpts (
   chapter_id UUID NOT NULL REFERENCES chapters(id) ON DELETE CASCADE,
   book_id UUID NOT NULL REFERENCES books(id),
   content TEXT NOT NULL,
+  order_index INT,
+  status PUBLIC.status NOT NULL DEFAULT 'preparing',
+  error_message TEXT,
+  difficulty_level PUBLIC.difficulty_level,
   created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );

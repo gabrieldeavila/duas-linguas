@@ -1,5 +1,13 @@
 import TableBuilder from "~/components/internal/table/builder";
 import type { TableColumn } from "~/types/table.types";
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLinkRouter,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from "~/components/ui/breadcrumb";
 
 export function meta() {
   return [
@@ -13,7 +21,7 @@ const BOOKS_COLUMNS: TableColumn<"books">[] = [
     id: "id",
     name: "id",
     label: "ID",
-    show: false
+    show: false,
   },
   {
     id: "title",
@@ -30,7 +38,26 @@ const BOOKS_COLUMNS: TableColumn<"books">[] = [
 const TABLE_NAME = "books" as const;
 
 function Books() {
-  return <TableBuilder<typeof TABLE_NAME> columns={BOOKS_COLUMNS} tableName={TABLE_NAME} />;
+  return (
+    <div>
+      <Breadcrumb className="mb-4">
+        <BreadcrumbList>
+          <BreadcrumbItem className="hidden md:block">
+            <BreadcrumbLinkRouter to="/admin">Admin</BreadcrumbLinkRouter>
+          </BreadcrumbItem>
+          <BreadcrumbSeparator className="hidden md:block" />
+          <BreadcrumbItem className="hidden md:block">
+            <BreadcrumbPage>Books</BreadcrumbPage>
+          </BreadcrumbItem>
+        </BreadcrumbList>
+      </Breadcrumb>
+
+      <TableBuilder<typeof TABLE_NAME>
+        columns={BOOKS_COLUMNS}
+        tableName={TABLE_NAME}
+      />
+    </div>
+  );
 }
 
 export default Books;

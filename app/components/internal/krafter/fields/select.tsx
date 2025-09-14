@@ -34,7 +34,7 @@ const SelectField: FC<RegisterFieldRenderProps<Date>> = memo(
           }}
         >
           <SelectTrigger className={cn("w-full", field.inputClassName)}>
-            <SelectValue placeholder={field.placeholder} />
+            <SelectValue placeholder={t(field.placeholder as never)} />
           </SelectTrigger>
           <SelectContent>
             <SelectGroup>
