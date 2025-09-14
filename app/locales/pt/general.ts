@@ -2,5 +2,16 @@ export default {
   system: "Sistema",
   dark: "Escuro",
   light: "Claro",
-  toggle_theme: "Alternar tema"
+  toggle_theme: "Alternar tema",
+  toggleSidebar: "Alternar barra lateral",
+  signIn: "Entrar",
+  mustSignIn: "Você precisa estar autenticado para acessar esta página.",
+  signUp: "Registrar-se",
+  signOut: "Sair",
+  platform: "Plataforma",
+  home: "Início",
+  next: "Próximo",
+  previous: "Anterior",
+  cancel: "Cancelar",
+  more_pages: "Mais páginas",
 };

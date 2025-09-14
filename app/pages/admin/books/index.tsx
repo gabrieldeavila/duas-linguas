@@ -1,4 +1,5 @@
 import TableBuilder from "~/components/internal/table/builder";
+import type { TableColumn } from "~/types/table.types";
 
 export function meta() {
   return [
@@ -7,7 +8,7 @@ export function meta() {
   ];
 }
 
-const BOOKS_COLUMNS = [
+const BOOKS_COLUMNS: TableColumn<"books">[] = [
   {
     id: "id",
     name: "id",
@@ -26,10 +27,10 @@ const BOOKS_COLUMNS = [
   },
 ];
 
-const TABLE_NAME = "books";
+const TABLE_NAME = "books" as const;
 
 function Books() {
-  return <TableBuilder columns={BOOKS_COLUMNS} tableName={TABLE_NAME} />;
+  return <TableBuilder<typeof TABLE_NAME> columns={BOOKS_COLUMNS} tableName={TABLE_NAME} />;
 }
 
 export default Books;

@@ -1,28 +1,34 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useSupabase } from "../supabaseAuth";
-import type { TableBuilderProps } from "~/types/table.types";
+import type {
+  TableBuilderProps,
+  TableName,
+  TableRowProps,
+} from "~/types/table.types";
 import { PaginationBuilder } from "../pagination/builder";
 import { Skeleton } from "~/components/ui/skeleton";
 import {
   Table,
   TableBody,
+  TableCell,
   TableHead,
   TableHeader,
   TableRow,
 } from "~/components/ui/table";
 
-const LIMIT_PER_PAGE = 5;
+const LIMIT_PER_PAGE = 20;
 
-function TableBuilder({ columns, tableName }: TableBuilderProps) {
+function TableBuilder<T extends TableName>({
+  columns,
+  tableName,
+}: TableBuilderProps<T>) {
   const supabase = useSupabase();
   const isFetching = useRef(false);
   const [isLoading, setIsLoading] = useState(false);
   const [page, setPage] = useState(1);
   const [tableSize, setTableSize] = useState(0);
 
-  const [data, setData] = useState<
-    Record<string, string | number | boolean | null>[]
-  >([]);
+  const [data, setData] = useState<TableRowProps<T>[]>([]);
 
   const selectedColumns = useMemo(
     () => columns.map((col) => col.name).join(", "),
@@ -65,12 +71,12 @@ function TableBuilder({ columns, tableName }: TableBuilderProps) {
           (pageNumber - 1) * LIMIT_PER_PAGE,
           pageNumber * LIMIT_PER_PAGE - 1
         )
-        .then(({ data, error }) => {
-          if (error || !data) {
+        .then(({ data: books, error }) => {
+          if (error || !books) {
             console.error("Error fetching books:", error);
           } else {
-            console.log("Books data:", data);
-            setData(data);
+            console.log("Books data:", books);
+            setData(books as unknown as TableRowProps<T>[]);
           }
 
           setIsLoading(false);
@@ -90,38 +96,39 @@ function TableBuilder({ columns, tableName }: TableBuilderProps) {
     [columns]
   );
 
-  if (isLoading) {
-    return (
-      <div>
-        {Array.from({ length: LIMIT_PER_PAGE }).map((_, index) => (
-          <Skeleton key={index} className="h-10 w-full mb-2" />
-        ))}
-      </div>
-    );
-  }
-
   return (
     <div className="flex flex-col gap-2">
-      <Table>
-        <TableHeader>
-          <TableRow>
-            {visibleCols.map((column) => (
-              <TableHead key={column.id}>{column.label}</TableHead>
+      <div className="overflow-hidden rounded-md border">
+        {isLoading ? (
+          <div>
+            {Array.from({ length: LIMIT_PER_PAGE }).map((_, index) => (
+              <Skeleton key={index} className="h-10 w-full mb-2" />
             ))}
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {data.map((row, rowIndex) => (
-            <TableRow key={rowIndex}>
-              {visibleCols.map((column) => (
-                <td key={column.id} className="p-2 border">
-                  {row[column.name]}
-                </td>
+          </div>
+        ) : (
+          <Table>
+            <TableHeader>
+              <TableRow>
+                {visibleCols.map((column) => (
+                  <TableHead key={column.id}>{column.label}</TableHead>
+                ))}
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {data.map((row, rowIndex) => (
+                <TableRow key={rowIndex}>
+                  {visibleCols.map((column) => (
+                    <TableCell key={column.id}>
+                      {row[column.name] != null ? String(row[column.name]) : ""}
+                    </TableCell>
+                  ))}
+                </TableRow>
               ))}
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
+            </TableBody>
+          </Table>
+        )}
+      </div>
+
       <PaginationBuilder
         currentPage={page}
         totalPages={Math.ceil(tableSize / LIMIT_PER_PAGE)}

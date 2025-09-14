@@ -1,13 +1,19 @@
 import type { Database } from "./database.types";
 
-export type TableColumn = {
+export type Tables = Database["public"]["Tables"];
+export type TableName = keyof Tables;
+export type TableRowProps<T extends TableName> = Tables[T]["Row"];
+
+export type TableColumn<T extends TableName> = {
   id: string;
-  name: string;
+  name: keyof TableRowProps<T>;
   label: string;
   show?: boolean;
 };
 
-export type TableBuilderProps = {
-  columns: TableColumn[];
-  tableName: keyof Database["public"]["Tables"];
+export type TableBuilderProps<T extends TableName> = {
+  columns: TableColumn<T>[];
+  tableName: T;
 };
+
+export type BookProps = TableRowProps<"books">;

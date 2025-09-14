@@ -10,4 +10,8 @@ export default {
   signOut: "Sign Out",
   platform: "Platform",
   home: "Home",
+  next: "Next",
+  previous: "Previous",
+  cancel: "Cancel",
+  more_pages: "More pages",
 };
