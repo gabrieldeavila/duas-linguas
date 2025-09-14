@@ -169,4 +169,3 @@ CREATE TRIGGER set_question_chapter_and_book_id
 BEFORE INSERT ON questions
 FOR EACH ROW
 EXECUTE FUNCTION auto_set_question_chapter_and_book_id();
-
