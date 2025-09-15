@@ -20,6 +20,14 @@ export default {
         title: "Books",
         buttonAddText: "Add New Book",
       },
+      categories: {
+        title: "Categories",
+        buttonAddText: "Add New Category",
+      },
+      book_categories: {
+        title: "Book Categories",
+        buttonAddText: "Link Book to Category",
+      },
     },
   },
 };

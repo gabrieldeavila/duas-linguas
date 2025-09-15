@@ -15,9 +15,24 @@ function Admin() {
 
       <div className="flex flex-wrap gap-6">
         <AdminCard
+          title="Categories"
+          description="Manage book categories"
+          link={{ to: "/admin/categories", label: "Manage Categories" }}
+        />
+
+        <AdminCard
           title="Books"
           description="Add books titles and authors"
           link={{ to: "/admin/books", label: "Manage Books" }}
+        />
+
+        <AdminCard
+          title="Book Categories"
+          description="Link books to categories"
+          link={{
+            to: "/admin/book-categories",
+            label: "Manage Book Categories",
+          }}
         />
       </div>
     </div>

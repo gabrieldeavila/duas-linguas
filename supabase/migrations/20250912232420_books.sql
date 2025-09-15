@@ -183,3 +183,29 @@ CREATE TRIGGER set_question_chapter_and_book_id
 BEFORE INSERT ON questions
 FOR EACH ROW
 EXECUTE FUNCTION auto_set_question_chapter_and_book_id();
+
+-- categories book many-to-many
+CREATE TABLE IF NOT EXISTS categories (
+  id UUID PRIMARY KEY DEFAULT GEN_RANDOM_UUID(),
+  name TEXT NOT NULL UNIQUE,
+  description TEXT,
+  language PUBLIC.language NOT NULL,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TRIGGER update_categories_updated_at
+BEFORE UPDATE ON categories
+FOR EACH ROW
+EXECUTE FUNCTION update_updated_at_column();
+
+CREATE TABLE IF NOT EXISTS book_categories (
+  book_id UUID NOT NULL REFERENCES books(id) ON DELETE CASCADE,
+  category_id UUID NOT NULL REFERENCES categories(id) ON DELETE CASCADE,
+  PRIMARY KEY (book_id, category_id)
+);
+
+-- add role_permissions
+INSERT INTO public.role_permissions (role, permission)
+VALUES
+  ('admin', 'editor.manage');

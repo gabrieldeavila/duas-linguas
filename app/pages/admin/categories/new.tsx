@@ -19,15 +19,9 @@ import { Button } from "~/components/ui/button";
 import { cn } from "~/lib/utils";
 
 const schema = z.object({
-  title: z.string().min(1),
-  author: z.string().min(1),
+  name: z.string().min(1),
   description: z.string().min(1),
-  published_date: z.date(),
-  cover_image_url: z.string().min(1).optional(),
   language: z.enum(["en", "pt", "es"]),
-  difficulty_level: z.enum(["beginner", "intermediate", "advanced"]),
-  chapter_start: z.number().min(1),
-  chapter_end: z.number().min(1),
 });
 
 type Schema = typeof schema;
@@ -42,9 +36,9 @@ export function meta() {
 
 const BOOK_FIELD: Field[] = [
   {
-    name: "title",
-    label: "title.label",
-    placeholder: "title.placeholder",
+    name: "name",
+    label: "name.label",
+    placeholder: "name.placeholder",
     required: true,
     disabled: false,
     type: "text",
@@ -52,40 +46,11 @@ const BOOK_FIELD: Field[] = [
     wrapperClassName: "gap-3 col-span-1 md:col-span-2",
   },
   {
-    name: "author",
-    label: "author.label",
-    placeholder: "author.placeholder",
-    required: true,
-    disabled: false,
-    type: "text",
-    initialValue: "",
-    wrapperClassName: "gap-3",
-  },
-  {
     name: "description",
     label: "description.label",
     placeholder: "description.placeholder",
     required: true,
     disabled: false,
-    type: "text",
-    initialValue: "",
-    wrapperClassName: "gap-3",
-  },
-  {
-    name: "published_date",
-    label: "published_date.label",
-    placeholder: "published_date.placeholder",
-    required: true,
-    disabled: false,
-    type: "date",
-    initialValue: "",
-    wrapperClassName: "gap-3",
-  },
-  {
-    name: "cover_image_url",
-    label: "cover_image_url.label",
-    placeholder: "cover_image_url.placeholder",
-    required: false,
     type: "text",
     initialValue: "",
     wrapperClassName: "gap-3",
@@ -104,39 +69,9 @@ const BOOK_FIELD: Field[] = [
     ],
     wrapperClassName: "gap-3",
   },
-  {
-    name: "difficulty_level",
-    label: "difficulty_level.label",
-    placeholder: "difficulty_level.placeholder",
-    required: true,
-    type: "select",
-    options: [
-      { label: "difficulty_level.beginner", value: "beginner" },
-      { label: "difficulty_level.intermediate", value: "intermediate" },
-      { label: "difficulty_level.advanced", value: "advanced" },
-    ],
-    initialValue: "beginner",
-    wrapperClassName: "gap-3",
-  },
-  {
-    name: "chapter_start",
-    label: "chapter_start.label",
-    placeholder: "chapter_start.placeholder",
-    required: true,
-    type: "number",
-    wrapperClassName: "gap-3",
-  },
-  {
-    name: "chapter_end",
-    label: "chapter_end.label",
-    placeholder: "chapter_end.placeholder",
-    required: true,
-    type: "number",
-    wrapperClassName: "gap-3",
-  },
 ];
 
-function NewBook() {
+function NewCategories() {
   const formApi = useRef<FormApi<Validator> | null>(null);
   const { t } = useTranslation("pages");
   const supabase = useSupabase();
@@ -144,20 +79,20 @@ function NewBook() {
 
   const handleSave = useCallback(
     async (data: Validator) => {
-      toast.loading("Saving book...");
+      toast.loading("Saving category...");
 
       supabase
-        .from("books")
+        .from("categories")
         .insert(data)
         .then(({ error }) => {
           toast.dismiss();
 
           if (error) {
-            toast.error("Error saving books.");
-            console.error("Error inserting books:", error);
+            toast.error("Error saving category.");
+            console.error("Error inserting category:", error);
           } else {
-            navigate("/admin/books");
-            toast.success("Books saved successfully!");
+            navigate("/admin/categories");
+            toast.success("Category saved successfully!");
           }
         });
     },
@@ -173,16 +108,18 @@ function NewBook() {
           </BreadcrumbItem>
           <BreadcrumbSeparator className="hidden md:block" />
           <BreadcrumbItem className="hidden md:block">
-            <BreadcrumbLinkRouter to="/admin/books">Books</BreadcrumbLinkRouter>
+            <BreadcrumbLinkRouter to="/admin/categories">
+              Categories
+            </BreadcrumbLinkRouter>
           </BreadcrumbItem>
           <BreadcrumbSeparator className="hidden md:block" />
           <BreadcrumbItem>
-            <BreadcrumbPage>{t("books.title")}</BreadcrumbPage>
+            <BreadcrumbPage>{t("categories.title")}</BreadcrumbPage>
           </BreadcrumbItem>
         </BreadcrumbList>
       </Breadcrumb>
 
-      <h1 className={cn("mb-4 text-2xl font-bold")}>{t("books.title")}</h1>
+      <h1 className={cn("mb-4 text-2xl font-bold")}>{t("categories.title")}</h1>
 
       <KrafterRegister>
         <Form<Validator, Schema>
@@ -196,11 +133,11 @@ function NewBook() {
           onSubmit={async (data) => {
             if (!data.success) return;
 
-            await handleSave(data.state);
+            handleSave(data.state);
           }}
         >
           <div className="col-span-1 md:col-span-2 lg:col-span-4">
-            <Button type="submit">{t("books.submitButton")}</Button>
+            <Button type="submit">{t("categories.submitButton")}</Button>
           </div>
         </Form>
       </KrafterRegister>
@@ -208,4 +145,4 @@ function NewBook() {
   );
 }
 
-export default NewBook;
+export default NewCategories;

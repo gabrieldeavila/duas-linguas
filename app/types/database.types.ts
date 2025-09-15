@@ -34,6 +34,36 @@ export type Database = {
   }
   public: {
     Tables: {
+      book_categories: {
+        Row: {
+          book_id: string
+          category_id: string
+        }
+        Insert: {
+          book_id: string
+          category_id: string
+        }
+        Update: {
+          book_id?: string
+          category_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "book_categories_book_id_fkey"
+            columns: ["book_id"]
+            isOneToOne: false
+            referencedRelation: "books"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "book_categories_category_id_fkey"
+            columns: ["category_id"]
+            isOneToOne: false
+            referencedRelation: "categories"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       books: {
         Row: {
           author: string
@@ -69,6 +99,33 @@ export type Database = {
           language?: string
           published_date?: string | null
           title?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      categories: {
+        Row: {
+          created_at: string | null
+          description: string | null
+          id: string
+          language: Database["public"]["Enums"]["language"]
+          name: string
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          language: Database["public"]["Enums"]["language"]
+          name: string
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          language?: Database["public"]["Enums"]["language"]
+          name?: string
           updated_at?: string | null
         }
         Relationships: []
@@ -279,6 +336,8 @@ export type Database = {
       app_permission: "editor.manage"
       app_role: "admin"
       difficulty_level: "beginner" | "intermediate" | "advanced"
+      language: "en" | "es" | "pt"
+      status: "preparing" | "processing" | "done" | "error"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -412,6 +471,8 @@ export const Constants = {
       app_permission: ["editor.manage"],
       app_role: ["admin"],
       difficulty_level: ["beginner", "intermediate", "advanced"],
+      language: ["en", "es", "pt"],
+      status: ["preparing", "processing", "done", "error"],
     },
   },
 } as const

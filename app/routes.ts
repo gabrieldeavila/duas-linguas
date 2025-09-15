@@ -23,6 +23,11 @@ export default [
       route("admin", "pages/admin/index.tsx"),
       route("admin/books", "pages/admin/books/index.tsx"),
       route("admin/books/new", "pages/admin/books/new.tsx"),
+
+      route("admin/categories", "pages/admin/categories/index.tsx"),
+      route("admin/categories/new", "pages/admin/categories/new.tsx"),
+
+      route("admin/book-categories", "pages/admin/booksCategories/index.tsx"),
     ]),
   ]),
 ] satisfies RouteConfig;

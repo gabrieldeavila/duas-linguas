@@ -47,7 +47,7 @@ function TableBuilder<T extends TableName>({
 
     supabase
       .from(tableName)
-      .select("*", { count: "exact" })
+      .select("*", { count: "estimated" })
       .then(({ count, error }) => {
         isFindingLimit.current = false;
 
@@ -70,6 +70,7 @@ function TableBuilder<T extends TableName>({
       supabase
         .from(tableName)
         .select(selectedColumns)
+        .order("created_at", { ascending: false })
         .range(
           (pageNumber - 1) * LIMIT_PER_PAGE,
           pageNumber * LIMIT_PER_PAGE - 1
@@ -78,7 +79,6 @@ function TableBuilder<T extends TableName>({
           if (error || !books) {
             console.error("Error fetching books:", error);
           } else {
-            console.log("Books data:", books);
             setData(books as unknown as TableRowProps<T>[]);
           }
 
@@ -141,11 +141,13 @@ function TableBuilder<T extends TableName>({
         )}
       </div>
 
-      <PaginationBuilder
-        currentPage={page}
-        totalPages={Math.ceil(tableSize / LIMIT_PER_PAGE)}
-        onPageChange={fetchPage}
-      />
+      {tableSize === 0 ? null : (
+        <PaginationBuilder
+          currentPage={page}
+          totalPages={Math.ceil(tableSize / LIMIT_PER_PAGE)}
+          onPageChange={fetchPage}
+        />
+      )}
     </div>
   );
 }

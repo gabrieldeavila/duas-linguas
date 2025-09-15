@@ -20,7 +20,7 @@ export default {
     label: "Author",
   },
   description: {
-    placeholder: "Enter a brief description of the book",
+    placeholder: "Enter a description",
     label: "Description",
   },
   published_date: {
@@ -34,6 +34,10 @@ export default {
   language: {
     placeholder: "Enter the language",
     label: "Language",
+  },
+  name: {
+    placeholder: "Enter the name",
+    label: "Name",
   },
   difficulty_level: {
     placeholder: "Select the difficulty level",
