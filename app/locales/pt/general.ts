@@ -14,4 +14,21 @@ export default {
   previous: "Anterior",
   cancel: "Cancelar",
   more_pages: "Mais páginas",
+  saveChanges: "Salvar alterações",
+  pages: {
+    admin: {
+      books: {
+        title: "Livros",
+        buttonAddText: "Adicionar novo livro",
+      },
+      categories: {
+        title: "Categorias",
+        buttonAddText: "Adicionar nova categoria",
+      },
+      book_categories: {
+        title: "Categorias de livros",
+        buttonAddText: "Vincular livro à categoria",
+      },
+    },
+  },
 };

@@ -13,6 +13,7 @@ export default {
   next: "Next",
   previous: "Previous",
   cancel: "Cancel",
+  saveChanges: "Save Changes",
   more_pages: "More pages",
   pages: {
     admin: {

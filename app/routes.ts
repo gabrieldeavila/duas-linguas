@@ -28,6 +28,7 @@ export default [
       route("admin/categories/new", "pages/admin/categories/new.tsx"),
 
       route("admin/book-categories", "pages/admin/booksCategories/index.tsx"),
+      route("admin/book-categories/new", "pages/admin/booksCategories/new.tsx"),
     ]),
   ]),
 ] satisfies RouteConfig;

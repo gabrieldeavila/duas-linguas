@@ -11,9 +11,18 @@ export type TableColumn<T extends TableName> = {
   show?: boolean;
 };
 
+export type TableSettingsProps<T extends TableName> = {
+  hideAdd: boolean;
+  limitHeight: boolean;
+  columnSelector: keyof TableRowProps<T>;
+  singleSelection: boolean;
+};
+
 export type TableBuilderProps<T extends TableName> = {
   columns: TableColumn<T>[];
   tableName: T;
+  to?: string;
+  settings?: Partial<TableSettingsProps<T>>;
 };
 
 export type BookProps = TableRowProps<"books">;

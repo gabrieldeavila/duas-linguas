@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { LinkButton } from "~/components/ui/button";
+import { Button, LinkButton } from "~/components/ui/button";
 import { Skeleton } from "~/components/ui/skeleton";
 import {
   Table,
@@ -17,12 +17,15 @@ import type {
 import { PaginationBuilder } from "../pagination/builder";
 import { useSupabase } from "../supabaseAuth";
 import { useTranslation } from "react-i18next";
+import { Square, SquareCheckBig } from "lucide-react";
 
 const LIMIT_PER_PAGE = 20;
 
 function TableBuilder<T extends TableName>({
   columns,
   tableName,
+  to,
+  settings,
 }: TableBuilderProps<T>) {
   const { t } = useTranslation("general");
   const supabase = useSupabase();
@@ -30,6 +33,9 @@ function TableBuilder<T extends TableName>({
   const [isLoading, setIsLoading] = useState(false);
   const [page, setPage] = useState(1);
   const [tableSize, setTableSize] = useState(0);
+  const [selectedRows, setSelectedRows] = useState<(keyof TableRowProps<T>)[]>(
+    []
+  );
 
   const [data, setData] = useState<TableRowProps<T>[]>([]);
 
@@ -94,23 +100,51 @@ function TableBuilder<T extends TableName>({
     findLimit();
   }, [columns, fetchPage, findLimit, supabase, tableName]);
 
+  const selectRow = useCallback(
+    (row: TableRowProps<T>) => {
+      if (!settings?.columnSelector) return;
+
+      const id = row[settings.columnSelector] as keyof TableRowProps<T>;
+
+      setSelectedRows((prev) => {
+        if (settings?.singleSelection) {
+          return [id];
+        }
+
+        if (prev.includes(id)) {
+          return prev.filter((rowId) => rowId !== id);
+        } else {
+          return [...prev, id];
+        }
+      });
+    },
+    [settings?.columnSelector, settings?.singleSelection]
+  );
+
   const visibleCols = useMemo(
     () => columns.filter((col) => col.show !== false),
     [columns]
   );
 
   return (
-    <div className="flex flex-col gap-2">
-      <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold capitalize">
-          {t(`pages.admin.${tableName}.title` as never)}
-        </h1>
-        <LinkButton to={`/admin/${tableName}/new`}>
-          {t(`pages.admin.${tableName}.buttonAddText` as never)}
-        </LinkButton>
-      </div>
+    <div
+      className="flex flex-col gap-2 overflow-auto"
+      style={settings?.limitHeight ? { maxHeight: "600px" } : undefined}
+    >
+      {!settings?.hideAdd && (
+        <>
+          <div className="flex items-center justify-between">
+            <h1 className="text-2xl font-bold capitalize">
+              {t(`pages.admin.${tableName}.title` as never)}
+            </h1>
+            <LinkButton to={to ?? `/admin/${tableName}/new`}>
+              {t(`pages.admin.${tableName}.buttonAddText` as never)}
+            </LinkButton>
+          </div>
+        </>
+      )}
 
-      <div className="overflow-hidden rounded-md border">
+      <div className="overflow-auto rounded-md border">
         {isLoading ? (
           <div>
             {Array.from({ length: LIMIT_PER_PAGE }).map((_, index) => (
@@ -121,6 +155,37 @@ function TableBuilder<T extends TableName>({
           <Table>
             <TableHeader>
               <TableRow>
+                {/* add checkbox */}
+                {settings?.columnSelector && (
+                  <TableHead>
+                    {!settings?.singleSelection && (
+                      <Button
+                        variant="ghost"
+                        onClick={() => {
+                          if (selectedRows.length === data.length) {
+                            setSelectedRows([]);
+                          } else {
+                            setSelectedRows(
+                              data.map(
+                                (row) =>
+                                  row[
+                                    settings.columnSelector as keyof TableRowProps<T>
+                                  ] as keyof TableRowProps<T>
+                              )
+                            );
+                          }
+                        }}
+                      >
+                        {selectedRows.length === data.length ? (
+                          <SquareCheckBig />
+                        ) : (
+                          <Square />
+                        )}
+                      </Button>
+                    )}
+                  </TableHead>
+                )}
+
                 {visibleCols.map((column) => (
                   <TableHead key={column.id}>{column.label}</TableHead>
                 ))}
@@ -129,6 +194,25 @@ function TableBuilder<T extends TableName>({
             <TableBody>
               {data.map((row, rowIndex) => (
                 <TableRow key={rowIndex}>
+                  {settings?.columnSelector && (
+                    <TableCell>
+                      <Button
+                        variant="ghost"
+                        onClick={() => {
+                          selectRow(row);
+                        }}
+                      >
+                        {selectedRows.includes(
+                          row[settings.columnSelector] as keyof TableRowProps<T>
+                        ) ? (
+                          <SquareCheckBig />
+                        ) : (
+                          <Square />
+                        )}
+                      </Button>
+                    </TableCell>
+                  )}
+
                   {visibleCols.map((column) => (
                     <TableCell key={column.id}>
                       {row[column.name] != null ? String(row[column.name]) : ""}

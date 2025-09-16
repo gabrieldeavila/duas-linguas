@@ -49,6 +49,7 @@ function Books() {
       <TableBuilder<typeof TABLE_NAME>
         columns={BOOKS_COLUMNS}
         tableName={TABLE_NAME}
+        to="/admin/book-categories/new"
       />
     </div>
   );

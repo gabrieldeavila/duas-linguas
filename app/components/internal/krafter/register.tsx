@@ -45,6 +45,12 @@ const COMPONENTS: RegisterComponent<FieldsValue>[] = [
       RegisterFieldRenderProps<FieldsValue>
     >,
   },
+  {
+    type: "modal",
+    render: lazy(() => import("./fields/modal")) as ComponentType<
+      RegisterFieldRenderProps<FieldsValue>
+    >,
+  },
 ];
 
 const settings: RegisterSettings = {
