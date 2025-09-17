@@ -1,8 +1,17 @@
 import type { Database } from "./database.types";
 
+export type Views = {
+  [K in keyof Database["public"]["Views"]]: {
+    Row: Database["public"]["Views"][K]["Row"];
+  };
+};
+
 export type Tables = Database["public"]["Tables"];
-export type TableName = keyof Tables;
-export type TableRowProps<T extends TableName> = Tables[T]["Row"];
+
+export type TablesAndViews = Tables & Views;
+
+export type TableName = keyof TablesAndViews;
+export type TableRowProps<T extends TableName> = TablesAndViews[T]["Row"];
 
 export type TableColumn<T extends TableName> = {
   id: string;
@@ -16,6 +25,15 @@ export type TableSettingsProps<T extends TableName> = {
   limitHeight: boolean;
   columnSelector: keyof TableRowProps<T>;
   singleSelection: boolean;
+  buttons: Partial<{
+    title: string;
+    buttonText: string;
+  }>
+};
+
+export type TableController<T extends TableName> = {
+  selectedRows: (keyof TableRowProps<T>)[];
+  selectedData: TableRowProps<T>[];
 };
 
 export type TableBuilderProps<T extends TableName> = {
@@ -23,6 +41,7 @@ export type TableBuilderProps<T extends TableName> = {
   tableName: T;
   to?: string;
   settings?: Partial<TableSettingsProps<T>>;
+  tableController?: React.RefObject<TableController<T> | null>;
 };
 
 export type BookProps = TableRowProps<"books">;

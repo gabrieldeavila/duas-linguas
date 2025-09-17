@@ -19,9 +19,14 @@ import { Button } from "~/components/ui/button";
 import { cn } from "~/lib/utils";
 
 const schema = z.object({
-  name: z.string().min(1),
-  description: z.string().min(1),
-  language: z.enum(["en", "pt", "es"]),
+  book: z.object({
+    label: z.string().min(1, "Book is required"),
+    id: z.string().min(1, "Book is required"),
+  }),
+  category: z.object({
+    label: z.string().min(1, "Category is required"),
+    id: z.string().min(1, "Category is required"),
+  }),
 });
 
 type Schema = typeof schema;
@@ -36,43 +41,9 @@ export function meta() {
 
 const BOOK_FIELD: Field[] = [
   {
-    name: "name",
-    label: "name.label",
-    placeholder: "name.placeholder",
-    required: true,
-    disabled: false,
-    type: "text",
-    initialValue: "",
-    wrapperClassName: "gap-3 col-span-1 md:col-span-2",
-  },
-  {
-    name: "description",
-    label: "description.label",
-    placeholder: "description.placeholder",
-    required: true,
-    disabled: false,
-    type: "text",
-    initialValue: "",
-    wrapperClassName: "gap-3",
-  },
-  {
-    name: "language",
-    label: "language.label",
-    placeholder: "language.placeholder",
-    required: true,
-    type: "select",
-    initialValue: "",
-    options: [
-      { label: "English", value: "en" },
-      { label: "Português", value: "pt" },
-      { label: "Español", value: "es" },
-    ],
-    wrapperClassName: "gap-3",
-  },
-  {
-    name: "modal",
-    label: "Modal",
-    placeholder: "language.placeholder",
+    name: "category",
+    label: "Category",
+    placeholder: "category.placeholder",
     required: true,
     type: "modal",
     initialValue: "",
@@ -80,9 +51,30 @@ const BOOK_FIELD: Field[] = [
     metadata: {
       table: "categories",
       columnSelector: "id",
+      columnLabel: "name",
       columns: [
         { id: "id", name: "id", label: "ID", show: false },
         { id: "name", name: "name", label: "Name" },
+        { id: "description", name: "description", label: "Description" },
+        { id: "language", name: "language", label: "Language" },
+      ],
+    },
+  },
+  {
+    name: "book",
+    label: "Book",
+    placeholder: "book.placeholder",
+    required: true,
+    type: "modal",
+    initialValue: "",
+    wrapperClassName: "gap-3",
+    metadata: {
+      table: "books",
+      columnSelector: "id",
+      columnLabel: "title",
+      columns: [
+        { id: "id", name: "id", label: "ID", show: false },
+        { id: "title", name: "title", label: "Title" },
         { id: "description", name: "description", label: "Description" },
         { id: "language", name: "language", label: "Language" },
       ],
@@ -101,8 +93,11 @@ function NewCategories() {
       toast.loading("Saving category...");
 
       supabase
-        .from("categories")
-        .insert(data)
+        .from("book_categories")
+        .insert({
+          book_id: data.book.id,
+          category_id: data.category.id,
+        })
         .then(({ error }) => {
           toast.dismiss();
 
@@ -110,7 +105,7 @@ function NewCategories() {
             toast.error("Error saving category.");
             console.error("Error inserting category:", error);
           } else {
-            navigate("/admin/categories");
+            navigate("/admin/book-categories");
             toast.success("Category saved successfully!");
           }
         });
@@ -127,18 +122,20 @@ function NewCategories() {
           </BreadcrumbItem>
           <BreadcrumbSeparator className="hidden md:block" />
           <BreadcrumbItem className="hidden md:block">
-            <BreadcrumbLinkRouter to="/admin/categories">
-              Categories
+            <BreadcrumbLinkRouter to="/admin/book-categories">
+              Book Categories
             </BreadcrumbLinkRouter>
           </BreadcrumbItem>
           <BreadcrumbSeparator className="hidden md:block" />
           <BreadcrumbItem>
-            <BreadcrumbPage>{t("categories.title")}</BreadcrumbPage>
+            <BreadcrumbPage>{t("book_categories.title")}</BreadcrumbPage>
           </BreadcrumbItem>
         </BreadcrumbList>
       </Breadcrumb>
 
-      <h1 className={cn("mb-4 text-2xl font-bold")}>{t("categories.title")}</h1>
+      <h1 className={cn("mb-4 text-2xl font-bold")}>
+        {t("book_categories.title")}
+      </h1>
 
       <KrafterRegister>
         <Form<Validator, Schema>
@@ -150,6 +147,8 @@ function NewCategories() {
           schema={schema}
           formApi={formApi}
           onSubmit={async (data) => {
+            console.log(data);
+
             if (!data.success) return;
 
             handleSave(data.state);

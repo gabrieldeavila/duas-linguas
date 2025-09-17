@@ -16,20 +16,26 @@ export function meta() {
   ];
 }
 
-const BOOKS_COLUMNS: TableColumn<"book_categories">[] = [
+const BOOKS_COLUMNS: TableColumn<"vw_book_categories">[] = [
   {
-    id: "book_id",
-    name: "book_id",
-    label: "Book ID",
+    id: "id",
+    name: "id",
+    label: "ID",
+    show: false,
   },
   {
-    id: "category_id",
-    name: "category_id",
-    label: "Category ID",
+    id: "book_title",
+    name: "book_title",
+    label: "Book Title",
+  },
+  {
+    id: "category_name",
+    name: "category_name",
+    label: "Category Name",
   },
 ];
 
-const TABLE_NAME = "book_categories" as const;
+const TABLE_NAME = "vw_book_categories" as const;
 
 function Books() {
   return (
@@ -41,7 +47,7 @@ function Books() {
           </BreadcrumbItem>
           <BreadcrumbSeparator className="hidden md:block" />
           <BreadcrumbItem className="hidden md:block">
-            <BreadcrumbPage>Books</BreadcrumbPage>
+            <BreadcrumbPage>Books Categories</BreadcrumbPage>
           </BreadcrumbItem>
         </BreadcrumbList>
       </Breadcrumb>
@@ -50,6 +56,12 @@ function Books() {
         columns={BOOKS_COLUMNS}
         tableName={TABLE_NAME}
         to="/admin/book-categories/new"
+        settings={{
+          buttons: {
+            title: "Add Book Category",
+            buttonText: "Add",
+          },
+        }}
       />
     </div>
   );

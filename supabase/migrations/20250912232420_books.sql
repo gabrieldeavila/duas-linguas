@@ -200,8 +200,10 @@ FOR EACH ROW
 EXECUTE FUNCTION update_updated_at_column();
 
 CREATE TABLE IF NOT EXISTS book_categories (
+  id UUID PRIMARY KEY DEFAULT GEN_RANDOM_UUID(),
   book_id UUID NOT NULL REFERENCES books(id) ON DELETE CASCADE,
   category_id UUID NOT NULL REFERENCES categories(id) ON DELETE CASCADE,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (book_id, category_id)
 );
 
@@ -209,3 +211,44 @@ CREATE TABLE IF NOT EXISTS book_categories (
 INSERT INTO public.role_permissions (role, permission)
 VALUES
   ('admin', 'editor.manage');
+
+-- create view for book with categories
+CREATE OR REPLACE VIEW public.vw_book_categories with (security_invoker = true) AS
+SELECT
+  books.title as book_title,
+  books.id as book_id,
+  categories.id AS category_id,
+  categories.name AS category_name,
+  book_categories.created_at,
+  book_categories.id
+FROM
+  book_categories
+JOIN books ON book_categories.book_id = books.id
+JOIN categories ON book_categories.category_id = categories.id;
+
+-- add rls
+ALTER TABLE PUBLIC.book_categories ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Allow authorized crud access" ON PUBLIC.book_categories
+AS PERMISSIVE FOR ALL
+TO authenticated
+USING (PUBLIC.authorize('editor.manage'))
+WITH CHECK (PUBLIC.authorize('editor.manage'));
+
+CREATE POLICY "Allow read access to everyone" ON PUBLIC.book_categories
+AS PERMISSIVE FOR SELECT
+TO authenticated, anon
+USING (TRUE);
+
+-- to categories
+ALTER TABLE PUBLIC.categories ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Allow authorized crud access" ON PUBLIC.categories
+AS PERMISSIVE FOR ALL
+TO authenticated
+USING (PUBLIC.authorize('editor.manage'))
+WITH CHECK (PUBLIC.authorize('editor.manage'));
+
+CREATE POLICY "Allow read access to everyone" ON PUBLIC.categories
+AS PERMISSIVE FOR SELECT
+TO authenticated, anon
+USING (TRUE);
+

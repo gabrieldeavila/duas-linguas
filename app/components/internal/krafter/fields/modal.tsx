@@ -1,5 +1,5 @@
 import { Search } from "lucide-react";
-import { memo, type FC } from "react";
+import { memo, useCallback, useRef, type FC } from "react";
 import type { RegisterFieldRenderProps } from "react-form-krafter";
 import { useTranslation } from "react-i18next";
 import { Button } from "~/components/ui/button";
@@ -17,31 +17,60 @@ import { InputVariant } from "~/components/ui/input";
 import { Label } from "~/components/ui/label";
 import { cn } from "~/lib/utils";
 import TableBuilder from "../../table/builder";
+import type { TableController } from "~/types/table.types";
 
-const ModalField: FC<RegisterFieldRenderProps<string>> = memo(
-  ({ methods, field }: RegisterFieldRenderProps<string>) => {
+type FieldDataProp = Partial<{
+  id: string;
+  label: string;
+}>;
+
+const ModalField: FC<RegisterFieldRenderProps<FieldDataProp>> = memo(
+  ({ methods, field }: RegisterFieldRenderProps<FieldDataProp>) => {
     const { t } = useTranslation("fields");
 
     return (
-      <div className={cn("flex flex-col gap-2", field.wrapperClassName)}>
+      <div
+        className={cn(
+          "flex flex-col gap-2 overflow-hidden",
+          field.wrapperClassName
+        )}
+      >
         <Label htmlFor={field.name}>{t(field.label as never)}</Label>
 
         <div
           className={cn(
             InputVariant(),
-            "flex items-center justify-between gap-2 px-3 py-2"
+            "flex items-center justify-between gap-2 px-3 py-2 w-full"
           )}
         >
-          <p>{field.value ?? field.placeholder}</p>
+          {field.value?.label ? (
+            <p
+              className={cn("goverflow-hidden whitespace-nowrap text-ellipsis")}
+            >
+              {field.value.label}
+            </p>
+          ) : (
+            <p
+              className={cn(
+                "text-muted-foreground",
+                "overflow-hidden whitespace-nowrap text-ellipsis"
+              )}
+            >
+              {field.placeholder}
+            </p>
+          )}
 
           <Dialog>
             <DialogTrigger asChild>
-              <button className="rounded-sm p-1 hover:bg-accent" type="button">
+              <button
+                className="flex rounded-sm p-1 hover:bg-accent"
+                type="button"
+              >
                 <Search size={15} />
               </button>
             </DialogTrigger>
-            <DialogContent className="sm:max-w-[425px]">
-              <DialogHelper field={field} />
+            <DialogContent className="sm:max-w-[90dvw]">
+              <DialogHelper field={field} onChange={methods.onChange} />
             </DialogContent>
           </Dialog>
         </div>
@@ -58,10 +87,24 @@ export default ModalField;
 
 const DialogHelper = ({
   field,
+  onChange,
 }: {
-  field: RegisterFieldRenderProps<string>["field"];
+  field: RegisterFieldRenderProps<FieldDataProp>["field"];
+  onChange: (value: Record<string, string>) => void;
 }) => {
   const { t } = useTranslation("general");
+  const tableController = useRef<TableController<never>>(null);
+
+  const handleSave = useCallback(() => {
+    if (!tableController.current) return;
+
+    const selectedData = tableController.current.selectedData;
+
+    onChange({
+      id: selectedData[0][field.metadata?.columnSelector as never],
+      label: selectedData[0][field.metadata?.columnLabel as never] || "",
+    });
+  }, [field.metadata?.columnSelector, field.metadata?.columnLabel, onChange]);
 
   return (
     <>
@@ -75,6 +118,7 @@ const DialogHelper = ({
       <TableBuilder<never>
         tableName={field.metadata?.table as never}
         columns={field.metadata?.columns as never}
+        tableController={tableController}
         settings={{
           hideAdd: true,
           limitHeight: true,
@@ -87,7 +131,11 @@ const DialogHelper = ({
         <DialogClose asChild>
           <Button variant="outline">{t("cancel")}</Button>
         </DialogClose>
-        <Button type="submit">{t("saveChanges")}</Button>
+        <DialogClose>
+          <Button type="submit" onClick={handleSave}>
+            {t("saveChanges")}
+          </Button>
+        </DialogClose>
       </DialogFooter>
     </>
   );

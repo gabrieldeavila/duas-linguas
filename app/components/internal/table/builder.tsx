@@ -1,4 +1,11 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import {
+  useCallback,
+  useEffect,
+  useImperativeHandle,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { Button, LinkButton } from "~/components/ui/button";
 import { Skeleton } from "~/components/ui/skeleton";
 import {
@@ -26,6 +33,7 @@ function TableBuilder<T extends TableName>({
   tableName,
   to,
   settings,
+  tableController,
 }: TableBuilderProps<T>) {
   const { t } = useTranslation("general");
   const supabase = useSupabase();
@@ -36,8 +44,19 @@ function TableBuilder<T extends TableName>({
   const [selectedRows, setSelectedRows] = useState<(keyof TableRowProps<T>)[]>(
     []
   );
-
   const [data, setData] = useState<TableRowProps<T>[]>([]);
+
+  const selectedData = useMemo(
+    () =>
+      data.filter((row) => {
+        if (!settings?.columnSelector) return false;
+
+        const id = row[settings.columnSelector];
+
+        return selectedRows.includes(id as keyof TableRowProps<T>);
+      }),
+    [data, selectedRows, settings?.columnSelector]
+  );
 
   const selectedColumns = useMemo(
     () => columns.map((col) => col.name).join(", "),
@@ -52,7 +71,8 @@ function TableBuilder<T extends TableName>({
     isFindingLimit.current = true;
 
     supabase
-      .from(tableName)
+      // supabase has two overloaded from methods, so we need to cast tableName
+      .from(tableName as never)
       .select("*", { count: "estimated" })
       .then(({ count, error }) => {
         isFindingLimit.current = false;
@@ -74,7 +94,7 @@ function TableBuilder<T extends TableName>({
       setPage(pageNumber);
 
       supabase
-        .from(tableName)
+        .from(tableName as never)
         .select(selectedColumns)
         .order("created_at", { ascending: false })
         .range(
@@ -126,6 +146,15 @@ function TableBuilder<T extends TableName>({
     [columns]
   );
 
+  useImperativeHandle(
+    tableController,
+    () => ({
+      selectedRows,
+      selectedData,
+    }),
+    [selectedData, selectedRows]
+  );
+
   return (
     <div
       className="flex flex-col gap-2 overflow-auto"
@@ -135,10 +164,16 @@ function TableBuilder<T extends TableName>({
         <>
           <div className="flex items-center justify-between">
             <h1 className="text-2xl font-bold capitalize">
-              {t(`pages.admin.${tableName}.title` as never)}
+              {t(
+                (settings?.buttons?.title ??
+                  `pages.admin.${tableName}.title`) as never
+              )}
             </h1>
             <LinkButton to={to ?? `/admin/${tableName}/new`}>
-              {t(`pages.admin.${tableName}.buttonAddText` as never)}
+              {t(
+                (settings?.buttons?.buttonText ??
+                  `pages.admin.${tableName}.buttonAddText`) as never
+              )}
             </LinkButton>
           </div>
         </>

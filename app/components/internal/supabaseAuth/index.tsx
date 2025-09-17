@@ -41,7 +41,6 @@ export const SupabaseAuthProvider = ({
   const updateUserRole = useCallback(
     (session: Session) => {
       const userRole = getUserRole(session);
-      console.log(userRole);
       setIsAdmin(userRole === "admin");
     },
     [getUserRole]

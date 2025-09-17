@@ -38,14 +38,20 @@ export type Database = {
         Row: {
           book_id: string
           category_id: string
+          created_at: string | null
+          id: string
         }
         Insert: {
           book_id: string
           category_id: string
+          created_at?: string | null
+          id?: string
         }
         Update: {
           book_id?: string
           category_id?: string
+          created_at?: string | null
+          id?: string
         }
         Relationships: [
           {
@@ -56,11 +62,25 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "book_categories_book_id_fkey"
+            columns: ["book_id"]
+            isOneToOne: false
+            referencedRelation: "vw_book_categories"
+            referencedColumns: ["book_id"]
+          },
+          {
             foreignKeyName: "book_categories_category_id_fkey"
             columns: ["category_id"]
             isOneToOne: false
             referencedRelation: "categories"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "book_categories_category_id_fkey"
+            columns: ["category_id"]
+            isOneToOne: false
+            referencedRelation: "vw_book_categories"
+            referencedColumns: ["category_id"]
           },
         ]
       }
@@ -172,6 +192,13 @@ export type Database = {
             referencedRelation: "books"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "chapters_book_id_fkey"
+            columns: ["book_id"]
+            isOneToOne: false
+            referencedRelation: "vw_book_categories"
+            referencedColumns: ["book_id"]
+          },
         ]
       }
       excerpts: {
@@ -206,6 +233,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "books"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "excerpts_book_id_fkey"
+            columns: ["book_id"]
+            isOneToOne: false
+            referencedRelation: "vw_book_categories"
+            referencedColumns: ["book_id"]
           },
           {
             foreignKeyName: "excerpts_chapter_id_fkey"
@@ -265,6 +299,13 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "questions_book_id_fkey"
+            columns: ["book_id"]
+            isOneToOne: false
+            referencedRelation: "vw_book_categories"
+            referencedColumns: ["book_id"]
+          },
+          {
             foreignKeyName: "questions_chapter_id_fkey"
             columns: ["chapter_id"]
             isOneToOne: false
@@ -318,7 +359,16 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      vw_book_categories: {
+        Row: {
+          book_id: string | null
+          book_title: string | null
+          category_id: string | null
+          category_name: string | null
+          id: string | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       authorize: {
