@@ -1,5 +1,5 @@
 import TableBuilder from "~/components/internal/table/builder";
-import type { TableColumn } from "~/types/table.types";
+import type { TableColumn, TableSettingsProps } from "~/types/table.types";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -9,6 +9,7 @@ import {
   BreadcrumbSeparator,
 } from "~/components/ui/breadcrumb";
 import { useTranslation } from "react-i18next";
+import { useMemo } from "react";
 
 export function meta() {
   return [
@@ -17,7 +18,7 @@ export function meta() {
   ];
 }
 
-const BOOKS_COLUMNS: TableColumn<"vw_book_categories">[] = [
+const BOOKS_CATEGORIES_COLUMNS: TableColumn<"vw_book_categories">[] = [
   {
     id: "id",
     name: "id",
@@ -38,8 +39,20 @@ const BOOKS_COLUMNS: TableColumn<"vw_book_categories">[] = [
 
 const TABLE_NAME = "vw_book_categories" as const;
 
-function Books() {
+function BooksCategories() {
   const { t } = useTranslation("pages");
+  const TABLE_SETTINGS: TableSettingsProps<"book_categories"> = useMemo(
+    () => ({
+      deleteItems: true,
+      columnSelector: "id",
+      tableToDeleteFrom: "book_categories",
+      buttons: {
+        title: t("book_categories.newTitle"),
+        buttonText: t("book_categories.submitButton"),
+      },
+    }),
+    [t]
+  );
 
   return (
     <div>
@@ -56,18 +69,13 @@ function Books() {
       </Breadcrumb>
 
       <TableBuilder<typeof TABLE_NAME>
-        columns={BOOKS_COLUMNS}
+        columns={BOOKS_CATEGORIES_COLUMNS}
         tableName={TABLE_NAME}
         to="/admin/book-categories"
-        settings={{
-          buttons: {
-            title: t("book_categories.newTitle"),
-            buttonText: t("book_categories.submitButton"),
-          },
-        }}
+        settings={TABLE_SETTINGS}
       />
     </div>
   );
 }
 
-export default Books;
+export default BooksCategories;

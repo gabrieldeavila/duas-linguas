@@ -26,6 +26,7 @@ import { useSupabase } from "../supabaseAuth";
 import { useTranslation } from "react-i18next";
 import { Square, SquareCheckBig } from "lucide-react";
 import { Link } from "react-router";
+import { toast } from "sonner";
 
 const LIMIT_PER_PAGE = 20;
 
@@ -40,6 +41,7 @@ function TableBuilder<T extends TableName>({
   const supabase = useSupabase();
   const isFetching = useRef(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
   const [page, setPage] = useState(1);
   const [tableSize, setTableSize] = useState(0);
   const [selectedRows, setSelectedRows] = useState<(keyof TableRowProps<T>)[]>(
@@ -116,6 +118,40 @@ function TableBuilder<T extends TableName>({
     [selectedColumns, supabase, tableName]
   );
 
+  const handleDelete = useCallback(() => {
+    if (selectedRows.length === 0 || !settings?.columnSelector) return;
+    toast.loading(t("loading.deleting"));
+    setIsDeleting(true);
+
+    supabase
+      .from(settings?.tableToDeleteFrom ?? (tableName as never))
+      .delete()
+      .in(settings?.columnSelector as string, selectedRows as string[])
+      .then(({ error }) => {
+        toast.dismiss();
+
+        if (error) {
+          toast.error(t("error.deleting"));
+          console.error("Error deleting items:", error);
+        } else {
+          toast.success(t("success.deleting"));
+          setSelectedRows([]);
+          fetchPage(1);
+          findLimit();
+        }
+        setIsDeleting(false);
+      });
+  }, [
+    selectedRows,
+    settings?.columnSelector,
+    settings?.tableToDeleteFrom,
+    t,
+    supabase,
+    tableName,
+    fetchPage,
+    findLimit,
+  ]);
+
   useEffect(() => {
     fetchPage(1);
     findLimit();
@@ -176,12 +212,24 @@ function TableBuilder<T extends TableName>({
                   `pages.admin.${tableName}.title`) as never
               )}
             </h1>
-            <LinkButton to={`${routeTo}/new`}>
-              {t(
-                (settings?.buttons?.buttonText ??
-                  `pages.admin.${tableName}.buttonAddText`) as never
+            <div className="flex gap-2">
+              {settings?.deleteItems && selectedRows.length > 0 && (
+                <Button
+                  variant="destructive"
+                  onClick={handleDelete}
+                  disabled={isDeleting}
+                >
+                  {t("deleteSelected")} ({selectedRows.length})
+                </Button>
               )}
-            </LinkButton>
+
+              <LinkButton to={`${routeTo}/new`}>
+                {t(
+                  (settings?.buttons?.buttonText ??
+                    `pages.admin.${tableName}.buttonAddText`) as never
+                )}
+              </LinkButton>
+            </div>
           </div>
         </>
       )}
@@ -257,7 +305,10 @@ function TableBuilder<T extends TableName>({
 
                   {visibleCols.map((column) => (
                     <TableCell key={column.id}>
-                      <Link to={`${routeTo}/edit/${row.id}`} className="flex w-full">
+                      <Link
+                        to={`${routeTo}/edit/${row.id}`}
+                        className="flex w-full"
+                      >
                         {row[column.name] != null
                           ? String(row[column.name])
                           : ""}

@@ -204,8 +204,10 @@ CREATE TABLE IF NOT EXISTS book_categories (
   book_id UUID NOT NULL REFERENCES books(id) ON DELETE CASCADE,
   category_id UUID NOT NULL REFERENCES categories(id) ON DELETE CASCADE,
   created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-  PRIMARY KEY (book_id, category_id)
 );
+
+-- index to ensure a book can't be in the same category more than once
+CREATE UNIQUE INDEX idx_book_category ON book_categories(book_id, category_id);
 
 -- add role_permissions
 INSERT INTO public.role_permissions (role, permission)

@@ -1,3 +1,4 @@
+
 export default {
   system: "System",
   dark: "Dark",
@@ -15,6 +16,16 @@ export default {
   cancel: "Cancel",
   saveChanges: "Save Changes",
   more_pages: "More pages",
+  deleteSelected: "Delete Selected",
+  loading: {
+    deleting: "Deleting...",
+  },
+  success: {
+    deleting: "Deleted successfully!",
+  },
+  error: {
+    deleting: "Error deleting items.",
+  },
   pages: {
     admin: {
       books: {

@@ -1,5 +1,5 @@
 import TableBuilder from "~/components/internal/table/builder";
-import type { TableColumn } from "~/types/table.types";
+import type { TableColumn, TableSettingsProps } from "~/types/table.types";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -38,6 +38,11 @@ const CATEGORIES_COLUMNS: TableColumn<"categories">[] = [
 
 const TABLE_NAME = "categories" as const;
 
+const TABLE_SETTINGS: TableSettingsProps<"categories"> = {
+  deleteItems: true,
+  columnSelector: "id",
+};
+
 function Categories() {
   const { t } = useTranslation("pages");
 
@@ -58,6 +63,7 @@ function Categories() {
       <TableBuilder<typeof TABLE_NAME>
         columns={CATEGORIES_COLUMNS}
         tableName={TABLE_NAME}
+        settings={TABLE_SETTINGS}
       />
     </div>
   );

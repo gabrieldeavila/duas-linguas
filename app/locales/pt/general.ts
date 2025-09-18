@@ -15,6 +15,16 @@ export default {
   cancel: "Cancelar",
   more_pages: "Mais páginas",
   saveChanges: "Salvar alterações",
+  deleteSelected: "Excluir selecionados",
+  loading: {
+    deleting: "Deletando...",
+  },
+  success: {
+    deleting: "Deletado com sucesso!",
+  },
+  error: {
+    deleting: "Erro ao deletar itens.",
+  },
   pages: {
     admin: {
       books: {
