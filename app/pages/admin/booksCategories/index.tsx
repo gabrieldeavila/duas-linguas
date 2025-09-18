@@ -8,6 +8,7 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "~/components/ui/breadcrumb";
+import { useTranslation } from "react-i18next";
 
 export function meta() {
   return [
@@ -24,20 +25,22 @@ const BOOKS_COLUMNS: TableColumn<"vw_book_categories">[] = [
     show: false,
   },
   {
-    id: "book_title",
-    name: "book_title",
-    label: "Book Title",
-  },
-  {
     id: "category_name",
     name: "category_name",
     label: "Category Name",
+  },
+  {
+    id: "book_title",
+    name: "book_title",
+    label: "Book Title",
   },
 ];
 
 const TABLE_NAME = "vw_book_categories" as const;
 
 function Books() {
+  const { t } = useTranslation("pages");
+
   return (
     <div>
       <Breadcrumb className="mb-4">
@@ -47,7 +50,7 @@ function Books() {
           </BreadcrumbItem>
           <BreadcrumbSeparator className="hidden md:block" />
           <BreadcrumbItem className="hidden md:block">
-            <BreadcrumbPage>Books Categories</BreadcrumbPage>
+            <BreadcrumbPage>{t("book_categories.title")}</BreadcrumbPage>
           </BreadcrumbItem>
         </BreadcrumbList>
       </Breadcrumb>
@@ -55,11 +58,11 @@ function Books() {
       <TableBuilder<typeof TABLE_NAME>
         columns={BOOKS_COLUMNS}
         tableName={TABLE_NAME}
-        to="/admin/book-categories/new"
+        to="/admin/book-categories"
         settings={{
           buttons: {
-            title: "Add Book Category",
-            buttonText: "Add",
+            title: t("book_categories.newTitle"),
+            buttonText: t("book_categories.submitButton"),
           },
         }}
       />

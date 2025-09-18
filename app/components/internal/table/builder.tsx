@@ -25,6 +25,7 @@ import { PaginationBuilder } from "../pagination/builder";
 import { useSupabase } from "../supabaseAuth";
 import { useTranslation } from "react-i18next";
 import { Square, SquareCheckBig } from "lucide-react";
+import { Link } from "react-router";
 
 const LIMIT_PER_PAGE = 20;
 
@@ -155,6 +156,12 @@ function TableBuilder<T extends TableName>({
     [selectedData, selectedRows]
   );
 
+  const routeTo = useMemo(() => {
+    if (to) return to;
+
+    return `/admin/${tableName}`;
+  }, [tableName, to]);
+
   return (
     <div
       className="flex flex-col gap-2 overflow-auto"
@@ -169,7 +176,7 @@ function TableBuilder<T extends TableName>({
                   `pages.admin.${tableName}.title`) as never
               )}
             </h1>
-            <LinkButton to={to ?? `/admin/${tableName}/new`}>
+            <LinkButton to={`${routeTo}/new`}>
               {t(
                 (settings?.buttons?.buttonText ??
                   `pages.admin.${tableName}.buttonAddText`) as never
@@ -250,7 +257,11 @@ function TableBuilder<T extends TableName>({
 
                   {visibleCols.map((column) => (
                     <TableCell key={column.id}>
-                      {row[column.name] != null ? String(row[column.name]) : ""}
+                      <Link to={`${routeTo}/edit/${row.id}`} className="flex w-full">
+                        {row[column.name] != null
+                          ? String(row[column.name])
+                          : ""}
+                      </Link>
                     </TableCell>
                   ))}
                 </TableRow>

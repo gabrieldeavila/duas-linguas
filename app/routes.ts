@@ -23,12 +23,15 @@ export default [
       route("admin", "pages/admin/index.tsx"),
       route("admin/books", "pages/admin/books/index.tsx"),
       route("admin/books/new", "pages/admin/books/new.tsx"),
+      route("admin/books/edit/:id", "pages/admin/books/edit.tsx"),
 
       route("admin/categories", "pages/admin/categories/index.tsx"),
       route("admin/categories/new", "pages/admin/categories/new.tsx"),
+      route("admin/categories/edit/:id", "pages/admin/categories/edit.tsx"),
 
       route("admin/book-categories", "pages/admin/booksCategories/index.tsx"),
       route("admin/book-categories/new", "pages/admin/booksCategories/new.tsx"),
+      route("admin/book-categories/edit/:id", "pages/admin/booksCategories/edit.tsx"),
     ]),
   ]),
 ] satisfies RouteConfig;

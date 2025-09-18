@@ -54,4 +54,12 @@ export default {
     placeholder: "Enter the ending chapter",
     label: "Chapter End",
   },
+  category: {
+    placeholder: "Select a category",
+    label: "Category",
+  },
+  book: {
+    placeholder: "Select a book",
+    label: "Book",
+  },
 };

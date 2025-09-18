@@ -87,6 +87,8 @@ export type Database = {
       books: {
         Row: {
           author: string
+          chapter_end: number | null
+          chapter_start: number | null
           cover_image_url: string | null
           created_at: string | null
           description: string
@@ -99,6 +101,8 @@ export type Database = {
         }
         Insert: {
           author: string
+          chapter_end?: number | null
+          chapter_start?: number | null
           cover_image_url?: string | null
           created_at?: string | null
           description: string
@@ -111,6 +115,8 @@ export type Database = {
         }
         Update: {
           author?: string
+          chapter_end?: number | null
+          chapter_start?: number | null
           cover_image_url?: string | null
           created_at?: string | null
           description?: string
@@ -365,6 +371,7 @@ export type Database = {
           book_title: string | null
           category_id: string | null
           category_name: string | null
+          created_at: string | null
           id: string | null
         }
         Relationships: []

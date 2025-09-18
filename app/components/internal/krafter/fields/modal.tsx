@@ -37,43 +37,45 @@ const ModalField: FC<RegisterFieldRenderProps<FieldDataProp>> = memo(
       >
         <Label htmlFor={field.name}>{t(field.label as never)}</Label>
 
-        <div
-          className={cn(
-            InputVariant(),
-            "flex items-center justify-between gap-2 px-3 py-2 w-full"
-          )}
-        >
-          {field.value?.label ? (
-            <p
-              className={cn("goverflow-hidden whitespace-nowrap text-ellipsis")}
-            >
-              {field.value.label}
-            </p>
-          ) : (
-            <p
+        <Dialog>
+          <DialogTrigger asChild>
+            <div
               className={cn(
-                "text-muted-foreground",
-                "overflow-hidden whitespace-nowrap text-ellipsis"
+                InputVariant(),
+                "flex items-center justify-between gap-2 px-3 py-2 w-full"
               )}
             >
-              {field.placeholder}
-            </p>
-          )}
+              {field.value?.label ? (
+                <p
+                  className={cn(
+                    "goverflow-hidden whitespace-nowrap text-ellipsis"
+                  )}
+                >
+                  {t(field.value.label as never)}
+                </p>
+              ) : (
+                <p
+                  className={cn(
+                    "text-muted-foreground",
+                    "overflow-hidden whitespace-nowrap text-ellipsis"
+                  )}
+                >
+                  {t(field.placeholder as never)}
+                </p>
+              )}
 
-          <Dialog>
-            <DialogTrigger asChild>
               <button
                 className="flex rounded-sm p-1 hover:bg-accent"
                 type="button"
               >
                 <Search size={15} />
               </button>
-            </DialogTrigger>
-            <DialogContent className="sm:max-w-[90dvw]">
-              <DialogHelper field={field} onChange={methods.onChange} />
-            </DialogContent>
-          </Dialog>
-        </div>
+            </div>
+          </DialogTrigger>
+          <DialogContent className="sm:max-w-[90dvw]">
+            <DialogHelper field={field} onChange={methods.onChange} />
+          </DialogContent>
+        </Dialog>
 
         {field.error && field.isErrorVisible && (
           <span className="text-xs text-destructive">{field.error}</span>

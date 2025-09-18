@@ -1,17 +1,39 @@
 export default {
+  error: {
+    saving: "Error saving the register.",
+    updating: "Error updating the register.",
+    fetching: "Error fetching the register.",
+  },
+  success: {
+    saving: "Register saved successfully!",
+    updating: "Register updated successfully!",
+  },
+  loading: {
+    saving: "Saving...",
+    updating: "Updating...",
+  },
   books: {
-    title: "New Book",
+    title: "Books",
+    newTitle: "New Book",
+    editTitle: "Edit Book",
     description: "Add a new book to be processed.",
     submitButton: "Add Book",
+    updateButton: "Update Book",
   },
   categories: {
-    title: "New Category",
+    title: "Categories",
+    newTitle: "New Category",
+    editTitle: "Edit Category",
     description: "Add a new category to classify books.",
     submitButton: "Add Category",
+    updateButton: "Update Category",
   },
   book_categories: {
-    title: "New Book Category",
+    title: "Book Categories",
+    newTitle: "New Book Category",
+    editTitle: "Edit Book Category",
     description: "Link a book to a category.",
     submitButton: "Link Book to Category",
+    updateButton: "Update Book Category",
   },
 };

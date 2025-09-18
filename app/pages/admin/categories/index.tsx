@@ -8,6 +8,7 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "~/components/ui/breadcrumb";
+import { useTranslation } from "react-i18next";
 
 export function meta() {
   return [
@@ -38,6 +39,8 @@ const CATEGORIES_COLUMNS: TableColumn<"categories">[] = [
 const TABLE_NAME = "categories" as const;
 
 function Categories() {
+  const { t } = useTranslation("pages");
+
   return (
     <div>
       <Breadcrumb className="mb-4">
@@ -47,7 +50,7 @@ function Categories() {
           </BreadcrumbItem>
           <BreadcrumbSeparator className="hidden md:block" />
           <BreadcrumbItem className="hidden md:block">
-            <BreadcrumbPage>Categories</BreadcrumbPage>
+            <BreadcrumbPage>{t("categories.title")}</BreadcrumbPage>
           </BreadcrumbItem>
         </BreadcrumbList>
       </Breadcrumb>

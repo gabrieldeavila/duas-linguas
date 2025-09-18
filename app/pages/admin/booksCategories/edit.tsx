@@ -1,8 +1,8 @@
 import i18next from "i18next";
-import { useCallback, useRef } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { Form, type FormApi } from "react-form-krafter";
 import { useTranslation } from "react-i18next";
-import { useNavigate } from "react-router";
+import { useNavigate, useParams } from "react-router";
 import { toast } from "sonner";
 import KrafterRegister from "~/components/internal/krafter/register";
 import { useSupabase } from "~/components/internal/supabaseAuth";
@@ -22,6 +22,7 @@ import {
   type SchemaBookCategories,
   type ValidatorBookCategories,
 } from "./utils";
+import { Skeleton } from "~/components/ui/skeleton";
 
 export function meta() {
   return [
@@ -30,35 +31,71 @@ export function meta() {
   ];
 }
 
-function NewCategories() {
+function EditBookCategories() {
   const formApi = useRef<FormApi<ValidatorBookCategories> | null>(null);
   const { t } = useTranslation("pages");
+  const { id } = useParams<{ id: string }>();
   const supabase = useSupabase();
   const navigate = useNavigate();
+  const [isLoading, setIsLoading] = useState(false);
+  const isLoadingRef = useRef(false);
 
-  const handleSave = useCallback(
+  useEffect(() => {
+    if (!id || isLoadingRef.current) return;
+
+    isLoadingRef.current = true;
+    setIsLoading(true);
+
+    supabase
+      .from("vw_book_categories")
+      .select("*")
+      .eq("id", id!)
+      .single()
+      .then(({ data, error }) => {
+        setIsLoading(false);
+        isLoadingRef.current = false;
+
+        if (error) {
+          toast.error(t("error.fetching"));
+          console.error("Error fetching category:", error);
+        } else if (data && formApi.current) {
+          formApi.current.setFieldsState({
+            book: {
+              label: data.book_title,
+              id: data.book_id,
+            },
+            category: {
+              label: data.category_name,
+              id: data.category_id,
+            },
+          } as ValidatorBookCategories);
+        }
+      });
+  }, [id, supabase, t]);
+
+  const handleUpdate = useCallback(
     async (data: ValidatorBookCategories) => {
-      toast.loading(t("loading.saving"));
+      toast.loading(t("loading.updating"));
 
       supabase
         .from("book_categories")
-        .insert({
+        .update({
           book_id: data.book.id,
           category_id: data.category.id,
         })
+        .eq("id", id!)
         .then(({ error }) => {
           toast.dismiss();
 
           if (error) {
-            toast.error(t("error.saving"));
-            console.error("Error inserting category:", error);
+            toast.error(t("error.updating"));
           } else {
             navigate("/admin/book-categories");
-            toast.success(t("success.saving"));
+            toast.success(t("success.updating"));
           }
         });
     },
-    [navigate, supabase, t]
+    [id, navigate, supabase, t]
   );
 
   return (
@@ -71,18 +108,18 @@ function NewCategories() {
           <BreadcrumbSeparator className="hidden md:block" />
           <BreadcrumbItem className="hidden md:block">
             <BreadcrumbLinkRouter to="/admin/book-categories">
-              Book Categories
+              {t("book_categories.title")}
             </BreadcrumbLinkRouter>
           </BreadcrumbItem>
           <BreadcrumbSeparator className="hidden md:block" />
           <BreadcrumbItem>
-            <BreadcrumbPage>{t("book_categories.newTitle")}</BreadcrumbPage>
+            <BreadcrumbPage>{t("book_categories.editTitle")}</BreadcrumbPage>
           </BreadcrumbItem>
         </BreadcrumbList>
       </Breadcrumb>
 
       <h1 className={cn("mb-4 text-2xl font-bold")}>
-        {t("book_categories.newTitle")}
+        {t("book_categories.editTitle")} aa
       </h1>
 
       <KrafterRegister>
@@ -93,17 +130,18 @@ function NewCategories() {
           )}
           fields={BOOK_CATEGORIES_FIELD}
           schema={schemaBookCategories}
+          fieldWrapper={(children) =>
+            isLoading ? <Skeleton className="h-10 w-full" /> : children
+          }
           formApi={formApi}
           onSubmit={async (data) => {
-            console.log(data);
-
             if (!data.success) return;
 
-            handleSave(data.state);
+            handleUpdate(data.state);
           }}
         >
           <div className="col-span-1 md:col-span-2 lg:col-span-4">
-            <Button type="submit">{t("categories.submitButton")}</Button>
+            <Button type="submit">{t("categories.updateButton")}</Button>
           </div>
         </Form>
       </KrafterRegister>
@@ -111,4 +149,4 @@ function NewCategories() {
   );
 }
 
-export default NewCategories;
+export default EditBookCategories;

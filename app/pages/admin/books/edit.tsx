@@ -1,8 +1,8 @@
 import i18next from "i18next";
-import { useCallback, useRef } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { Form, type FormApi } from "react-form-krafter";
 import { useTranslation } from "react-i18next";
-import { useNavigate } from "react-router";
+import { useNavigate, useParams } from "react-router";
 import { toast } from "sonner";
 import KrafterRegister from "~/components/internal/krafter/register";
 import { useSupabase } from "~/components/internal/supabaseAuth";
@@ -22,6 +22,7 @@ import {
   type SchemaBook,
   type ValidatorBook,
 } from "./utils";
+import { Skeleton } from "~/components/ui/skeleton";
 
 export function meta() {
   return [
@@ -30,37 +31,69 @@ export function meta() {
   ];
 }
 
-function NewBook() {
+function EditBook() {
   const formApi = useRef<FormApi<ValidatorBook> | null>(null);
   const { t } = useTranslation("pages");
   const supabase = useSupabase();
   const navigate = useNavigate();
+  const [isLoading, setIsLoading] = useState(false);
+  const isLoadingRef = useRef(false);
+  const { id } = useParams<{ id: string }>();
 
-  const handleSave = useCallback(
+  useEffect(() => {
+    if (!id || isLoadingRef.current) return;
+
+    isLoadingRef.current = true;
+    setIsLoading(true);
+
+    supabase
+      .from("books")
+      .select(BOOK_FIELD.map((field) => field.name).join(","))
+      .eq("id", id!)
+      .single()
+      .then(({ data, error }) => {
+        setIsLoading(false);
+        isLoadingRef.current = false;
+
+        if (error) {
+          toast.error(t("error.fetching"));
+          console.error("Error fetching category:", error);
+        } else if (data && formApi.current) {
+          console.log(data);
+          formApi.current.setFieldsState({
+            ...(data as unknown as ValidatorBook),
+            published_date: new Date(),
+          });
+        }
+      });
+  }, [id, supabase, t]);
+
+  const handleUpdate = useCallback(
     async (data: ValidatorBook) => {
-      toast.loading(t("loading.saving"));
+      toast.loading(t("loading.updating"));
 
       supabase
         .from("books")
-        .insert({
+        .update({
           ...data,
           published_date: new Date(data.published_date)
             .toISOString()
             .slice(0, 10),
         })
+        .eq("id", id!)
         .then(({ error }) => {
           toast.dismiss();
 
           if (error) {
-            toast.error(t("error.saving"));
+            toast.error(t("error.updating"));
             console.error("Error inserting books:", error);
           } else {
             navigate("/admin/books");
-            toast.success(t("success.saving"));
+            toast.success(t("success.updating"));
           }
         });
     },
-    [navigate, supabase, t]
+    [id, navigate, supabase, t]
   );
 
   return (
@@ -78,12 +111,12 @@ function NewBook() {
           </BreadcrumbItem>
           <BreadcrumbSeparator className="hidden md:block" />
           <BreadcrumbItem>
-            <BreadcrumbPage>{t("books.newTitle")}</BreadcrumbPage>
+            <BreadcrumbPage>{t("books.editTitle")}</BreadcrumbPage>
           </BreadcrumbItem>
         </BreadcrumbList>
       </Breadcrumb>
 
-      <h1 className={cn("mb-4 text-2xl font-bold")}>{t("books.newTitle")}</h1>
+      <h1 className={cn("mb-4 text-2xl font-bold")}>{t("books.editTitle")}</h1>
 
       <KrafterRegister>
         <Form<ValidatorBook, SchemaBook>
@@ -94,14 +127,17 @@ function NewBook() {
           fields={BOOK_FIELD}
           schema={schemaBook}
           formApi={formApi}
+          fieldWrapper={(children) =>
+            isLoading ? <Skeleton className="h-10 w-full" /> : children
+          }
           onSubmit={async (data) => {
             if (!data.success) return;
 
-            await handleSave(data.state);
+            await handleUpdate(data.state);
           }}
         >
           <div className="col-span-1 md:col-span-2 lg:col-span-4">
-            <Button type="submit">{t("books.submitButton")}</Button>
+            <Button type="submit">{t("books.updateButton")}</Button>
           </div>
         </Form>
       </KrafterRegister>
@@ -109,4 +145,4 @@ function NewBook() {
   );
 }
 
-export default NewBook;
+export default EditBook;
