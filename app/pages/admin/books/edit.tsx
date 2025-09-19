@@ -57,9 +57,7 @@ function EditBook() {
 
         if (error) {
           toast.error(t("error.fetching"));
-          console.error("Error fetching category:", error);
         } else if (data && formApi.current) {
-          console.log(data);
           formApi.current.setFieldsState({
             ...(data as unknown as ValidatorBook),
             published_date: new Date(),

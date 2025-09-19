@@ -111,9 +111,9 @@ const DialogHelper = ({
   return (
     <>
       <DialogHeader>
-        <DialogTitle>{field.label}</DialogTitle>
+        <DialogTitle>{t(field.label as never)}</DialogTitle>
         <DialogDescription>
-          {field.placeholder && <p>{field.placeholder}</p>}
+          {field.placeholder && <p>{t(field.placeholder as never)}</p>}
         </DialogDescription>
       </DialogHeader>
 

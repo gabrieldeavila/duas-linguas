@@ -18,7 +18,7 @@ export type ValidatorBookCategories = z.infer<SchemaBookCategories>;
 export const BOOK_CATEGORIES_FIELD: Field[] = [
   {
     name: "category",
-    label: "Category",
+    label: "category.label",
     placeholder: "category.placeholder",
     required: true,
     type: "modal",
@@ -38,7 +38,7 @@ export const BOOK_CATEGORIES_FIELD: Field[] = [
   },
   {
     name: "book",
-    label: "Book",
+    label: "book.title",
     placeholder: "book.placeholder",
     required: true,
     type: "modal",

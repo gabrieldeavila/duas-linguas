@@ -26,6 +26,14 @@ export default {
   error: {
     deleting: "Error deleting items.",
   },
+  category: {
+    label: "Category",
+    placeholder: "Select a category",
+  },
+  book: {
+    title: "Book",
+    placeholder: "Select a book",
+  },
   pages: {
     admin: {
       books: {

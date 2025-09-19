@@ -25,6 +25,14 @@ export default {
   error: {
     deleting: "Erro ao deletar itens.",
   },
+  category: {
+    label: "Categoria",
+    placeholder: "Selecione uma categoria",
+  },
+  book: {
+    title: "Livro",
+    placeholder: "Selecione um livro",
+  },
   pages: {
     admin: {
       books: {
