@@ -98,7 +98,7 @@ function NewCategories() {
           }}
         >
           <div className="col-span-1 md:col-span-2 lg:col-span-4">
-            <Button type="submit">{t("categories.updateButton")}</Button>
+            <Button type="submit">{t("categories.submitButton")}</Button>
           </div>
         </Form>
       </KrafterRegister>

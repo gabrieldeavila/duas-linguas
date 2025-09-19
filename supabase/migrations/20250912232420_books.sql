@@ -203,7 +203,7 @@ CREATE TABLE IF NOT EXISTS book_categories (
   id UUID PRIMARY KEY DEFAULT GEN_RANDOM_UUID(),
   book_id UUID NOT NULL REFERENCES books(id) ON DELETE CASCADE,
   category_id UUID NOT NULL REFERENCES categories(id) ON DELETE CASCADE,
-  created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
 -- index to ensure a book can't be in the same category more than once
