@@ -247,7 +247,7 @@ function TableBuilder<T extends TableName>({
               <TableRow>
                 {/* add checkbox */}
                 {settings?.columnSelector && (
-                  <TableHead>
+                  <TableHead className="w-8">
                     {!settings?.singleSelection && (
                       <Button
                         variant="ghost"

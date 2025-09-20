@@ -35,3 +35,25 @@ port = 55437
 [edge_runtime]
 enabled = true
 inspector_port = 8183
+
+[functions.init_book_chapters]
+enabled = true
+verify_jwt = true
+import_map = "./functions/init_book_chapters/deno.json"
+# Uncomment to specify a custom file path to the entrypoint.
+# Supported file extensions are: .ts, .js, .mjs, .jsx, .tsx
+entrypoint = "./functions/init_book_chapters/index.ts"
+# Specifies static files to be bundled with the function. Supports glob patterns.
+# For example, if you want to serve static HTML pages in your function:
+# static_files = [ "./functions/init_book_chapters/*.html" ]
+
+[functions.init_book_chapters_2]
+enabled = true
+verify_jwt = true
+import_map = "./functions/init_book_chapters_2/deno.json"
+# Uncomment to specify a custom file path to the entrypoint.
+# Supported file extensions are: .ts, .js, .mjs, .jsx, .tsx
+entrypoint = "./functions/init_book_chapters_2/index.ts"
+# Specifies static files to be bundled with the function. Supports glob patterns.
+# For example, if you want to serve static HTML pages in your function:
+# static_files = [ "./functions/init_book_chapters_2/*.html" ]
