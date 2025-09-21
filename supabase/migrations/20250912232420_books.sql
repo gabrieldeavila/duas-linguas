@@ -139,9 +139,10 @@ CREATE OR REPLACE FUNCTION auto_set_excerpt_book_id()
 RETURNS TRIGGER AS $$
 DECLARE
   chapter_book UUID;
+  diff_level PUBLIC.difficulty_level;
 BEGIN
   -- Get the book_id from the chapter
-  SELECT book_id INTO chapter_book
+  SELECT book_id, difficulty_level INTO chapter_book, diff_level
   FROM chapters
   WHERE id = NEW.chapter_id;
 
@@ -152,6 +153,7 @@ BEGIN
 
   -- Set the book_id
   NEW.book_id := chapter_book;
+  NEW.difficulty_level := diff_level;
 
   RETURN NEW;
 END;
@@ -162,9 +164,10 @@ RETURNS TRIGGER AS $$
 DECLARE
   excerpt_chapter UUID;
   excerpt_book UUID;
+  diff_level PUBLIC.difficulty_level;
 BEGIN
   -- Get chapter and book from excerpt
-  SELECT chapter_id, book_id INTO excerpt_chapter, excerpt_book
+  SELECT chapter_id, book_id, difficulty_level INTO excerpt_chapter, excerpt_book, diff_level
   FROM excerpts
   WHERE id = NEW.excerpt_id;
 
@@ -174,6 +177,7 @@ BEGIN
 
   NEW.chapter_id := excerpt_chapter;
   NEW.book_id := excerpt_book;
+  NEW.difficulty_level := diff_level;
 
   RETURN NEW;
 END;

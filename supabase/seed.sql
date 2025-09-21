@@ -16,3 +16,8 @@ VALUES
 -- add role
 insert into public.user_roles(user_id, role) values
 ((select id from auth.users where email = 'admin@gmail.com'), 'admin');
+
+select vault.create_secret(
+  'http://host.docker.internal:55431', 
+  'supabase_url'
+);

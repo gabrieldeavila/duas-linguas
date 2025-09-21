@@ -6,7 +6,7 @@ export const schemaBook = z.object({
   author: z.string().min(1),
   description: z.string().min(1),
   published_date: z.date(),
-  cover_image_url: z.string().min(1).optional(),
+  cover_image_url: z.string(),
   language: z.enum(["en", "pt", "es"]),
   difficulty_level: z.enum(["beginner", "intermediate", "advanced"]),
   chapter_start: z.number().min(1),
