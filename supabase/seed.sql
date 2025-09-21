@@ -21,3 +21,13 @@ select vault.create_secret(
   'http://host.docker.internal:55431', 
   'supabase_url'
 );
+
+select vault.create_secret(
+  'A_REALLY_LONG_KEY_YOU_SHOULD_NOT_SHARE', 
+  'internal_secret_key'
+);
+
+select vault.create_secret(
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJleHAiOjE5ODM4MTI5OTZ9.CRXP1A7WOeoJeXxjNni43kdQwgnWNReilDMblYTn_I0', 
+  'anon_key'
+);

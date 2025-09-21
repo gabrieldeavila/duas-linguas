@@ -3,6 +3,7 @@ import { corsHeaders } from "../_shared/cors.ts";
 import { getModel } from "../_shared/ai.ts";
 import { generateObject } from "ai";
 import { z } from "@zod";
+import axiod from "axiod";
 
 Deno.serve(async (req: Request) => {
   // This is needed if you're planning to invoke your function from a browser.
@@ -10,23 +11,27 @@ Deno.serve(async (req: Request) => {
     return new Response("ok", { headers: corsHeaders });
   }
 
-  try {
-    // Create a Supabase client with the Auth context of the logged in user.
-    const supabaseClient = createClient(
-      // Supabase API URL - env var exported by default.
-      Deno.env.get("SUPABASE_URL") ?? "",
-      // Supabase API ANON KEY - env var exported by default.
-      Deno.env.get("SUPABASE_ANON_KEY") ?? "",
-      // Create client with Auth context of the user that called the function.
-      // This way your row-level-security (RLS) policies are applied.
-      {
-        global: {
-          headers: { Authorization: req.headers.get("Authorization")! },
-        },
-      }
-    );
+  console.log("Initializing book chapters...");
 
-    const { bookId } = await req.json();
+  // Create a Supabase client with the Auth context of the logged in user.
+  const supabaseClient = createClient(
+    // Supabase API URL - env var exported by default.
+    Deno.env.get("SUPABASE_URL") ?? "",
+    // Supabase API ANON KEY - env var exported by default.
+    Deno.env.get("SUPABASE_ANON_KEY")!,
+    // Create client with Auth context of the user that called the function.
+    // This way your row-level-security (RLS) policies are applied.
+    {
+      global: {
+        headers: { Authorization: req.headers.get("Authorization")! },
+      },
+    }
+  );
+
+  const { bookId } = await req.json();
+
+  try {
+    console.log("Fetching book with ID:", bookId);
 
     const book = await supabaseClient
       .from("books")
@@ -39,6 +44,10 @@ Deno.serve(async (req: Request) => {
       .from("books")
       .update({ status: "processing" })
       .eq("id", bookId);
+
+    console.log(
+      `Generating chapters for book ID: ${bookId}, Title: ${book.data?.title}`
+    );
 
     const chapterStart = book.data?.chapter_start;
     const chapterEnd = book.data?.chapter_end;
@@ -89,17 +98,46 @@ Only provide the chapter numbers and titles, no extra explanations.
       )
     );
 
+    callSelf("bulk_chapters", req.headers.get("Authorization") || "", {
+      bookId,
+    });
+
     return new Response(JSON.stringify({ data, error }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
       status: 200,
     });
   } catch (error: unknown) {
+    console.log("Error initializing book chapters:", error);
+    supabaseClient
+      .from("books")
+      .update({ status: "error", error_message: (error as Error).message })
+      .eq("id", bookId);
+
     return new Response(JSON.stringify({ error: (error as Error).message }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
       status: 400,
     });
   }
 });
+
+const SUPABASE_URL = Deno.env.get("SUPABASE_URL");
+
+export const apiSelf = axiod.create({
+  baseURL: SUPABASE_URL + "/functions/v1/",
+});
+
+export const callSelf = (
+  route: string,
+  authorization: string,
+  body?: Record<string, string>
+) => {
+  return apiSelf.post(route, body, {
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: authorization,
+    },
+  });
+};
 
 // To invoke:
 // curl -i --location --request POST 'http://127.0.0.1:55431/functions/v1/init_book_chapters' \

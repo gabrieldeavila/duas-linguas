@@ -42,6 +42,7 @@ CREATE TABLE IF NOT EXISTS chapters (
   status PUBLIC.status NOT NULL DEFAULT 'preparing',
   error_message TEXT,
   difficulty_level PUBLIC.difficulty_level,
+  language PUBLIC.language,
   created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
@@ -54,11 +55,10 @@ EXECUTE FUNCTION update_updated_at_column();
 CREATE TABLE IF NOT EXISTS excerpts (
   id UUID PRIMARY KEY DEFAULT GEN_RANDOM_UUID(),
   chapter_id UUID NOT NULL REFERENCES chapters(id) ON DELETE CASCADE,
-  book_id UUID NOT NULL REFERENCES books(id),
+  book_id UUID REFERENCES books(id) ON DELETE CASCADE,
   content TEXT NOT NULL,
   order_index INT,
   status PUBLIC.status NOT NULL DEFAULT 'preparing',
-  error_message TEXT,
   difficulty_level PUBLIC.difficulty_level,
   created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
@@ -71,11 +71,12 @@ EXECUTE FUNCTION update_updated_at_column();
 
 CREATE TABLE IF NOT EXISTS questions (
   id UUID PRIMARY KEY DEFAULT GEN_RANDOM_UUID(),
-  excerpt_id UUID NOT NULL REFERENCES excerpts(id) ON DELETE CASCADE,
-  chapter_id UUID NOT NULL REFERENCES chapters(id),
-  book_id UUID NOT NULL REFERENCES books(id),
+  chapter_id UUID NOT NULL REFERENCES chapters(id) ON DELETE CASCADE,
+  book_id UUID REFERENCES books(id) ON DELETE CASCADE,
   question TEXT NOT NULL,
-  is_correct BOOLEAN DEFAULT FALSE,
+  options JSONB NOT NULL,
+  answer TEXT NOT NULL,
+  language PUBLIC.language,
   difficulty_level PUBLIC.difficulty_level,
   created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
@@ -140,9 +141,10 @@ RETURNS TRIGGER AS $$
 DECLARE
   chapter_book UUID;
   diff_level PUBLIC.difficulty_level;
+  language_key PUBLIC.language;
 BEGIN
   -- Get the book_id from the chapter
-  SELECT book_id, difficulty_level INTO chapter_book, diff_level
+  SELECT book_id, difficulty_level, language INTO chapter_book, diff_level, language_key
   FROM chapters
   WHERE id = NEW.chapter_id;
 
@@ -154,30 +156,7 @@ BEGIN
   -- Set the book_id
   NEW.book_id := chapter_book;
   NEW.difficulty_level := diff_level;
-
-  RETURN NEW;
-END;
-$$ LANGUAGE PLPGSQL;
-
-CREATE OR REPLACE FUNCTION auto_set_question_chapter_and_book_id()
-RETURNS TRIGGER AS $$
-DECLARE
-  excerpt_chapter UUID;
-  excerpt_book UUID;
-  diff_level PUBLIC.difficulty_level;
-BEGIN
-  -- Get chapter and book from excerpt
-  SELECT chapter_id, book_id, difficulty_level INTO excerpt_chapter, excerpt_book, diff_level
-  FROM excerpts
-  WHERE id = NEW.excerpt_id;
-
-  IF excerpt_chapter IS NULL THEN
-    RAISE EXCEPTION 'Excerpt % does not exist', NEW.excerpt_id;
-  END IF;
-
-  NEW.chapter_id := excerpt_chapter;
-  NEW.book_id := excerpt_book;
-  NEW.difficulty_level := diff_level;
+  NEW.language := language_key;
 
   RETURN NEW;
 END;
@@ -186,7 +165,7 @@ $$ LANGUAGE PLPGSQL;
 CREATE TRIGGER set_question_chapter_and_book_id
 BEFORE INSERT ON questions
 FOR EACH ROW
-EXECUTE FUNCTION auto_set_question_chapter_and_book_id();
+EXECUTE FUNCTION auto_set_excerpt_book_id();
 
 -- categories book many-to-many
 CREATE TABLE IF NOT EXISTS categories (
