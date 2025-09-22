@@ -1,8 +1,8 @@
 CREATE TYPE PUBLIC.difficulty_level AS ENUM ('beginner', 'intermediate', 'advanced');
-
 CREATE TYPE PUBLIC.language AS ENUM ('en', 'es', 'pt');
-
 CREATE TYPE PUBLIC.status AS ENUM ('preparing', 'processing', 'done', 'error');
+
+CREATE EXTENSION IF NOT EXISTS vector;
 
 CREATE TABLE IF NOT EXISTS books (
   id UUID PRIMARY KEY DEFAULT GEN_RANDOM_UUID(),
@@ -58,6 +58,8 @@ CREATE TABLE IF NOT EXISTS excerpts (
   book_id UUID REFERENCES books(id) ON DELETE CASCADE,
   content TEXT NOT NULL,
   order_index INT,
+  embedding vector (384),
+  language PUBLIC.language,
   difficulty_level PUBLIC.difficulty_level,
   created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
@@ -136,6 +138,29 @@ AS PERMISSIVE FOR SELECT
 TO authenticated, anon
 USING (TRUE);
 
+CREATE OR REPLACE FUNCTION auto_set_book_id()
+RETURNS TRIGGER AS $$
+DECLARE
+  diff_level PUBLIC.difficulty_level;
+  language_key PUBLIC.language;
+BEGIN
+  -- Get the book_id from the chapter
+  SELECT difficulty_level, language INTO diff_level, language_key
+  FROM chapters
+  WHERE id = NEW.book_id;
+
+  -- Raise error if book doesn't exist
+  IF book IS NULL THEN
+    RAISE EXCEPTION 'Book % does not exist', NEW.book_id;
+  END IF;
+
+  NEW.difficulty_level := diff_level;
+  NEW.language := language_key;
+
+  RETURN NEW;
+END;
+$$ LANGUAGE PLPGSQL;
+
 CREATE OR REPLACE FUNCTION auto_set_excerpt_book_id()
 RETURNS TRIGGER AS $$
 DECLARE
@@ -164,6 +189,16 @@ $$ LANGUAGE PLPGSQL;
 
 CREATE TRIGGER set_question_chapter_and_book_id
 BEFORE INSERT ON questions
+FOR EACH ROW
+EXECUTE FUNCTION auto_set_excerpt_book_id();
+
+CREATE TRIGGER set_question_chapter_and_book_id
+BEFORE INSERT ON excerpts
+FOR EACH ROW
+EXECUTE FUNCTION auto_set_excerpt_book_id();
+
+CREATE TRIGGER set_book_id
+BEFORE INSERT ON chapters
 FOR EACH ROW
 EXECUTE FUNCTION auto_set_excerpt_book_id();
 
