@@ -87,43 +87,49 @@ export type Database = {
       books: {
         Row: {
           author: string
-          chapter_end: number | null
-          chapter_start: number | null
+          chapter_end: number
+          chapter_start: number
           cover_image_url: string | null
           created_at: string | null
           description: string
           difficulty_level: Database["public"]["Enums"]["difficulty_level"]
+          error_message: string | null
           id: string
-          language: string
+          language: Database["public"]["Enums"]["language"]
           published_date: string | null
+          status: Database["public"]["Enums"]["status"]
           title: string
           updated_at: string | null
         }
         Insert: {
           author: string
-          chapter_end?: number | null
-          chapter_start?: number | null
+          chapter_end?: number
+          chapter_start?: number
           cover_image_url?: string | null
           created_at?: string | null
           description: string
           difficulty_level: Database["public"]["Enums"]["difficulty_level"]
+          error_message?: string | null
           id?: string
-          language: string
+          language: Database["public"]["Enums"]["language"]
           published_date?: string | null
+          status?: Database["public"]["Enums"]["status"]
           title: string
           updated_at?: string | null
         }
         Update: {
           author?: string
-          chapter_end?: number | null
-          chapter_start?: number | null
+          chapter_end?: number
+          chapter_start?: number
           cover_image_url?: string | null
           created_at?: string | null
           description?: string
           difficulty_level?: Database["public"]["Enums"]["difficulty_level"]
+          error_message?: string | null
           id?: string
-          language?: string
+          language?: Database["public"]["Enums"]["language"]
           published_date?: string | null
+          status?: Database["public"]["Enums"]["status"]
           title?: string
           updated_at?: string | null
         }
@@ -163,8 +169,11 @@ export type Database = {
           difficulty_level:
             | Database["public"]["Enums"]["difficulty_level"]
             | null
+          error_message: string | null
           id: string
+          language: Database["public"]["Enums"]["language"] | null
           number: number | null
+          status: Database["public"]["Enums"]["status"]
           title: string
           updated_at: string | null
         }
@@ -174,8 +183,11 @@ export type Database = {
           difficulty_level?:
             | Database["public"]["Enums"]["difficulty_level"]
             | null
+          error_message?: string | null
           id?: string
+          language?: Database["public"]["Enums"]["language"] | null
           number?: number | null
+          status?: Database["public"]["Enums"]["status"]
           title: string
           updated_at?: string | null
         }
@@ -185,8 +197,11 @@ export type Database = {
           difficulty_level?:
             | Database["public"]["Enums"]["difficulty_level"]
             | null
+          error_message?: string | null
           id?: string
+          language?: Database["public"]["Enums"]["language"] | null
           number?: number | null
+          status?: Database["public"]["Enums"]["status"]
           title?: string
           updated_at?: string | null
         }
@@ -209,27 +224,42 @@ export type Database = {
       }
       excerpts: {
         Row: {
-          book_id: string
+          book_id: string | null
           chapter_id: string
           content: string
           created_at: string | null
+          difficulty_level:
+            | Database["public"]["Enums"]["difficulty_level"]
+            | null
           id: string
+          order_index: number | null
+          status: Database["public"]["Enums"]["status"]
           updated_at: string | null
         }
         Insert: {
-          book_id: string
+          book_id?: string | null
           chapter_id: string
           content: string
           created_at?: string | null
+          difficulty_level?:
+            | Database["public"]["Enums"]["difficulty_level"]
+            | null
           id?: string
+          order_index?: number | null
+          status?: Database["public"]["Enums"]["status"]
           updated_at?: string | null
         }
         Update: {
-          book_id?: string
+          book_id?: string | null
           chapter_id?: string
           content?: string
           created_at?: string | null
+          difficulty_level?:
+            | Database["public"]["Enums"]["difficulty_level"]
+            | null
           id?: string
+          order_index?: number | null
+          status?: Database["public"]["Enums"]["status"]
           updated_at?: string | null
         }
         Relationships: [
@@ -258,41 +288,47 @@ export type Database = {
       }
       questions: {
         Row: {
-          book_id: string
+          answer: string
+          book_id: string | null
           chapter_id: string
           created_at: string | null
           difficulty_level:
             | Database["public"]["Enums"]["difficulty_level"]
             | null
-          excerpt_id: string
           id: string
           is_correct: boolean | null
+          language: Database["public"]["Enums"]["language"] | null
+          options: Json | null
           question: string
           updated_at: string | null
         }
         Insert: {
-          book_id: string
+          answer: string
+          book_id?: string | null
           chapter_id: string
           created_at?: string | null
           difficulty_level?:
             | Database["public"]["Enums"]["difficulty_level"]
             | null
-          excerpt_id: string
           id?: string
           is_correct?: boolean | null
+          language?: Database["public"]["Enums"]["language"] | null
+          options?: Json | null
           question: string
           updated_at?: string | null
         }
         Update: {
-          book_id?: string
+          answer?: string
+          book_id?: string | null
           chapter_id?: string
           created_at?: string | null
           difficulty_level?:
             | Database["public"]["Enums"]["difficulty_level"]
             | null
-          excerpt_id?: string
           id?: string
           is_correct?: boolean | null
+          language?: Database["public"]["Enums"]["language"] | null
+          options?: Json | null
           question?: string
           updated_at?: string | null
         }
@@ -316,13 +352,6 @@ export type Database = {
             columns: ["chapter_id"]
             isOneToOne: false
             referencedRelation: "chapters"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "questions_excerpt_id_fkey"
-            columns: ["excerpt_id"]
-            isOneToOne: false
-            referencedRelation: "excerpts"
             referencedColumns: ["id"]
           },
         ]
@@ -378,6 +407,10 @@ export type Database = {
       }
     }
     Functions: {
+      anon_key: {
+        Args: Record<PropertyKey, never>
+        Returns: string
+      }
       authorize: {
         Args: {
           requested_permission: Database["public"]["Enums"]["app_permission"]
@@ -387,6 +420,14 @@ export type Database = {
       custom_access_token_hook: {
         Args: { event: Json }
         Returns: Json
+      }
+      internal_secret_key: {
+        Args: Record<PropertyKey, never>
+        Returns: string
+      }
+      supabase_url: {
+        Args: Record<PropertyKey, never>
+        Returns: string
       }
     }
     Enums: {

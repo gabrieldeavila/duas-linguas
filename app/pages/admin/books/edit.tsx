@@ -23,6 +23,14 @@ import {
   type ValidatorBook,
 } from "./utils";
 import { Skeleton } from "~/components/ui/skeleton";
+import { type BookChapterProps } from "../booksCategories/utils";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "~/components/ui/accordion";
+import type { ExcerptTable, QuestionTable } from "~/types";
 
 export function meta() {
   return [
@@ -39,6 +47,7 @@ function EditBook() {
   const [isLoading, setIsLoading] = useState(false);
   const isLoadingRef = useRef(false);
   const { id } = useParams<{ id: string }>();
+  const [chapters, setChapters] = useState<BookChapterProps[]>([]);
 
   useEffect(() => {
     if (!id || isLoadingRef.current) return;
@@ -48,7 +57,10 @@ function EditBook() {
 
     supabase
       .from("books")
-      .select(BOOK_FIELD.map((field) => field.name).join(","))
+      .select(
+        BOOK_FIELD.map((field) => field.name).join(",") +
+          ", chapters(id, title, number, error_message, status)"
+      )
       .eq("id", id!)
       .single()
       .then(({ data, error }) => {
@@ -58,6 +70,10 @@ function EditBook() {
         if (error) {
           toast.error(t("error.fetching"));
         } else if (data && formApi.current) {
+          setChapters(
+            (data as unknown as { chapters: BookChapterProps[] }).chapters || []
+          );
+
           formApi.current.setFieldsState({
             ...(data as unknown as ValidatorBook),
             published_date: new Date(),
@@ -139,8 +155,138 @@ function EditBook() {
           </div>
         </Form>
       </KrafterRegister>
+
+      <ChapterList chapters={chapters} />
     </div>
   );
 }
 
 export default EditBook;
+
+const ChapterList = ({ chapters }: { chapters: BookChapterProps[] }) => {
+  const { t } = useTranslation("pages");
+
+  return (
+    <div className="mt-8">
+      <h2 className="mb-4 text-xl font-bold">{t("books.chapters")}</h2>
+      <Accordion type="multiple" className="w-full">
+        {chapters
+          .sort((a, b) => (a.number ?? 0) - (b.number ?? 0))
+          .map((chapter) => (
+            <AccordionItem key={chapter.id} value={`item-${chapter.id}`}>
+              <AccordionTrigger>
+                {chapter.number} - {chapter.title}
+                {chapter.status !== "done" && `(${chapter.status})`}
+              </AccordionTrigger>
+              <AccordionContent>
+                {chapter.error_message ? (
+                  <p className="mb-2 text-sm text-red-600">
+                    {chapter.error_message}
+                  </p>
+                ) : (
+                  <Excerpts chapterId={chapter.id} />
+                )}
+              </AccordionContent>
+            </AccordionItem>
+          ))}
+      </Accordion>
+    </div>
+  );
+};
+
+const Excerpts = ({ chapterId }: { chapterId: string }) => {
+  const supabase = useSupabase();
+  const [excerpts, setExcerpts] = useState<ExcerptTable[]>([]);
+  const [questions, setQuestions] = useState<QuestionTable[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const isLoadingRef = useRef(false);
+
+  useEffect(() => {
+    if (isLoadingRef.current) return;
+    isLoadingRef.current = true;
+
+    setIsLoading(true);
+    supabase
+      .from("excerpts")
+      .select("*")
+      .eq("chapter_id", chapterId)
+      .order("order_index", { ascending: true })
+      .then(({ data, error }) => {
+        isLoadingRef.current = false;
+        setIsLoading(false);
+
+        if (error) {
+          console.error("Error fetching excerpts:", error);
+        } else {
+          setExcerpts(data || []);
+        }
+      });
+
+    supabase
+      .from("questions")
+      .select("*")
+      .eq("chapter_id", chapterId)
+      .then(({ data, error }) => {
+        if (error) {
+          console.error("Error fetching questions:", error);
+        } else {
+          setQuestions(data || []);
+        }
+      });
+  }, [chapterId, supabase]);
+
+  if (isLoading) {
+    return <Skeleton className="h-10 w-full" />;
+  }
+
+  return (
+    <div className="flex items-center flex-col w-full">
+      {excerpts.map((excerpt, index) => (
+        <div
+          className={cn("max-w-2xl w-full", "bg-background")}
+          key={excerpt.id}
+        >
+          <p
+            key={index}
+            className={cn("mb-2 whitespace-pre-wrap text-lg leading-6")}
+            style={{
+              wordSpacing: "0.25em",
+            }}
+          >
+            {excerpt.content}
+          </p>
+        </div>
+      ))}
+
+      {questions.length > 0 && (
+        <div className="mt-4 w-full max-w-2xl">
+          <h3 className="mb-2 text-lg font-bold">Questions</h3>
+          <ul className="list-decimal">
+            {questions.map((question) => (
+              <li key={question.id} className="mb-4">
+                <p className="font-medium">{question.question}</p>
+                <ul className="list-none mt-1">
+                  {(question.options as Array<string>)?.map((option, idx) => (
+                    <li key={idx} className={cn("px-2 py-1 rounded")}>
+                      {option}
+                    </li>
+                  ))}
+                </ul>
+                {question.answer && (
+                  <p className="mt-1 text-sm italic">
+                    Answer: {question.answer}
+                  </p>
+                )}
+                {question.why && (
+                  <p className="mt-1 text-sm italic">
+                    Explanation: {question.why}
+                  </p>
+                )}
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+    </div>
+  );
+};

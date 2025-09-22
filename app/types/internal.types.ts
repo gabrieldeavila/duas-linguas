@@ -6,3 +6,6 @@ export type SupabaseAuthProviderType = {
   session: Session | null;
   isAdmin: boolean;
 };
+
+export type ExcerptTable = Database["public"]["Tables"]["excerpts"]["Row"];
+export type QuestionTable = Database["public"]["Tables"]["questions"]["Row"];

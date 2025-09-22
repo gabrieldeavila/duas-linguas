@@ -1,5 +1,6 @@
 import type { Field } from "react-form-krafter";
 import z from "zod";
+import type { Database } from "~/types";
 
 export const schemaBookCategories = z.object({
   book: z.object({
@@ -14,6 +15,7 @@ export const schemaBookCategories = z.object({
 
 export type SchemaBookCategories = typeof schemaBookCategories;
 export type ValidatorBookCategories = z.infer<SchemaBookCategories>;
+export type BookChapterProps = Database["public"]["Tables"]["chapters"]["Row"];
 
 export const BOOK_CATEGORIES_FIELD: Field[] = [
   {

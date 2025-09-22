@@ -160,11 +160,15 @@ Chapter ${chapterNumber} is titled "${chapterTitle}".
 Use the following snippets from the chapter as context:
 ${chapterSnippets.map((s) => `- ${s.snippet}`).join("\n")}
 
-Generate 5 multiple-choice questions about this chapter.
+Generate 8 multiple-choice questions about this chapter:
+- 5 comprehension questions about the content
+- 3 grammar or vocabulary questions based on the language used in the snippets
+
 Each question should include:
 - "question": the question text
 - "options": an array of 4 possible answers labeled with letters A, B, C, D
 - "answer": the letter corresponding to the correct option (A, B, C, or D)
+- "why": a short explanation of why this answer is correct
 - Use the ${readingLevel} style:
   - Beginner: simple, short sentences, easy vocabulary
   - Intermediate: medium-length sentences, natural flow, moderately rich vocabulary

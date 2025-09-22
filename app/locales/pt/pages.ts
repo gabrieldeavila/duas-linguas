@@ -19,6 +19,7 @@ export default {
     description: "Adicione um novo livro para ser processado.",
     submitButton: "Adicionar Livro",
     updateButton: "Atualizar Livro",
+    chapters: "Capítulos",
   },
   categories: {
     title: "Categorias",

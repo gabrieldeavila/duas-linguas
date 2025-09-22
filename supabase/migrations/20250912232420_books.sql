@@ -58,7 +58,6 @@ CREATE TABLE IF NOT EXISTS excerpts (
   book_id UUID REFERENCES books(id) ON DELETE CASCADE,
   content TEXT NOT NULL,
   order_index INT,
-  status PUBLIC.status NOT NULL DEFAULT 'preparing',
   difficulty_level PUBLIC.difficulty_level,
   created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
@@ -76,6 +75,7 @@ CREATE TABLE IF NOT EXISTS questions (
   question TEXT NOT NULL,
   options JSONB NOT NULL,
   answer TEXT NOT NULL,
+  why TEXT,
   language PUBLIC.language,
   difficulty_level PUBLIC.difficulty_level,
   created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
