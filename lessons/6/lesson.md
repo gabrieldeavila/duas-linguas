@@ -214,11 +214,11 @@ export const openai = createOpenAI({
 });
 
 export function getModel(model?: string): [string, OpenAIProvider] {
-  return [model ?? "gpt-4.1-mini", openai];
+  return [model ?? "gpt-5-mini", openai];
 }
 ```
 
-By default we will use the `gpt-4.1-mini` model, but you can change it by passing the model name in the request.
+By default we will use the `gpt-5-mini` model, but you can change it by passing the model name in the request.
 
 To get an OpenAI key, you can create an account [here](https://platform.openai.com/signup).
 

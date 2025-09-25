@@ -51,6 +51,12 @@ const COMPONENTS: RegisterComponent<FieldsValue>[] = [
       RegisterFieldRenderProps<FieldsValue>
     >,
   },
+  {
+    type: "color",
+    render: lazy(() => import("./fields/color")) as ComponentType<
+      RegisterFieldRenderProps<FieldsValue>
+    >,
+  },
 ];
 
 const settings: RegisterSettings = {

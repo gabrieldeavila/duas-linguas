@@ -32,6 +32,13 @@ export const CATEGORIES_FIELD: Field[] = [
     wrapperClassName: "gap-3",
   },
   {
+    name: "color",
+    label: "color.label",
+    placeholder: "color.placeholder",
+    required: false,
+    type: "color",
+  },
+  {
     name: "language",
     label: "language.label",
     placeholder: "language.placeholder",

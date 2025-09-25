@@ -6,5 +6,5 @@ export const openai = createOpenAI({
 });
 
 export function getModel(model?: string): [string, OpenAIProvider] {
-  return [model ?? "gpt-4.1-mini", openai];
+  return [model ?? "gpt-5-mini", openai];
 }

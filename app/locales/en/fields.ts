@@ -15,6 +15,10 @@ export default {
     placeholder: "Enter the book title",
     label: "Title",
   },
+  color: {
+    placeholder: "Choose a color",
+    label: "Color",
+  },
   author: {
     placeholder: "Enter the author's name",
     label: "Author",

@@ -11,6 +11,10 @@ export default {
     placeholder: "Confirme sua senha",
     label: "Confirmar Senha",
   },
+  color: {
+    placeholder: "Escolha uma cor",
+    label: "Cor",
+  },
   title: {
     placeholder: "Digite o título do livro",
     label: "Título",
