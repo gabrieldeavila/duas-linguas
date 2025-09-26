@@ -25,3 +25,11 @@ CREATE TRIGGER update_favorite_categories_updated_at
 BEFORE UPDATE ON favorite_categories
 FOR EACH ROW
 EXECUTE FUNCTION update_updated_at_column();
+
+-- exerpt read
+CREATE TABLE IF NOT EXISTS excerpt_read (
+  user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+  excerpt_id UUID NOT NULL REFERENCES excerpts(id) ON DELETE CASCADE,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (user_id, excerpt_id)
+);
