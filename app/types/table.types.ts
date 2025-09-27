@@ -47,3 +47,7 @@ export type TableBuilderProps<T extends TableName> = {
 };
 
 export type BookProps = TableRowProps<"books">;
+
+export type PreferenceProps = TableRowProps<"preferences">;
+
+export type CategoriesProps = TableRowProps<"categories">;

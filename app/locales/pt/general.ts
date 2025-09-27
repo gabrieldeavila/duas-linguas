@@ -18,12 +18,15 @@ export default {
   deleteSelected: "Excluir selecionados",
   loading: {
     deleting: "Deletando...",
+    saving: "Salvando...",
   },
   success: {
     deleting: "Deletado com sucesso!",
+    saving: "Salvo com sucesso!",
   },
   error: {
     deleting: "Erro ao deletar itens.",
+    saving: "Erro ao salvar.",
   },
   category: {
     label: "Categoria",
@@ -48,5 +51,12 @@ export default {
         buttonAddText: "Vincular livro à categoria",
       },
     },
+  },
+  preferences: {
+    categories: {
+      title: "Categorias",
+      description: "Selecione suas categorias preferidas",
+    },
+    buttonText: "Salvar Preferências",
   },
 };

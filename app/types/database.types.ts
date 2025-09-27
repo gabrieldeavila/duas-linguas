@@ -137,6 +137,7 @@ export type Database = {
       }
       categories: {
         Row: {
+          color: string
           created_at: string | null
           description: string | null
           id: string
@@ -145,6 +146,7 @@ export type Database = {
           updated_at: string | null
         }
         Insert: {
+          color: string
           created_at?: string | null
           description?: string | null
           id?: string
@@ -153,6 +155,7 @@ export type Database = {
           updated_at?: string | null
         }
         Update: {
+          color?: string
           created_at?: string | null
           description?: string | null
           id?: string
@@ -222,6 +225,32 @@ export type Database = {
           },
         ]
       }
+      excerpt_read: {
+        Row: {
+          created_at: string | null
+          excerpt_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          excerpt_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          excerpt_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "excerpt_read_excerpt_id_fkey"
+            columns: ["excerpt_id"]
+            isOneToOne: false
+            referencedRelation: "excerpts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       excerpts: {
         Row: {
           book_id: string | null
@@ -231,6 +260,7 @@ export type Database = {
           difficulty_level:
             | Database["public"]["Enums"]["difficulty_level"]
             | null
+          embedding: string | null
           id: string
           order_index: number | null
           status: Database["public"]["Enums"]["status"]
@@ -244,6 +274,7 @@ export type Database = {
           difficulty_level?:
             | Database["public"]["Enums"]["difficulty_level"]
             | null
+          embedding?: string | null
           id?: string
           order_index?: number | null
           status?: Database["public"]["Enums"]["status"]
@@ -257,6 +288,7 @@ export type Database = {
           difficulty_level?:
             | Database["public"]["Enums"]["difficulty_level"]
             | null
+          embedding?: string | null
           id?: string
           order_index?: number | null
           status?: Database["public"]["Enums"]["status"]
@@ -285,6 +317,72 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      favorite_categories: {
+        Row: {
+          category_id: string
+          created_at: string | null
+          id: string
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          category_id: string
+          created_at?: string | null
+          id?: string
+          updated_at?: string | null
+          user_id?: string
+        }
+        Update: {
+          category_id?: string
+          created_at?: string | null
+          id?: string
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "favorite_categories_category_id_fkey"
+            columns: ["category_id"]
+            isOneToOne: false
+            referencedRelation: "categories"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "favorite_categories_category_id_fkey"
+            columns: ["category_id"]
+            isOneToOne: false
+            referencedRelation: "vw_book_categories"
+            referencedColumns: ["category_id"]
+          },
+        ]
+      }
+      preferences: {
+        Row: {
+          created_at: string | null
+          did_setup: boolean | null
+          embedding: string | null
+          id: string
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          did_setup?: boolean | null
+          embedding?: string | null
+          id?: string
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          did_setup?: boolean | null
+          embedding?: string | null
+          id?: string
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
       }
       questions: {
         Row: {
@@ -417,17 +515,109 @@ export type Database = {
         }
         Returns: boolean
       }
+      binary_quantize: {
+        Args: { "": string } | { "": unknown }
+        Returns: unknown
+      }
       custom_access_token_hook: {
         Args: { event: Json }
         Returns: Json
+      }
+      halfvec_avg: {
+        Args: { "": number[] }
+        Returns: unknown
+      }
+      halfvec_out: {
+        Args: { "": unknown }
+        Returns: unknown
+      }
+      halfvec_send: {
+        Args: { "": unknown }
+        Returns: string
+      }
+      halfvec_typmod_in: {
+        Args: { "": unknown[] }
+        Returns: number
+      }
+      hnsw_bit_support: {
+        Args: { "": unknown }
+        Returns: unknown
+      }
+      hnsw_halfvec_support: {
+        Args: { "": unknown }
+        Returns: unknown
+      }
+      hnsw_sparsevec_support: {
+        Args: { "": unknown }
+        Returns: unknown
+      }
+      hnswhandler: {
+        Args: { "": unknown }
+        Returns: unknown
       }
       internal_secret_key: {
         Args: Record<PropertyKey, never>
         Returns: string
       }
+      ivfflat_bit_support: {
+        Args: { "": unknown }
+        Returns: unknown
+      }
+      ivfflat_halfvec_support: {
+        Args: { "": unknown }
+        Returns: unknown
+      }
+      ivfflathandler: {
+        Args: { "": unknown }
+        Returns: unknown
+      }
+      l2_norm: {
+        Args: { "": unknown } | { "": unknown }
+        Returns: number
+      }
+      l2_normalize: {
+        Args: { "": string } | { "": unknown } | { "": unknown }
+        Returns: string
+      }
+      sparsevec_out: {
+        Args: { "": unknown }
+        Returns: unknown
+      }
+      sparsevec_send: {
+        Args: { "": unknown }
+        Returns: string
+      }
+      sparsevec_typmod_in: {
+        Args: { "": unknown[] }
+        Returns: number
+      }
       supabase_url: {
         Args: Record<PropertyKey, never>
         Returns: string
+      }
+      vector_avg: {
+        Args: { "": number[] }
+        Returns: string
+      }
+      vector_dims: {
+        Args: { "": string } | { "": unknown }
+        Returns: number
+      }
+      vector_norm: {
+        Args: { "": string }
+        Returns: number
+      }
+      vector_out: {
+        Args: { "": string }
+        Returns: unknown
+      }
+      vector_send: {
+        Args: { "": string }
+        Returns: string
+      }
+      vector_typmod_in: {
+        Args: { "": unknown[] }
+        Returns: number
       }
     }
     Enums: {

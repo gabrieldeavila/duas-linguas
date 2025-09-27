@@ -1,4 +1,5 @@
 import { Outlet } from "react-router";
+import Preferences from "~/components/internal/preferences";
 import { AppSidebar } from "~/components/internal/sidebar/app-sidebar";
 import { ToggleSidebar } from "~/components/internal/sidebar/toggleSidebar";
 import { SupabaseAuthProvider } from "~/components/internal/supabaseAuth";
@@ -10,6 +11,7 @@ function Layout() {
     <SupabaseAuthProvider>
       <SidebarProvider>
         <AppSidebar />
+        <Preferences />
 
         <SidebarInset>
           <div

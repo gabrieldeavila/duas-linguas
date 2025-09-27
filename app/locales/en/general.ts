@@ -1,4 +1,3 @@
-
 export default {
   system: "System",
   dark: "Dark",
@@ -19,12 +18,15 @@ export default {
   deleteSelected: "Delete Selected",
   loading: {
     deleting: "Deleting...",
+    saving: "Saving...",
   },
   success: {
     deleting: "Deleted successfully!",
+    saving: "Saved successfully!",
   },
   error: {
     deleting: "Error deleting items.",
+    saving: "Error saving.",
   },
   category: {
     label: "Category",
@@ -49,5 +51,12 @@ export default {
         buttonAddText: "Link Book to Category",
       },
     },
+  },
+  preferences: {
+    categories: {
+      title: "Categories",
+      description: "Select your preferred categories",
+    },
+    buttonText: "Save Preferences",
   },
 };
