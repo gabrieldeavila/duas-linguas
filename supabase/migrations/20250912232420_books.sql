@@ -161,7 +161,7 @@ BEGIN
 END;
 $$ LANGUAGE PLPGSQL;
 
-CREATE OR REPLACE FUNCTION auto_set_excerpt_book_id()
+CREATE OR REPLACE FUNCTION auto_set_info_from_chapter()
 RETURNS TRIGGER AS $$
 DECLARE
   chapter_book UUID;
@@ -187,20 +187,44 @@ BEGIN
 END;
 $$ LANGUAGE PLPGSQL;
 
-CREATE TRIGGER set_question_chapter_and_book_id
+CREATE OR REPLACE FUNCTION auto_set_info_from_book()
+RETURNS TRIGGER AS $$
+DECLARE
+  diff_level PUBLIC.difficulty_level;
+  language_key PUBLIC.language;
+BEGIN
+  -- Get the book_id from the chapter
+  SELECT difficulty_level, language INTO diff_level, language_key
+  FROM books
+  WHERE id = NEW.book_id;
+
+  -- Raise error if book doesn't exist
+  IF diff_level IS NULL THEN
+    RAISE EXCEPTION 'Book % does not exist', NEW.book_id;
+  END IF;
+
+  -- Set the book_id
+  NEW.difficulty_level := diff_level;
+  NEW.language := language_key;
+
+  RETURN NEW;
+END;
+$$ LANGUAGE PLPGSQL;
+
+CREATE TRIGGER set_info_from_chapter
 BEFORE INSERT ON questions
 FOR EACH ROW
-EXECUTE FUNCTION auto_set_excerpt_book_id();
+EXECUTE FUNCTION auto_set_info_from_chapter();
 
-CREATE TRIGGER set_question_chapter_and_book_id
+CREATE TRIGGER set_info_from_chapter
 BEFORE INSERT ON excerpts
 FOR EACH ROW
-EXECUTE FUNCTION auto_set_excerpt_book_id();
+EXECUTE FUNCTION auto_set_info_from_chapter();
 
 CREATE TRIGGER set_book_id
 BEFORE INSERT ON chapters
 FOR EACH ROW
-EXECUTE FUNCTION auto_set_excerpt_book_id();
+EXECUTE FUNCTION auto_set_info_from_book();
 
 -- categories book many-to-many
 CREATE TABLE IF NOT EXISTS categories (

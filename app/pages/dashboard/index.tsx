@@ -26,7 +26,7 @@ function Dashboard() {
 
       supabase
         .from("books")
-        .select("id, title, author, cover_image")
+        .select("id, title, author, cover_image_url")
         .order("created_at", { ascending: false })
         .range(
           (pageNumber - 1) * LIMIT_PER_PAGE,

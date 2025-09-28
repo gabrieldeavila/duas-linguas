@@ -523,6 +523,18 @@ export type Database = {
         Args: { event: Json }
         Returns: Json
       }
+      get_recommendations: {
+        Args: {
+          lang?: Database["public"]["Enums"]["language"]
+          p_limit?: number
+        }
+        Returns: {
+          category_id: string
+          excerpt_id: string
+          similarity: number
+          title: string
+        }[]
+      }
       halfvec_avg: {
         Args: { "": number[] }
         Returns: unknown

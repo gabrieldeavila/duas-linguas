@@ -39,6 +39,19 @@ function Preferences() {
         setHasPreference(!!data.did_setup);
         isFetching.current = false;
       });
+
+    console.log("Fetching recommendations...");
+
+    supabase
+      .rpc("get_recommendations", { lang: "pt", p_limit: 20 })
+      .then(({ data, error }) => {
+        if (error) {
+          console.error("Error fetching recommendations:", error);
+          return;
+        }
+
+        console.log("Recommendations:", data);
+      });
   }, [supabase]);
 
   if (hasPreference) return null;

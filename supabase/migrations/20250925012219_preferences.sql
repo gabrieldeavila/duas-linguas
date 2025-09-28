@@ -63,9 +63,16 @@ WITH CHECK (user_id = auth.uid());
 CREATE OR REPLACE FUNCTION set_did_setup_true()
 RETURNS TRIGGER AS $$
 BEGIN
-  UPDATE preferences
-  SET did_setup = TRUE
-  WHERE user_id = auth.uid();
+-- only updates if there is at least one favorite category
+  IF EXISTS (
+    SELECT 1
+    FROM favorite_categories
+    WHERE user_id = auth.uid()
+  ) THEN
+    UPDATE preferences
+    SET did_setup = TRUE
+    WHERE user_id = auth.uid();
+  END IF;
   RETURN NEW;
 END;
 $$ LANGUAGE plpgsql;
@@ -86,3 +93,77 @@ $$ LANGUAGE plpgsql;
 create trigger on_auth_user_created
   after insert on auth.users
   for each row execute procedure public.handle_new_user();
+
+
+create or replace function get_recommendations(p_limit int default 20, lang public.language default 'en')
+returns table (
+  excerpt_id uuid,
+  title text,
+  similarity float8,
+  category_id uuid
+) as $$
+declare
+  uvec vector; -- holds the user's embedding or a fallback
+begin
+  -- 1. Try to load existing user embedding
+  select embedding into uvec
+  from preferences
+  where user_id = auth.uid();
+
+  -- 2. If null, bootstrap from favorite categories
+  if uvec is null then
+    select avg(e.embedding) into uvec
+    from excerpts e
+    join book_categories bc on e.book_id = bc.book_id
+    where bc.category_id in (
+      select favorite_categories.category_id
+      from favorite_categories
+      where user_id = auth.uid()
+    ) and e.language = lang;
+  end if;
+
+  -- 3. Case A: we now have a vector (from user or categories)
+  if uvec is not null then
+    return query
+    with prefs as (
+      select favorite_categories.category_id
+      from favorite_categories
+      where user_id = auth.uid()
+    ),
+    excerpts_categories as (
+      select e.id, bc.category_id, e.embedding, e.content
+      from excerpts e
+      join book_categories bc on e.book_id = bc.book_id
+      where bc.category_id in (select prefs.category_id from prefs)
+    )
+    select e.id,
+           e.content as title,
+           1 - (e.embedding <=> uvec) as similarity,
+           e.category_id
+    from excerpts_categories e
+    where e.id not in (
+      select excerpt_read.excerpt_id from excerpt_read where user_id = auth.uid()
+    )
+    order by (
+      (1 - (e.embedding <=> uvec)) * 0.8
+      + case when e.category_id in (select prefs.category_id from prefs) then 0.2 else 0 end
+    ) desc
+    limit p_limit;
+
+  -- 4. Case B: no embedding and no categories → show fallback
+  else
+    return query
+    select e.id,
+           e.content as title,
+           null::float8 as similarity,
+           bc.category_id
+    from excerpts e
+    join book_categories bc on e.book_id = bc.book_id
+    where e.id not in (
+      select excerpt_read.excerpt_id from excerpt_read where user_id = auth.uid()
+    ) and e.language = lang
+    order by e.created_at desc
+    limit p_limit;
+  end if;
+end;
+$$ language plpgsql stable;
