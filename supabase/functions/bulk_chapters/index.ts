@@ -100,32 +100,34 @@ Deno.serve(async (req) => {
       const language = chapter.books?.language;
       const readingLevel = chapter.difficulty_level || "Intermediate";
 
-      const prompt: string = `
-You are an assistant that creates short, engaging snippets for a book chapter.
+    const prompt: string = `
+You are an assistant that creates tweet-style hooks for a book chapter.
 The book is "${bookTitle}" by ${author}.
 Chapter ${chapterNumber} is titled "${chapterTitle}".
-Generate around 15 short, catchy snippets that summarize or highlight this chapter.
+Generate around 15 snippets that tease or highlight this chapter.
 Requirements for each snippet:
-- Mini-paragraph of 3-5 sentences
-- Begin directly with content, avoid generic openings 
-- Easy to read, attention-grabbing
+- Length between 220 and 280 characters (like a tweet), including spaces
+- Written as 1–2 punchy sentences, not a full paragraph
+- Must spark curiosity, create suspense, or leave an emotional pull
+- Should feel like a social media post that makes readers want to keep scrolling
+- Begin directly with the idea, no introductions or filler
 - Written in the language of the book, which is "${language}"
 - Avoid repeating words or phrases across snippets
-- Formatted in Markdown, using '\\n' to separate sentences or ideas
+- Return only plain text, formatted in Markdown
 - Use the ${readingLevel} style:
-  - Beginner: simple, short sentences, easy vocabulary
-  - Intermediate: medium-length sentences, natural flow, moderately rich vocabulary
-  - Advanced: longer sentences, rich vocabulary, literary style
+  - Beginner: very simple, direct, easy words
+  - Intermediate: natural flow, relatable tone
+  - Advanced: more expressive, vivid vocabulary, but still concise
 
 Return an array of objects in this format:
 [
-  { "snippet": "Mini-paragraph in Markdown" },
-  { "snippet": "Mini-paragraph in Markdown" },
+  { "snippet": "Snippet text" },
+  { "snippet": "Snippet text" },
   ...
 ]
 
 Do not include explanations, headings, or anything else — only the array.
-`;
+`
 
       const chapterExcerpts = await generateObject({
         model: model(aiType),

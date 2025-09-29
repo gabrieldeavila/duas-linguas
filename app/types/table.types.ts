@@ -10,6 +10,8 @@ export type Tables = Database["public"]["Tables"];
 
 export type TablesAndViews = Tables & Views;
 
+export type Functions = Database["public"]["Functions"];
+
 export type TableName = keyof TablesAndViews;
 export type TableRowProps<T extends TableName> = TablesAndViews[T]["Row"];
 
@@ -51,3 +53,5 @@ export type BookProps = TableRowProps<"books">;
 export type PreferenceProps = TableRowProps<"preferences">;
 
 export type CategoriesProps = TableRowProps<"categories">;
+
+export type RecommendationProps = Functions["get_recommendations"]["Returns"][number];

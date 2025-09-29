@@ -77,7 +77,8 @@ select
           body:=jsonb_build_object(
             'secretKey', internal_secret_key()
           )
-      ) as request_id;
+      ) as request_id
+      where exists (select 1 from chapters where status != 'done');
     $$
   );
 

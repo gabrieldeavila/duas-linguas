@@ -234,7 +234,7 @@ export type Database = {
         Insert: {
           created_at?: string | null
           excerpt_id: string
-          user_id: string
+          user_id?: string
         }
         Update: {
           created_at?: string | null
@@ -262,8 +262,8 @@ export type Database = {
             | null
           embedding: string | null
           id: string
+          language: Database["public"]["Enums"]["language"] | null
           order_index: number | null
-          status: Database["public"]["Enums"]["status"]
           updated_at: string | null
         }
         Insert: {
@@ -276,8 +276,8 @@ export type Database = {
             | null
           embedding?: string | null
           id?: string
+          language?: Database["public"]["Enums"]["language"] | null
           order_index?: number | null
-          status?: Database["public"]["Enums"]["status"]
           updated_at?: string | null
         }
         Update: {
@@ -290,8 +290,8 @@ export type Database = {
             | null
           embedding?: string | null
           id?: string
+          language?: Database["public"]["Enums"]["language"] | null
           order_index?: number | null
-          status?: Database["public"]["Enums"]["status"]
           updated_at?: string | null
         }
         Relationships: [
@@ -394,11 +394,11 @@ export type Database = {
             | Database["public"]["Enums"]["difficulty_level"]
             | null
           id: string
-          is_correct: boolean | null
           language: Database["public"]["Enums"]["language"] | null
-          options: Json | null
+          options: Json
           question: string
           updated_at: string | null
+          why: string | null
         }
         Insert: {
           answer: string
@@ -409,11 +409,11 @@ export type Database = {
             | Database["public"]["Enums"]["difficulty_level"]
             | null
           id?: string
-          is_correct?: boolean | null
           language?: Database["public"]["Enums"]["language"] | null
-          options?: Json | null
+          options: Json
           question: string
           updated_at?: string | null
+          why?: string | null
         }
         Update: {
           answer?: string
@@ -424,11 +424,11 @@ export type Database = {
             | Database["public"]["Enums"]["difficulty_level"]
             | null
           id?: string
-          is_correct?: boolean | null
           language?: Database["public"]["Enums"]["language"] | null
-          options?: Json | null
+          options?: Json
           question?: string
           updated_at?: string | null
+          why?: string | null
         }
         Relationships: [
           {
@@ -490,6 +490,18 @@ export type Database = {
         }
         Relationships: []
       }
+      uvec: {
+        Row: {
+          avg: string | null
+        }
+        Insert: {
+          avg?: string | null
+        }
+        Update: {
+          avg?: string | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       vw_book_categories: {
@@ -530,9 +542,9 @@ export type Database = {
         }
         Returns: {
           category_id: string
+          content: string
           excerpt_id: string
           similarity: number
-          title: string
         }[]
       }
       halfvec_avg: {

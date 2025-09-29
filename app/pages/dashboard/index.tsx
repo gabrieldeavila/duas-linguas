@@ -1,6 +1,8 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useSupabase } from "~/components/internal/supabaseAuth";
 import { Skeleton } from "~/components/ui/skeleton";
+import { useReadChildren } from "~/hooks/useReadChildren";
+import type { RecommendationProps } from "~/types/table.types";
 
 export function meta() {
   return [
@@ -15,6 +17,67 @@ function Dashboard() {
   const supabase = useSupabase();
   const isFetching = useRef(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [recommendations, setRecommendations] = useState<RecommendationProps[]>(
+    []
+  );
+  const { setContainer, readChildren } = useReadChildren();
+  const readExcerptIds = useRef<Set<string>>(new Set());
+
+  const readTimer = useRef<NodeJS.Timeout | null>(null);
+
+  useEffect(() => {
+    if (readTimer.current) {
+      clearTimeout(readTimer.current);
+    }
+
+    readTimer.current = setTimeout(async () => {
+      if (readChildren.size === 0) return;
+      console.log("Read children:", readChildren);
+
+      const currentRecommendations = (await new Promise((resolve) =>
+        setRecommendations((prev) => {
+          resolve(prev);
+          return prev;
+        })
+      )) as RecommendationProps[];
+
+      const excerptIds = Array.from(readChildren).map((index) => {
+        const rec = currentRecommendations[index];
+        return rec?.excerpt_id;
+      });
+
+      // remove the ones that are already in readExcerptIds
+      const uniqueExcerptIds = excerptIds.filter(
+        (id) => !readExcerptIds.current.has(id)
+      );
+
+      readExcerptIds.current = new Set([
+        ...readExcerptIds.current,
+        ...uniqueExcerptIds.filter((id): id is string => !!id),
+      ]);
+
+      console.log("Excerpt IDs to mark as read:", uniqueExcerptIds);
+
+      supabase
+        .from("excerpt_read")
+        // @ts-expect-error - user_is is set on the database side
+        .upsert(
+          uniqueExcerptIds.map((id) => ({ excerpt_id: id })),
+          {
+            onConflict: ["excerpt_id", "user_id"],
+            ignoreDuplicates: true,
+          }
+        )
+        .then(({ error }) => {
+          if (error) {
+            console.error("Error marking excerpts as read:", error);
+            return;
+          }
+          console.log("Marked excerpts as read:", uniqueExcerptIds);
+        });
+    }, 5000);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [readChildren]);
 
   const fetchPage = useCallback(
     (pageNumber: number) => {
@@ -24,23 +87,21 @@ function Dashboard() {
       setIsLoading(true);
       // setPage(pageNumber);
 
-      supabase
-        .from("books")
-        .select("id, title, author, cover_image_url")
-        .order("created_at", { ascending: false })
-        .range(
-          (pageNumber - 1) * LIMIT_PER_PAGE,
-          pageNumber * LIMIT_PER_PAGE - 1
-        )
-        .then(({ data: books, error }) => {
-          if (error || !books) {
-            console.error("Error fetching books:", error);
-          } else {
-            // setData(books as unknown as TableRowProps<T>[]);
-          }
+      console.log("Fetching recommendations...");
 
+      supabase
+        .rpc("get_recommendations", { lang: "pt", p_limit: LIMIT_PER_PAGE })
+        .then(({ data, error }) => {
           setIsLoading(false);
+
+          if (error) {
+            console.error("Error fetching recommendations:", error);
+            return;
+          }
+          setRecommendations(data || []);
           isFetching.current = false;
+
+          console.log("Recommendations:", data);
         });
     },
     [supabase]
@@ -50,11 +111,38 @@ function Dashboard() {
     fetchPage(1);
   }, [fetchPage]);
 
-  if (isLoading) {
-    return <Skeleton className="h-48 w-48" />;
-  }
-
-  return "Welcome";
+  return (
+    <div>
+      <h1 className="text-2xl font-bold mb-4">Your Feed</h1>
+      <div
+        ref={isLoading ? null : setContainer}
+        className="flex items-center flex-col gap-5"
+      >
+        {isLoading ? (
+          <>
+            {Array.from({ length: LIMIT_PER_PAGE }).map((_, index) => (
+              <Skeleton
+                key={index}
+                className="h-24 w-full sm:w-lg rounded-md"
+              />
+            ))}
+          </>
+        ) : (
+          recommendations.map((rec) => (
+            <Recommendation key={rec.excerpt_id} excerpt={rec} />
+          ))
+        )}
+      </div>
+    </div>
+  );
 }
 
 export default Dashboard;
+
+const Recommendation = ({ excerpt }: { excerpt: RecommendationProps }) => {
+  return (
+    <div className="p-4 border rounded shadow w-full sm:w-lg">
+      <p>{excerpt.content}</p>
+    </div>
+  );
+};
