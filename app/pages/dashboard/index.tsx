@@ -58,6 +58,8 @@ function Dashboard() {
 
       console.log("Excerpt IDs to mark as read:", uniqueExcerptIds);
 
+      if (uniqueExcerptIds.length === 0) return;
+
       supabase
         .from("excerpt_read")
         // @ts-expect-error - user_is is set on the database side

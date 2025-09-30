@@ -24,6 +24,11 @@ export const SupabaseAuthProvider = ({
   children: React.ReactNode;
 }) => {
   const { t } = useTranslation("general");
+  const [supabaseKey, setSupabaseKey] = useState(0);
+
+  const silentRefresh = useCallback(() => {
+    setSupabaseKey((prev) => prev + 1);
+  }, []);
 
   const [session, setSession] = useState<Session | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -65,8 +70,8 @@ export const SupabaseAuthProvider = ({
   }, [updateUserRole]);
 
   const value = useMemo(
-    () => ({ supabase, session, isAdmin }),
-    [session, isAdmin]
+    () => ({ supabase, session, isAdmin, silentRefresh }),
+    [session, isAdmin, silentRefresh]
   );
 
   if (isLoading) {
@@ -103,11 +108,21 @@ export const SupabaseAuthProvider = ({
   }
 
   return (
-    <SupabaseAuthProviderContext.Provider value={value}>
+    <SupabaseAuthProviderContext.Provider key={supabaseKey} value={value}>
       {children}
     </SupabaseAuthProviderContext.Provider>
   );
 };
+
+export const useSupabaseAuth = () => {
+  const context = useContext(SupabaseAuthProviderContext);
+  if (context === null) {
+    throw new Error(
+      "useSupabaseAuth must be used within a SupabaseAuthProviderContext"
+    );
+  }
+  return context;
+}
 
 export const useSession = () => {
   const context = useContext(SupabaseAuthProviderContext);

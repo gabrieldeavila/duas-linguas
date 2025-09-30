@@ -53,9 +53,18 @@ export default {
     },
   },
   preferences: {
+    title: "Preferences",
     categories: {
       title: "Categories",
       description: "Select your preferred categories",
+    },
+    difficulty_level: {
+      title: "Difficulty Level",
+      description: "Set your language difficulty level",
+    },
+    language: {
+      title: "Language",
+      description: "Set your preferred language",
     },
     buttonText: "Save Preferences",
   },

@@ -1,4 +1,9 @@
+import { Check } from "lucide-react";
 import { useCallback, useEffect, useRef, useState } from "react";
+import { Form, type FormApi } from "react-form-krafter";
+import { useTranslation } from "react-i18next";
+import { toast } from "sonner";
+import z from "zod";
 import { Button } from "~/components/ui/button";
 import {
   Dialog,
@@ -9,16 +14,23 @@ import {
   DialogHeader,
   DialogTitle,
 } from "~/components/ui/dialog";
-import { useSupabase } from "../supabaseAuth";
+import { cn } from "~/lib/utils";
+import { LanguageEnum, LanguageLevelEnum } from "~/types/enums.types";
 import type { CategoriesProps } from "~/types/table.types";
-import { Check } from "lucide-react";
-import { useTranslation } from "react-i18next";
-import { toast } from "sonner";
+import KrafterRegister from "../krafter/register";
+import { useSupabase, useSupabaseAuth, useUser } from "../supabaseAuth";
 
 function Preferences() {
   const [hasPreference, setHasPreference] = useState(true);
+  const [language, setLanguage] = useState<LanguageEnum>(LanguageEnum.EN);
+  const [difficultyLevel, setDifficultyLevel] = useState<LanguageLevelEnum>(
+    LanguageLevelEnum.BEGINNER
+  );
+  const [goNext, setGoNext] = useState(false);
   const supabase = useSupabase();
   const isFetching = useRef(false);
+  const userId = useUser()?.id;
+  const { silentRefresh } = useSupabaseAuth();
 
   useEffect(() => {
     if (isFetching.current) return;
@@ -41,18 +53,140 @@ function Preferences() {
       });
   }, [supabase]);
 
+  const handleClose = useCallback(() => {
+    supabase
+      .from("preferences")
+      .update({ language_learning: language, language_level: difficultyLevel })
+      .eq("user_id", userId!)
+      .then(({ error }) => {
+        if (error) {
+          console.error("Error updating preferences:", error);
+        }
+
+        silentRefresh();
+        setHasPreference(true);
+      });
+  }, [difficultyLevel, language, silentRefresh, supabase, userId]);
+
   if (hasPreference) return null;
 
   return (
     <Dialog open>
       <DialogContent showCloseButton={false} className="sm:max-w-4xl">
-        <PreferencesCategories onSave={() => setHasPreference(true)} />
+        {goNext ? (
+          <PreferencesCategories onSave={handleClose} />
+        ) : (
+          <ChooseLanguageToLearn
+            onLanguageSelect={setLanguage}
+            onNext={() => setGoNext(true)}
+            onDifficultyLevelChange={setDifficultyLevel}
+          />
+        )}
       </DialogContent>
     </Dialog>
   );
 }
 
 export default Preferences;
+
+const LANGUAGE_FIELD = [
+  {
+    name: "language",
+    label: "language.label",
+    type: "select",
+    placeholder: "language.placeholder",
+    initialValue: "en",
+    options: [
+      { label: "Spanish", value: "es" },
+      { label: "English", value: "en" },
+    ],
+  },
+  {
+    name: "difficulty_level",
+    label: "difficulty_level.label",
+    placeholder: "difficulty_level.placeholder",
+    required: true,
+    type: "select",
+    options: [
+      { label: "difficulty_level.beginner", value: "beginner" },
+      { label: "difficulty_level.intermediate", value: "intermediate" },
+      { label: "difficulty_level.advanced", value: "advanced" },
+    ],
+    initialValue: "beginner",
+  },
+];
+
+export const schemaBook = z.object({
+  language: z.enum(["en", "pt", "es"]),
+  difficulty_level: z.enum(["beginner", "intermediate", "advanced"]),
+});
+
+export type SchemaBook = typeof schemaBook;
+export type ValidatorBook = z.infer<SchemaBook>;
+
+const ChooseLanguageToLearn = ({
+  onLanguageSelect,
+  onDifficultyLevelChange,
+  onNext: onNextFn,
+}: {
+  onLanguageSelect: (language: LanguageEnum) => void;
+  onDifficultyLevelChange: (level: LanguageLevelEnum) => void;
+  onNext: () => void;
+}) => {
+  const { t } = useTranslation("general");
+  const formApi = useRef<FormApi<ValidatorBook> | null>(null);
+
+  const onNext = useCallback(() => {
+    const values = formApi.current?.fieldsState;
+    const language = values?.language;
+    const difficultyLevel = values?.difficulty_level;
+
+    if (!language) {
+      toast.error(t("preferences.language.description"));
+      return;
+    }
+
+    if (!difficultyLevel) {
+      toast.error(t("preferences.difficulty_level.description"));
+      return;
+    }
+
+    onNextFn();
+
+    onDifficultyLevelChange(difficultyLevel as LanguageLevelEnum);
+    onLanguageSelect(language as LanguageEnum);
+    // Proceed to the next step or save the preference
+  }, [onDifficultyLevelChange, onLanguageSelect, onNextFn, t]);
+
+  return (
+    <div>
+      <DialogHeader>
+        <DialogTitle>{t("preferences.title")}</DialogTitle>
+        <DialogDescription>
+          {t("preferences.language.description")}
+        </DialogDescription>
+      </DialogHeader>
+
+      {/* Language selection UI goes here */}
+      <KrafterRegister>
+        <Form<ValidatorBook, SchemaBook>
+          formClassName={cn("my-5 grid grid-cols-1 gap-4 sm:grid-cols-2")}
+          fields={LANGUAGE_FIELD}
+          schema={schemaBook}
+          formApi={formApi}
+        />
+      </KrafterRegister>
+
+      <DialogFooter>
+        <DialogClose asChild>
+          <Button variant="outline" onClick={onNext}>
+            {t("next")}
+          </Button>
+        </DialogClose>
+      </DialogFooter>
+    </div>
+  );
+};
 
 const PreferencesCategories = ({ onSave }: { onSave?: () => void }) => {
   const [categories, setCategories] = useState<

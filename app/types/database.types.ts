@@ -363,6 +363,8 @@ export type Database = {
           did_setup: boolean | null
           embedding: string | null
           id: string
+          language_learning: Database["public"]["Enums"]["language"] | null
+          language_level: Database["public"]["Enums"]["difficulty_level"] | null
           updated_at: string | null
           user_id: string
         }
@@ -371,6 +373,10 @@ export type Database = {
           did_setup?: boolean | null
           embedding?: string | null
           id?: string
+          language_learning?: Database["public"]["Enums"]["language"] | null
+          language_level?:
+            | Database["public"]["Enums"]["difficulty_level"]
+            | null
           updated_at?: string | null
           user_id: string
         }
@@ -379,6 +385,10 @@ export type Database = {
           did_setup?: boolean | null
           embedding?: string | null
           id?: string
+          language_learning?: Database["public"]["Enums"]["language"] | null
+          language_level?:
+            | Database["public"]["Enums"]["difficulty_level"]
+            | null
           updated_at?: string | null
           user_id?: string
         }

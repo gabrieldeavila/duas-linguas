@@ -5,6 +5,7 @@ export type SupabaseAuthProviderType = {
   supabase: SupabaseClient<Database>;
   session: Session | null;
   isAdmin: boolean;
+  silentRefresh: () => void;
 };
 
 export type ExcerptTable = Database["public"]["Tables"]["excerpts"]["Row"];
