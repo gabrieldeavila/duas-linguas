@@ -22,6 +22,8 @@ function Dashboard() {
   );
   const { setContainer, readChildren } = useReadChildren();
   const readExcerptIds = useRef<Set<string>>(new Set());
+  const [currentPage, setCurrentPage] = useState(0);
+  const didPaginateEnd = useRef(true);
 
   const readTimer = useRef<NodeJS.Timeout | null>(null);
 
@@ -32,7 +34,6 @@ function Dashboard() {
 
     readTimer.current = setTimeout(async () => {
       if (readChildren.size === 0) return;
-      console.log("Read children:", readChildren);
 
       const currentRecommendations = (await new Promise((resolve) =>
         setRecommendations((prev) => {
@@ -56,8 +57,6 @@ function Dashboard() {
         ...uniqueExcerptIds.filter((id): id is string => !!id),
       ]);
 
-      console.log("Excerpt IDs to mark as read:", uniqueExcerptIds);
-
       if (uniqueExcerptIds.length === 0) return;
 
       supabase
@@ -75,7 +74,6 @@ function Dashboard() {
             console.error("Error marking excerpts as read:", error);
             return;
           }
-          console.log("Marked excerpts as read:", uniqueExcerptIds);
         });
     }, 5000);
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -83,35 +81,58 @@ function Dashboard() {
 
   const fetchPage = useCallback(
     (pageNumber: number) => {
-      if (isFetching.current) return;
+      if (isFetching.current || !didPaginateEnd.current) return;
       isFetching.current = true;
 
       setIsLoading(true);
-      // setPage(pageNumber);
-
-      console.log("Fetching recommendations...");
+      setCurrentPage(pageNumber);
 
       supabase
-        .rpc("get_recommendations", { lang: "pt", p_limit: LIMIT_PER_PAGE })
+        .rpc("get_recommendations", {
+          p_limit: LIMIT_PER_PAGE,
+          p_offset: pageNumber * LIMIT_PER_PAGE,
+        })
         .then(({ data, error }) => {
           setIsLoading(false);
+          isFetching.current = false;
 
           if (error) {
             console.error("Error fetching recommendations:", error);
             return;
           }
-          setRecommendations(data || []);
-          isFetching.current = false;
 
-          console.log("Recommendations:", data);
+          if (!data || data.length === 0) {
+            console.log("No more recommendations to load.");
+            didPaginateEnd.current = false;
+            return;
+          }
+
+          setRecommendations((prev) => [...prev, ...(data || [])]);
         });
     },
     [supabase]
   );
 
   useEffect(() => {
-    fetchPage(1);
+    fetchPage(0);
   }, [fetchPage]);
+
+  useEffect(() => {
+    const checkWindowScroll = () => {
+      const scrollPosition =
+        window.innerHeight + document.documentElement.scrollTop;
+      const threshold = document.documentElement.offsetHeight - 100;
+
+      if (scrollPosition >= threshold) {
+        fetchPage(currentPage + 1);
+      }
+    };
+
+    window.addEventListener("scroll", checkWindowScroll);
+    return () => {
+      window.removeEventListener("scroll", checkWindowScroll);
+    };
+  }, [currentPage, fetchPage]);
 
   return (
     <div>
@@ -120,20 +141,14 @@ function Dashboard() {
         ref={isLoading ? null : setContainer}
         className="flex items-center flex-col gap-5"
       >
-        {isLoading ? (
-          <>
-            {Array.from({ length: LIMIT_PER_PAGE }).map((_, index) => (
-              <Skeleton
-                key={index}
-                className="h-24 w-full sm:w-lg rounded-md"
-              />
-            ))}
-          </>
-        ) : (
-          recommendations.map((rec) => (
-            <Recommendation key={rec.excerpt_id} excerpt={rec} />
-          ))
-        )}
+        {isLoading &&
+          Array.from({ length: LIMIT_PER_PAGE }).map((_, index) => (
+            <Skeleton key={index} className="h-24 w-full sm:w-lg rounded-md" />
+          ))}
+
+        {recommendations.map((rec) => (
+          <Recommendation key={rec.excerpt_id} excerpt={rec} />
+        ))}
       </div>
     </div>
   );

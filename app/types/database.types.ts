@@ -546,10 +546,9 @@ export type Database = {
         Returns: Json
       }
       get_recommendations: {
-        Args: {
-          lang?: Database["public"]["Enums"]["language"]
-          p_limit?: number
-        }
+        Args:
+          | { lang?: Database["public"]["Enums"]["language"]; p_limit?: number }
+          | { p_limit?: number; p_offset?: number }
         Returns: {
           category_id: string
           content: string

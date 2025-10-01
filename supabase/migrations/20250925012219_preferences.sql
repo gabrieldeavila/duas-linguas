@@ -96,7 +96,7 @@ create trigger on_auth_user_created
   after insert on auth.users
   for each row execute procedure public.handle_new_user();
 
-create or replace function get_recommendations(p_limit int default 20, lang public.language default 'en')
+create or replace function get_recommendations(p_limit int default 20, p_offset int default 0)
 returns table (
   excerpt_id uuid,
   content text,
@@ -105,9 +105,15 @@ returns table (
 ) as $$
 declare
   uvec vector; -- holds the user's embedding or a fallback
+  lang public.language := 'en'; -- default language
 begin
   -- 1. Try to load existing user embedding
   select embedding into uvec
+  from preferences
+  where user_id = auth.uid();
+
+  -- 1.1 find the language preference
+  select language_learning into lang
   from preferences
   where user_id = auth.uid();
 
@@ -149,7 +155,7 @@ begin
       (1 - (e.embedding <=> uvec)) * 0.8
       + case when e.category_id in (select prefs.category_id from prefs) then 0.2 else 0 end
     ) desc
-    limit p_limit;
+    limit p_limit offset p_offset;
 
   -- 4. Case B: no embedding and no categories → show fallback
   else
@@ -164,7 +170,7 @@ begin
       select excerpt_read.excerpt_id from excerpt_read where user_id = auth.uid()
     ) and e.language = lang
     order by e.created_at desc
-    limit p_limit;
+    limit p_limit offset p_offset;
   end if;
 end;
 $$ language plpgsql stable;
