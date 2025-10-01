@@ -5,7 +5,7 @@ CREATE TABLE IF NOT EXISTS preferences (
   embedding vector(384),
   did_setup BOOLEAN DEFAULT FALSE,
   language_learning public.language DEFAULT 'en',
-  language_level public.language_level DEFAULT 'beginner',
+  language_level public.difficulty_level DEFAULT 'beginner',
   created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
