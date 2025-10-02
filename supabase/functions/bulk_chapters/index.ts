@@ -42,7 +42,7 @@ Deno.serve(async (req) => {
     .from("chapters")
     .select("*, books(title, author, language)")
     .neq("status", "done")
-    .limit(5);
+    .limit(1);
 
   console.log(`Found ${bulkChapters.data?.length || 0} chapters to process.`);
 
@@ -114,6 +114,7 @@ Requirements for each snippet:
 - Written in the language of the book, which is "${language}"
 - Avoid repeating words or phrases across snippets
 - Return only plain text, formatted in Markdown
+- Make it engaging and fun to read
 - Use the ${readingLevel} style:
   - Beginner: very simple, direct, easy words
   - Intermediate: natural flow, relatable tone
