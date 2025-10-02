@@ -20,8 +20,13 @@ WORKDIR /app
 ENV NODE_ENV=production
 ARG VITE_SUPABASE_PUBLISHABLE_KEY
 ARG VITE_SUPABASE_URL
+
+ENV VITE_SUPABASE_PUBLISHABLE_KEY=$VITE_SUPABASE_PUBLISHABLE_KEY
+ENV VITE_SUPABASE_URL=$VITE_SUPABASE_URL
+
 COPY package.json pnpm-lock.yaml ./
 COPY --from=deps /app/node_modules ./node_modules
 COPY --from=build /app/build ./build
+
 EXPOSE 3000
 CMD ["pnpm", "start"] 
