@@ -167,7 +167,7 @@ Chapter ${chapterNumber} is titled "${chapterTitle}".
 Use the following snippets from the chapter as context:
 ${chapterSnippets.map((s) => `- ${s.snippet}`).join("\n")}
 
-Generate 8 multiple-choice questions about this chapter:
+Generate 4 - 8 multiple-choice questions about this chapter:
 - 5 comprehension questions about the content
 - 3 grammar or vocabulary questions based on the language used in the snippets
 

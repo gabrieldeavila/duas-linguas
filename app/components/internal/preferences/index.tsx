@@ -74,7 +74,7 @@ function Preferences() {
     <Dialog open>
       <DialogContent showCloseButton={false} className="sm:max-w-4xl">
         {goNext ? (
-          <PreferencesCategories onSave={handleClose} />
+          <PreferencesCategories language={language} onSave={handleClose} />
         ) : (
           <ChooseLanguageToLearn
             onLanguageSelect={setLanguage}
@@ -188,7 +188,7 @@ const ChooseLanguageToLearn = ({
   );
 };
 
-const PreferencesCategories = ({ onSave }: { onSave?: () => void }) => {
+const PreferencesCategories = ({ onSave, language }: { onSave?: () => void, language: LanguageEnum }) => {
   const [categories, setCategories] = useState<
     Pick<CategoriesProps, "id" | "name" | "color">[]
   >([]);
@@ -208,6 +208,7 @@ const PreferencesCategories = ({ onSave }: { onSave?: () => void }) => {
     supabase
       .from("categories")
       .select("id, name, color")
+      .eq("language", language)
       .then(({ data, error }) => {
         if (error) {
           console.error("Error fetching categories:", error);
@@ -217,7 +218,7 @@ const PreferencesCategories = ({ onSave }: { onSave?: () => void }) => {
 
         setCategories(data || []);
       });
-  }, [supabase]);
+  }, [language, supabase]);
 
   const handleSave = useCallback(() => {
     const toastId = toast.loading(t("loading.saving"));
