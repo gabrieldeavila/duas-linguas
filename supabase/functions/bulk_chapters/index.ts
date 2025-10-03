@@ -55,6 +55,8 @@ Deno.serve(async (req) => {
   const [aiType, model] = getModel();
 
   for (const chapter of bulkChapters.data) {
+    console.log(`Processing chapter ${chapter.id}: ${chapter.title}`);
+
     try {
       if (
         chapter.status === "processing" &&
@@ -104,9 +106,9 @@ Deno.serve(async (req) => {
 You are an assistant that creates tweet-style hooks for a book chapter.
 The book is "${bookTitle}" by ${author}.
 Chapter ${chapterNumber} is titled "${chapterTitle}".
-Generate around 15 snippets that tease or highlight this chapter.
+Generate around 8 - 10 snippets that tease or highlight this chapter.
 Requirements for each snippet:
-- Length between 220 and 280 characters (like a tweet), including spaces
+- Length between 150 and 280 characters (like a tweet), including spaces
 - Written as 1–2 punchy sentences, not a full paragraph
 - Must spark curiosity, create suspense, or leave an emotional pull
 - Should feel like a social media post that makes readers want to keep scrolling
@@ -115,6 +117,8 @@ Requirements for each snippet:
 - Avoid repeating words or phrases across snippets
 - Return only plain text, formatted in Markdown
 - Make it engaging and fun to read
+- Each snippet must use a different angle (emotion, imagery, tension, question, shock, intrigue, irony, etc.)  
+- Do not repeat words, metaphors, or sentence structures across snippets  
 - Use the ${readingLevel} style:
   - Beginner: very simple, direct, easy words
   - Intermediate: natural flow, relatable tone
@@ -257,6 +261,8 @@ Do not include explanations.
         .eq("id", chapter.id);
     }
   }
+
+  console.log("Bulk chapter processing completed.");
 
   return new Response(JSON.stringify({ success: "true" }), {
     headers: { "Content-Type": "application/json" },
