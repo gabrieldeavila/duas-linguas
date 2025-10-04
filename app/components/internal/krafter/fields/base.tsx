@@ -18,7 +18,7 @@ const FieldBase = memo(
     type,
     onFieldChange,
   }: FieldBaseProps & {
-    onFieldChange: (value: unknown) => string | number;
+    onFieldChange: (value: unknown) => string | number | Date;
   }) => {
     const { t } = useTranslation("fields");
 
