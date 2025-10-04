@@ -102,7 +102,16 @@ Deno.serve(async (req) => {
       const language = chapter.books?.language;
       const readingLevel = chapter.difficulty_level || "Intermediate";
 
-    const prompt: string = `
+      const chapterPromptLevel = {
+        beginner:
+          "No complex words or idioms, very simple sentences. Like the page is for kids.",
+        intermediate:
+          "Natural flow, relatable tone, moderately rich vocabulary.",
+        advanced:
+          "Rich vocabulary, literary style, more complex sentence structures.",
+      };
+
+      const prompt: string = `
 You are an assistant that creates tweet-style hooks for a book chapter.
 The book is "${bookTitle}" by ${author}.
 Chapter ${chapterNumber} is titled "${chapterTitle}".
@@ -119,10 +128,7 @@ Requirements for each snippet:
 - Make it engaging and fun to read
 - Each snippet must use a different angle (emotion, imagery, tension, question, shock, intrigue, irony, etc.)  
 - Do not repeat words, metaphors, or sentence structures across snippets  
-- Use the ${readingLevel} style:
-  - Beginner: very simple, direct, easy words
-  - Intermediate: natural flow, relatable tone
-  - Advanced: more expressive, vivid vocabulary, but still concise
+- Use the ${readingLevel} style: ${chapterPromptLevel[readingLevel.toLowerCase() as keyof typeof chapterPromptLevel]}
 
 Return an array of objects in this format:
 [
@@ -132,7 +138,7 @@ Return an array of objects in this format:
 ]
 
 Do not include explanations, headings, or anything else — only the array.
-`
+`;
 
       const chapterExcerpts = await generateObject({
         model: model(aiType),
@@ -160,6 +166,13 @@ Do not include explanations, headings, or anything else — only the array.
 
       const chapterSnippets = chapterExcerpts.object.snippets;
 
+      const questionsStyle = {
+        beginner: "simple, short sentences, easy vocabulary",
+        intermediate:
+          "medium-length sentences, natural flow, moderately rich vocabulary",
+        advanced: "longer sentences, rich vocabulary, literary style",
+      };
+
       const promptQuestions = `
 You are an assistant that creates multiple-choice questions based on a book chapter.
 The book is "${bookTitle}" by ${author}.
@@ -176,10 +189,7 @@ Each question should include:
 - "options": an array of 4 possible answers labeled with letters A, B, C, D
 - "answer": the letter corresponding to the correct option (A, B, C, or D)
 - "why": a short explanation of why this answer is correct
-- Use the ${readingLevel} style:
-  - Beginner: simple, short sentences, easy vocabulary
-  - Intermediate: medium-length sentences, natural flow, moderately rich vocabulary
-  - Advanced: longer sentences, rich vocabulary, literary style
+- Use the ${readingLevel} style: ${questionsStyle[readingLevel.toLowerCase() as keyof typeof questionsStyle]}
 
 All questions and answers must be written in the language of the book ("${language}").
 Return an array of objects like this:

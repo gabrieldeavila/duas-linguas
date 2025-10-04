@@ -98,10 +98,6 @@ Only provide the chapter numbers and titles, no extra explanations.
       )
     );
 
-    callSelf("bulk_chapters", req.headers.get("Authorization") || "", {
-      bookId,
-    });
-
     return new Response(JSON.stringify({ data, error }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
       status: 200,
