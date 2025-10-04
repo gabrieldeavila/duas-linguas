@@ -1,5 +1,5 @@
 import i18next from "i18next";
-import { useCallback, useRef } from "react";
+import { useCallback, useRef, useState } from "react";
 import { Form, type Field, type FormApi } from "react-form-krafter";
 import { Trans, useTranslation } from "react-i18next";
 import { Link, useNavigate } from "react-router";
@@ -71,13 +71,16 @@ function SignUp({ className, ...props }: React.ComponentProps<"div">) {
 
   const { t, i18n } = useTranslation("login");
   const navigate = useNavigate();
+  const [isSigningIn, setIsSigningIn] = useState(false);
 
   const signUpNewUser = useCallback(
     async (email: string, password: string) => {
+      setIsSigningIn(true);
       const { error } = await supabase.auth.signUp({
         email,
         password,
       });
+      setIsSigningIn(false);
 
       if (error) {
         const errorMessage = i18n.exists(`login:errors.${error.code}`)
@@ -136,7 +139,7 @@ function SignUp({ className, ...props }: React.ComponentProps<"div">) {
                   }}
                 >
                   <div className="flex flex-col gap-3">
-                    <Button type="submit">{t("signUp.button")}</Button>
+                    <Button disabled={isSigningIn} type="submit">{t("signUp.button")}</Button>
                   </div>
                 </Form>
 

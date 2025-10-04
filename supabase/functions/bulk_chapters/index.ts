@@ -201,6 +201,8 @@ Return an array of objects like this:
   },
   ...
 ]
+Do not return the same answer letter for all questions.
+
 Do not include explanations.
 `;
       const chapterQuestions = await generateObject({
