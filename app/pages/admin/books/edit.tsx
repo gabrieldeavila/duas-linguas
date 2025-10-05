@@ -74,10 +74,9 @@ function EditBook() {
             (data as unknown as { chapters: BookChapterProps[] }).chapters || []
           );
 
-          formApi.current.setFieldsState({
-            ...(data as unknown as ValidatorBook),
-            published_date: new Date(),
-          });
+          delete (data as { chapters?: unknown }).chapters;
+
+          formApi.current.setFieldsState(data as unknown as ValidatorBook);
         }
       });
   }, [id, supabase, t]);
@@ -88,12 +87,7 @@ function EditBook() {
 
       supabase
         .from("books")
-        .update({
-          ...data,
-          published_date: new Date(data.published_date)
-            .toISOString()
-            .slice(0, 10),
-        })
+        .update(data)
         .eq("id", id!)
         .then(({ error }) => {
           toast.dismiss();

@@ -42,12 +42,7 @@ function NewBook() {
 
       supabase
         .from("books")
-        .insert({
-          ...data,
-          published_date: new Date(data.published_date)
-            .toISOString()
-            .slice(0, 10),
-        })
+        .insert(data)
         .then(({ error }) => {
           toast.dismiss();
 
