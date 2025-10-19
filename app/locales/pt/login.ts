@@ -16,4 +16,14 @@ export default {
     alreadyHaveAccount: "Já tem uma conta? <0>Entrar</0>",
     passwordsDoNotMatch: "As senhas não coincidem"
   },
+  errors: {
+    bad_json: "Algo deu errado. Por favor, tente novamente mais tarde.",
+    bad_jwt: "Token inválido. Por favor, faça login novamente.",
+    email_address_invalid: "Endereço de e-mail inválido",
+    unknown: "Ocorreu um erro desconhecido",
+    invalid_credentials: "E-mail ou senha inválidos",
+    email_exists: "E-mail já cadastrado",
+    email_not_confirmed: "E-mail não confirmado",
+    email_provider_disabled: "Provedor de e-mail desabilitado"
+  },
 };

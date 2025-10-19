@@ -105,12 +105,14 @@ function SignIn({ className, ...props }: React.ComponentProps<"div">) {
                     if (data?.success) {
                       await signInUser(data.state.email, data.state.password);
                     } else {
-                      alert("Sign in failed. Please try again.");
+                      toast.error(t("errors.bad_json"));
                     }
                   }}
                 >
                   <div className="flex flex-col gap-3">
-                    <Button disabled={isSigningIn} type="submit">{t("signIn.button")}</Button>
+                    <Button disabled={isSigningIn} type="submit">
+                      {t("signIn.button")}
+                    </Button>
                   </div>
                 </Form>
 
