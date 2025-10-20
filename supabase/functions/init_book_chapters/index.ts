@@ -70,8 +70,8 @@ The author of the book is ${author}.
 Generate chapter names in the language of the book, which is "${language}".
 Return an array of objects in this format:
 [
-  { "chapter": 1, "title": "Chapter Name" },
-  { "chapter": 2, "title": "Chapter Name" },
+  { "chapter": 1, "title": "Chapter Name", "description": "Chapter Description" },
+  { "chapter": 2, "title": "Chapter Name", "description": "Chapter Description" },
   ...
 ]
 Only provide the chapter numbers and titles, no extra explanations.
@@ -82,6 +82,7 @@ Only provide the chapter numbers and titles, no extra explanations.
           z.object({
             chapter: z.number().min(chapterStart).max(chapterEnd),
             title: z.string().min(1).max(100),
+            description: z.string().min(1),
           })
         ),
       }),
@@ -90,13 +91,20 @@ Only provide the chapter numbers and titles, no extra explanations.
     // insert chapters into chapters table
     const { data, error } = await supabaseClient.from("chapters").insert(
       bookChapters.object.chapters.map(
-        (chapter: { chapter: number; title: string }) => ({
+        (chapter: { chapter: number; title: string; description: string }) => ({
           book_id: bookId,
           number: chapter.chapter,
           title: chapter.title,
+          description: chapter.description,
         })
       )
     );
+
+    await supabaseClient
+      .from("books")
+      .update({ status: "done" })
+      .eq("id", bookId)
+      .select("id");
 
     return new Response(JSON.stringify({ data, error }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
@@ -104,7 +112,7 @@ Only provide the chapter numbers and titles, no extra explanations.
     });
   } catch (error: unknown) {
     console.log("Error initializing book chapters:", error);
-    supabaseClient
+    await supabaseClient
       .from("books")
       .update({ status: "error", error_message: (error as Error).message })
       .eq("id", bookId);

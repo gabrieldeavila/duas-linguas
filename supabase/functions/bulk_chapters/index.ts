@@ -104,42 +104,45 @@ Deno.serve(async (req) => {
 
       const chapterPromptLevel = {
         beginner:
-          "No complex words or idioms, very simple sentences. Like the page is for kids.",
+          "Use only common, everyday words. Keep sentences short (max 10–12 words). No idioms, no figurative or abstract ideas. Simple cause–effect or descriptive statements only.",
         intermediate:
-          "Natural flow, relatable tone, moderately rich vocabulary.",
+          "Use natural, conversational tone with some variety in sentence structure. Include mild emotion or reflection, but avoid heavy metaphors or literary expressions.",
         advanced:
-          "Rich vocabulary, literary style, more complex sentence structures.",
+          "Use rich, expressive language with figurative elements, varied rhythm, and complex syntax. Allow for subtle emotions, metaphors, and layered meaning.",
       };
 
-      const prompt: string = `
+      const prompt = `
 You are an assistant that creates tweet-style hooks for a book chapter.
 The book is "${bookTitle}" by ${author}.
 Chapter ${chapterNumber} is titled "${chapterTitle}".
-Generate around 8 - 10 snippets that tease or highlight this chapter.
-Requirements for each snippet:
-- Length between 150 and 280 characters (like a tweet), including spaces
-- Written as 1–2 punchy sentences, not a full paragraph
-- Must spark curiosity, create suspense, or leave an emotional pull
-- Should feel like a social media post that makes readers want to keep scrolling
-- Begin directly with the idea, no introductions or filler
-- Written in the language of the book, which is "${language}"
-- Avoid repeating words or phrases across snippets
-- Return only plain text, formatted in Markdown
-- Make it engaging and fun to read
-- Each snippet must use a different angle (emotion, imagery, tension, question, shock, intrigue, irony, etc.)  
-- Do not repeat words, metaphors, or sentence structures across snippets  
-- Use the ${readingLevel} style: ${chapterPromptLevel[readingLevel.toLowerCase() as keyof typeof chapterPromptLevel]}
 
-Return an array of objects in this format:
+Generate 8–10 snippets that explain or capture this chapter.
+
+Requirements:
+- Each between 150 and 280 characters (like a tweet), including spaces
+- 1–2 sentences max — short, punchy, emotionally engaging
+- Must spark curiosity, create suspense, or leave an emotional pull
+- Begin directly with the idea, no intros or fillers
+- Written in the language of the book: "${language}"
+- Avoid repeating words, phrases, or sentence structures
+- Make it fun and scroll-stopping
+- Use the ${readingLevel} style: ${chapterPromptLevel[readingLevel.toLowerCase() as keyof typeof chapterPromptLevel]}
+- Each snippet must stand alone and make sense without context
+- Avoid clichés and generic inspiration
+
+Before returning, review all snippets to ensure:
+- Diversity in tone, rhythm, and ideas
+- No repetition
+- Compliance with reading level
+
+Return only this JSON array:
 [
   { "snippet": "Snippet text" },
   { "snippet": "Snippet text" },
   ...
 ]
-
-Do not include explanations, headings, or anything else — only the array.
 `;
-
+      console.log("start generating excerpts!");
       const chapterExcerpts = await generateObject({
         model: model(aiType),
         prompt,
@@ -152,6 +155,8 @@ Do not include explanations, headings, or anything else — only the array.
           ),
         }),
       });
+
+      console.log("finished generating excerpts!", chapterExcerpts.object.snippets);
 
       // insert excerpts into excerpts table
       const { error } = await supabaseClient.from("excerpts").insert(
