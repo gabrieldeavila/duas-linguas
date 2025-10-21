@@ -1,7 +1,9 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useSupabase } from "~/components/internal/supabaseAuth";
 import { Skeleton } from "~/components/ui/skeleton";
-import { useReadChildren } from "~/hooks/useReadChildren";
+import getPastelColors from "~/lib/color";
+import { cn } from "~/lib/utils";
 import type { RecommendationProps } from "~/types/table.types";
 
 export function meta() {
@@ -20,64 +22,9 @@ function Dashboard() {
   const [recommendations, setRecommendations] = useState<RecommendationProps[]>(
     []
   );
-  const { setContainer, readChildren } = useReadChildren();
-  const readExcerptIds = useRef<Set<string>>(new Set());
   const [currentPage, setCurrentPage] = useState(0);
+  const currentPageRef = useRef(currentPage);
   const didPaginateEnd = useRef(true);
-
-  const readTimer = useRef<NodeJS.Timeout | null>(null);
-
-  useEffect(() => {
-    if (readTimer.current) {
-      clearTimeout(readTimer.current);
-    }
-
-    readTimer.current = setTimeout(async () => {
-      if (readChildren.size === 0) return;
-
-      const currentRecommendations = (await new Promise((resolve) =>
-        setRecommendations((prev) => {
-          resolve(prev);
-          return prev;
-        })
-      )) as RecommendationProps[];
-
-      const excerptIds = Array.from(readChildren).map((index) => {
-        const rec = currentRecommendations[index];
-        return rec?.excerpt_id;
-      });
-
-      // remove the ones that are already in readExcerptIds
-      const uniqueExcerptIds = excerptIds.filter(
-        (id) => !readExcerptIds.current.has(id)
-      );
-
-      readExcerptIds.current = new Set([
-        ...readExcerptIds.current,
-        ...uniqueExcerptIds.filter((id): id is string => !!id),
-      ]);
-
-      if (uniqueExcerptIds.length === 0) return;
-
-      supabase
-        .from("excerpt_read")
-        // @ts-expect-error - user_is is set on the database side
-        .upsert(
-          uniqueExcerptIds.map((id) => ({ excerpt_id: id })),
-          {
-            onConflict: ["excerpt_id", "user_id"],
-            ignoreDuplicates: true,
-          }
-        )
-        .then(({ error }) => {
-          if (error) {
-            console.error("Error marking excerpts as read:", error);
-            return;
-          }
-        });
-    }, 5000);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [readChildren]);
 
   const fetchPage = useCallback(
     (pageNumber: number) => {
@@ -85,6 +32,7 @@ function Dashboard() {
       isFetching.current = true;
 
       setIsLoading(true);
+      currentPageRef.current = pageNumber;
       setCurrentPage(pageNumber);
 
       supabase
@@ -114,6 +62,7 @@ function Dashboard() {
   );
 
   useEffect(() => {
+    setRecommendations([]);
     fetchPage(0);
   }, [fetchPage]);
 
@@ -124,7 +73,7 @@ function Dashboard() {
       const threshold = document.documentElement.offsetHeight - 100;
 
       if (scrollPosition >= threshold) {
-        fetchPage(currentPage + 1);
+        fetchPage(currentPageRef.current + 1);
       }
     };
 
@@ -137,18 +86,17 @@ function Dashboard() {
   return (
     <div>
       <h1 className="text-2xl font-bold mb-4">Your Feed</h1>
-      <div
-        ref={isLoading ? null : setContainer}
-        className="flex items-center flex-col gap-5"
-      >
+      <div className="flex items-center flex-col gap-5">
         {isLoading &&
           Array.from({ length: LIMIT_PER_PAGE }).map((_, index) => (
             <Skeleton key={index} className="h-24 w-full sm:w-lg rounded-md" />
           ))}
 
-        {recommendations.map((rec) => (
-          <Recommendation key={rec.excerpt_id} excerpt={rec} />
-        ))}
+        <div className="flex flex-wrap justify-center gap-5 w-full">
+          {recommendations.map((rec) => (
+            <Recommendation key={rec.id} book={rec} />
+          ))}
+        </div>
       </div>
     </div>
   );
@@ -156,10 +104,52 @@ function Dashboard() {
 
 export default Dashboard;
 
-const Recommendation = ({ excerpt }: { excerpt: RecommendationProps }) => {
+const Recommendation = ({ book }: { book: RecommendationProps }) => {
+  const colors = useMemo(() => getPastelColors(book.id, 3), [book.id]);
+  const { t } = useTranslation("dashboard");
+
   return (
-    <div className="p-4 border rounded shadow w-full sm:w-lg">
-      <p>{excerpt.content}</p>
+    <div className="flex rounded shadow w-full sm:w-lg max-w-lg">
+      <div
+        className={cn(
+          "min-h-64",
+          "flex flex-col",
+          "items-center",
+          "justify-center",
+          "p-4",
+          "rounded-md",
+          "flex-grow"
+        )}
+        style={{
+          background: `linear-gradient(135deg, ${colors.join(", ")})`,
+        }}
+      >
+        {/* add shadow black text */}
+        <p
+          className={cn("text-lg font-semibold")}
+          style={{
+            textShadow: "1px 1px 2px rgba(0, 0, 0, 0.7)",
+          }}
+        >
+          {book.title}
+        </p>
+        <p
+          className="text-sm"
+          style={{
+            textShadow: "1px 1px 2px rgba(0, 0, 0, 0.7)",
+          }}
+        >
+          {t("by", { author: book.author })}
+        </p>
+        <p
+          className="text-sm"
+          style={{
+            textShadow: "1px 1px 2px rgba(0, 0, 0, 0.7)",
+          }}
+        >
+          {t(`levels.${book.difficulty_level}`)}
+        </p>
+      </div>
     </div>
   );
 };

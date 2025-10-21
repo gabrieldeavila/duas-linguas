@@ -93,6 +93,7 @@ export type Database = {
           created_at: string | null
           description: string
           difficulty_level: Database["public"]["Enums"]["difficulty_level"]
+          embedding: string | null
           error_message: string | null
           id: string
           language: Database["public"]["Enums"]["language"]
@@ -109,6 +110,7 @@ export type Database = {
           created_at?: string | null
           description: string
           difficulty_level: Database["public"]["Enums"]["difficulty_level"]
+          embedding?: string | null
           error_message?: string | null
           id?: string
           language: Database["public"]["Enums"]["language"]
@@ -125,6 +127,7 @@ export type Database = {
           created_at?: string | null
           description?: string
           difficulty_level?: Database["public"]["Enums"]["difficulty_level"]
+          embedding?: string | null
           error_message?: string | null
           id?: string
           language?: Database["public"]["Enums"]["language"]
@@ -169,9 +172,11 @@ export type Database = {
         Row: {
           book_id: string
           created_at: string | null
+          description: string | null
           difficulty_level:
             | Database["public"]["Enums"]["difficulty_level"]
             | null
+          embedding: string | null
           error_message: string | null
           id: string
           language: Database["public"]["Enums"]["language"] | null
@@ -183,9 +188,11 @@ export type Database = {
         Insert: {
           book_id: string
           created_at?: string | null
+          description?: string | null
           difficulty_level?:
             | Database["public"]["Enums"]["difficulty_level"]
             | null
+          embedding?: string | null
           error_message?: string | null
           id?: string
           language?: Database["public"]["Enums"]["language"] | null
@@ -197,9 +204,11 @@ export type Database = {
         Update: {
           book_id?: string
           created_at?: string | null
+          description?: string | null
           difficulty_level?:
             | Database["public"]["Enums"]["difficulty_level"]
             | null
+          embedding?: string | null
           error_message?: string | null
           id?: string
           language?: Database["public"]["Enums"]["language"] | null
@@ -260,7 +269,6 @@ export type Database = {
           difficulty_level:
             | Database["public"]["Enums"]["difficulty_level"]
             | null
-          embedding: string | null
           id: string
           language: Database["public"]["Enums"]["language"] | null
           order_index: number | null
@@ -274,7 +282,6 @@ export type Database = {
           difficulty_level?:
             | Database["public"]["Enums"]["difficulty_level"]
             | null
-          embedding?: string | null
           id?: string
           language?: Database["public"]["Enums"]["language"] | null
           order_index?: number | null
@@ -288,7 +295,6 @@ export type Database = {
           difficulty_level?:
             | Database["public"]["Enums"]["difficulty_level"]
             | null
-          embedding?: string | null
           id?: string
           language?: Database["public"]["Enums"]["language"] | null
           order_index?: number | null
@@ -500,18 +506,6 @@ export type Database = {
         }
         Relationships: []
       }
-      uvec: {
-        Row: {
-          avg: string | null
-        }
-        Insert: {
-          avg?: string | null
-        }
-        Update: {
-          avg?: string | null
-        }
-        Relationships: []
-      }
     }
     Views: {
       vw_book_categories: {
@@ -546,14 +540,14 @@ export type Database = {
         Returns: Json
       }
       get_recommendations: {
-        Args:
-          | { lang?: Database["public"]["Enums"]["language"]; p_limit?: number }
-          | { p_limit?: number; p_offset?: number }
+        Args: { p_limit?: number; p_offset?: number }
         Returns: {
-          category_id: string
-          content: string
-          excerpt_id: string
-          similarity: number
+          author: string
+          cover_image_url: string
+          description: string
+          difficulty_level: Database["public"]["Enums"]["difficulty_level"]
+          id: string
+          title: string
         }[]
       }
       halfvec_avg: {
