@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { useNavigate } from "react-router";
 import { useSupabase } from "~/components/internal/supabaseAuth";
 import { Skeleton } from "~/components/ui/skeleton";
 import getPastelColors from "~/lib/color";
@@ -107,9 +108,28 @@ export default Dashboard;
 const Recommendation = ({ book }: { book: RecommendationProps }) => {
   const colors = useMemo(() => getPastelColors(book.id, 3), [book.id]);
   const { t } = useTranslation("dashboard");
+  const supabase = useSupabase();
+  const navigate = useNavigate();
+
+  const handleClick = useCallback(() => {
+    supabase
+      .rpc("set_book_focus", { p_book_id: book.id })
+      .then(({ error, data }) => {
+        if (error) {
+          console.error("Error setting book focus:", error);
+        } else {
+          console.log(data);
+          // window.location.href = `/books/${book.id}`;
+          navigate(`/book/read/${book.id}`);
+        }
+      });
+  }, [book.id, navigate, supabase]);
 
   return (
-    <div className="flex rounded shadow w-full sm:w-lg max-w-lg">
+    <button
+      className="flex rounded shadow w-full sm:w-lg max-w-lg cursor-pointer hover:shadow-lg transition-shadow duration-200"
+      onClick={handleClick}
+    >
       <div
         className={cn(
           "min-h-64",
@@ -150,6 +170,6 @@ const Recommendation = ({ book }: { book: RecommendationProps }) => {
           {t(`levels.${book.difficulty_level}`)}
         </p>
       </div>
-    </div>
+    </button>
   );
 };

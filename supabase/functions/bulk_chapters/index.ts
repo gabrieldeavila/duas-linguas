@@ -116,7 +116,7 @@ You are an assistant that creates tweet-style hooks for a book chapter.
 The book is "${bookTitle}" by ${author}.
 Chapter ${chapterNumber} is titled "${chapterTitle}".
 
-Generate 8–10 snippets that explain or capture this chapter.
+Generate 10–15 snippets that explain or capture this chapter.
 
 Requirements:
 - Each between 150 and 280 characters (like a tweet), including spaces

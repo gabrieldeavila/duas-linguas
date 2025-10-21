@@ -84,6 +84,59 @@ export type Database = {
           },
         ]
       }
+      book_focus: {
+        Row: {
+          book_id: string
+          chapter_id: string | null
+          excerpt_id: string | null
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          book_id: string
+          chapter_id?: string | null
+          excerpt_id?: string | null
+          updated_at?: string | null
+          user_id?: string
+        }
+        Update: {
+          book_id?: string
+          chapter_id?: string | null
+          excerpt_id?: string | null
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "book_focus_book_id_fkey"
+            columns: ["book_id"]
+            isOneToOne: false
+            referencedRelation: "books"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "book_focus_book_id_fkey"
+            columns: ["book_id"]
+            isOneToOne: false
+            referencedRelation: "vw_book_categories"
+            referencedColumns: ["book_id"]
+          },
+          {
+            foreignKeyName: "book_focus_chapter_id_fkey"
+            columns: ["chapter_id"]
+            isOneToOne: false
+            referencedRelation: "chapters"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "book_focus_excerpt_id_fkey"
+            columns: ["excerpt_id"]
+            isOneToOne: false
+            referencedRelation: "excerpts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       books: {
         Row: {
           author: string
@@ -605,6 +658,14 @@ export type Database = {
       l2_normalize: {
         Args: { "": string } | { "": unknown } | { "": unknown }
         Returns: string
+      }
+      set_book_focus: {
+        Args: {
+          p_book_id: string
+          p_chapter_id?: string
+          p_excerpt_id?: string
+        }
+        Returns: undefined
       }
       sparsevec_out: {
         Args: { "": unknown }
