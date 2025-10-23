@@ -68,6 +68,8 @@ You are an assistant that generates chapter names for books.
 The book "${bookTitle}" has chapters from number ${chapterStart} to ${chapterEnd}.
 The author of the book is ${author}.
 Generate chapter names in the language of the book, which is "${language}".
+Also, return the description for each chapter.
+
 Return an array of objects in this format:
 [
   { "chapter": 1, "title": "Chapter Name", "description": "Chapter Description" },
@@ -76,7 +78,6 @@ Return an array of objects in this format:
 ]
 Only provide the chapter numbers and titles, no extra explanations.
 `,
-      temperature: 0.65,
       schema: z.object({
         chapters: z.array(
           z.object({
