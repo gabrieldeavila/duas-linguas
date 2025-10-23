@@ -37,4 +37,8 @@ export default {
     submitButton: "Vincular Livro à Categoria",
     updateButton: "Atualizar Categoria de Livro",
   },
+  read: {
+    changedChapterTo: "Mudou para o capítulo número: {{chapterNumber}}",
+    loadingChapter: "Carregando o capítulo número: {{chapterNumber}}",
+  },
 };

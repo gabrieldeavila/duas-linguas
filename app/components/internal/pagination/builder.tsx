@@ -64,7 +64,7 @@ export function PaginationBuilder({
   const totalPage = useMemo(() => getPages(), [getPages]);
 
   return (
-    <Pagination>
+    <Pagination className="max-sm:scale-80">
       <PaginationContent>
         {currentPage !== 1 && (
           <PaginationItem>
