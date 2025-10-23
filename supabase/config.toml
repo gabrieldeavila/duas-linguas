@@ -38,7 +38,7 @@ inspector_port = 8183
 
 [functions.init_book_chapters]
 enabled = true
-verify_jwt = true
+verify_jwt = false
 import_map = "./functions/init_book_chapters/deno.json"
 # Uncomment to specify a custom file path to the entrypoint.
 # Supported file extensions are: .ts, .js, .mjs, .jsx, .tsx
@@ -50,7 +50,7 @@ entrypoint = "./functions/init_book_chapters/index.ts"
 
 [functions.bulk_chapters]
 enabled = true
-verify_jwt = true
+verify_jwt = false
 import_map = "./functions/bulk_chapters/deno.json"
 # Uncomment to specify a custom file path to the entrypoint.
 # Supported file extensions are: .ts, .js, .mjs, .jsx, .tsx
@@ -61,7 +61,7 @@ entrypoint = "./functions/bulk_chapters/index.ts"
 
 [functions.embed]
 enabled = true
-verify_jwt = true
+verify_jwt = false
 import_map = "./functions/embed/deno.json"
 # Uncomment to specify a custom file path to the entrypoint.
 # Supported file extensions are: .ts, .js, .mjs, .jsx, .tsx

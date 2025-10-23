@@ -84,6 +84,59 @@ export type Database = {
           },
         ]
       }
+      book_focus: {
+        Row: {
+          book_id: string
+          chapter_id: string | null
+          excerpt_id: string | null
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          book_id: string
+          chapter_id?: string | null
+          excerpt_id?: string | null
+          updated_at?: string | null
+          user_id?: string
+        }
+        Update: {
+          book_id?: string
+          chapter_id?: string | null
+          excerpt_id?: string | null
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "book_focus_book_id_fkey"
+            columns: ["book_id"]
+            isOneToOne: false
+            referencedRelation: "books"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "book_focus_book_id_fkey"
+            columns: ["book_id"]
+            isOneToOne: false
+            referencedRelation: "vw_book_categories"
+            referencedColumns: ["book_id"]
+          },
+          {
+            foreignKeyName: "book_focus_chapter_id_fkey"
+            columns: ["chapter_id"]
+            isOneToOne: false
+            referencedRelation: "chapters"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "book_focus_excerpt_id_fkey"
+            columns: ["excerpt_id"]
+            isOneToOne: false
+            referencedRelation: "excerpts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       books: {
         Row: {
           author: string
@@ -93,10 +146,13 @@ export type Database = {
           created_at: string | null
           description: string
           difficulty_level: Database["public"]["Enums"]["difficulty_level"]
+          embedding: string | null
+          end_chapter: number | null
           error_message: string | null
           id: string
           language: Database["public"]["Enums"]["language"]
           published_date: string | null
+          start_chapter: number | null
           status: Database["public"]["Enums"]["status"]
           title: string
           updated_at: string | null
@@ -109,10 +165,13 @@ export type Database = {
           created_at?: string | null
           description: string
           difficulty_level: Database["public"]["Enums"]["difficulty_level"]
+          embedding?: string | null
+          end_chapter?: number | null
           error_message?: string | null
           id?: string
           language: Database["public"]["Enums"]["language"]
           published_date?: string | null
+          start_chapter?: number | null
           status?: Database["public"]["Enums"]["status"]
           title: string
           updated_at?: string | null
@@ -125,10 +184,13 @@ export type Database = {
           created_at?: string | null
           description?: string
           difficulty_level?: Database["public"]["Enums"]["difficulty_level"]
+          embedding?: string | null
+          end_chapter?: number | null
           error_message?: string | null
           id?: string
           language?: Database["public"]["Enums"]["language"]
           published_date?: string | null
+          start_chapter?: number | null
           status?: Database["public"]["Enums"]["status"]
           title?: string
           updated_at?: string | null
@@ -169,9 +231,11 @@ export type Database = {
         Row: {
           book_id: string
           created_at: string | null
+          description: string | null
           difficulty_level:
             | Database["public"]["Enums"]["difficulty_level"]
             | null
+          embedding: string | null
           error_message: string | null
           id: string
           language: Database["public"]["Enums"]["language"] | null
@@ -183,9 +247,11 @@ export type Database = {
         Insert: {
           book_id: string
           created_at?: string | null
+          description?: string | null
           difficulty_level?:
             | Database["public"]["Enums"]["difficulty_level"]
             | null
+          embedding?: string | null
           error_message?: string | null
           id?: string
           language?: Database["public"]["Enums"]["language"] | null
@@ -197,9 +263,11 @@ export type Database = {
         Update: {
           book_id?: string
           created_at?: string | null
+          description?: string | null
           difficulty_level?:
             | Database["public"]["Enums"]["difficulty_level"]
             | null
+          embedding?: string | null
           error_message?: string | null
           id?: string
           language?: Database["public"]["Enums"]["language"] | null
@@ -225,32 +293,6 @@ export type Database = {
           },
         ]
       }
-      excerpt_read: {
-        Row: {
-          created_at: string | null
-          excerpt_id: string
-          user_id: string
-        }
-        Insert: {
-          created_at?: string | null
-          excerpt_id: string
-          user_id?: string
-        }
-        Update: {
-          created_at?: string | null
-          excerpt_id?: string
-          user_id?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "excerpt_read_excerpt_id_fkey"
-            columns: ["excerpt_id"]
-            isOneToOne: false
-            referencedRelation: "excerpts"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
       excerpts: {
         Row: {
           book_id: string | null
@@ -260,7 +302,6 @@ export type Database = {
           difficulty_level:
             | Database["public"]["Enums"]["difficulty_level"]
             | null
-          embedding: string | null
           id: string
           language: Database["public"]["Enums"]["language"] | null
           order_index: number | null
@@ -274,7 +315,6 @@ export type Database = {
           difficulty_level?:
             | Database["public"]["Enums"]["difficulty_level"]
             | null
-          embedding?: string | null
           id?: string
           language?: Database["public"]["Enums"]["language"] | null
           order_index?: number | null
@@ -288,7 +328,6 @@ export type Database = {
           difficulty_level?:
             | Database["public"]["Enums"]["difficulty_level"]
             | null
-          embedding?: string | null
           id?: string
           language?: Database["public"]["Enums"]["language"] | null
           order_index?: number | null
@@ -500,18 +539,6 @@ export type Database = {
         }
         Relationships: []
       }
-      uvec: {
-        Row: {
-          avg: string | null
-        }
-        Insert: {
-          avg?: string | null
-        }
-        Update: {
-          avg?: string | null
-        }
-        Relationships: []
-      }
     }
     Views: {
       vw_book_categories: {
@@ -546,14 +573,14 @@ export type Database = {
         Returns: Json
       }
       get_recommendations: {
-        Args:
-          | { lang?: Database["public"]["Enums"]["language"]; p_limit?: number }
-          | { p_limit?: number; p_offset?: number }
+        Args: { p_limit?: number; p_offset?: number }
         Returns: {
-          category_id: string
-          content: string
-          excerpt_id: string
-          similarity: number
+          author: string
+          cover_image_url: string
+          description: string
+          difficulty_level: Database["public"]["Enums"]["difficulty_level"]
+          id: string
+          title: string
         }[]
       }
       halfvec_avg: {
@@ -611,6 +638,16 @@ export type Database = {
       l2_normalize: {
         Args: { "": string } | { "": unknown } | { "": unknown }
         Returns: string
+      }
+      set_book_focus: {
+        Args:
+          | { p_book_id: string; p_chapter_id?: string; p_excerpt_id?: string }
+          | {
+              p_book_id: string
+              p_chapter_number?: number
+              p_excerpt_id?: string
+            }
+        Returns: undefined
       }
       sparsevec_out: {
         Args: { "": unknown }
