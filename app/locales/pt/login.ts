@@ -19,6 +19,7 @@ export default {
   errors: {
     bad_json: "Algo deu errado. Por favor, tente novamente mais tarde.",
     bad_jwt: "Token inválido. Por favor, faça login novamente.",
+    user_already_exists: "Já existe um usuário com este e-mail.",
     email_address_invalid: "Endereço de e-mail inválido",
     unknown: "Ocorreu um erro desconhecido",
     invalid_credentials: "E-mail ou senha inválidos",
