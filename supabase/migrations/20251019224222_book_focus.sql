@@ -29,7 +29,7 @@ FOR EACH STATEMENT
 EXECUTE FUNCTION embed_inserted('description', 'embedding');
 
 -- drop function get_recommendations
-DROP FUNCTION IF EXISTS public.get_recommendations
+DROP FUNCTION IF EXISTS public.get_recommendations;
 
 -- returns books that are related to the favorite_categories of the user
 CREATE OR REPLACE FUNCTION public.get_recommendations(p_limit int default 20, p_offset
