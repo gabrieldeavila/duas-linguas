@@ -1,5 +1,7 @@
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useParams } from "react-router";
+import { toast } from "sonner";
+import { PaginationBuilder } from "~/components/internal/pagination/builder";
 import { useSupabase } from "~/components/internal/supabaseAuth";
 import {
   Breadcrumb,
@@ -12,18 +14,17 @@ import {
 import { Skeleton } from "~/components/ui/skeleton";
 import type { ExcerptTable } from "~/types";
 
-type BookDataProps = {
-  chapter_id: string | null;
-  excerpt_id: string | null;
-};
-
 function Read() {
   const { id } = useParams<{ id: string }>();
   const isLoadingRef = useRef(false);
   const [isLoading, setIsLoading] = useState(true);
-  const [data, setData] = useState<BookDataProps | null>(null);
   const [title, setTitle] = useState<string>("");
   const [bookTitle, setBookTitle] = useState<string>("");
+  const [currentChapterNumber, setCurrentChapterNumber] = useState<number>(0);
+  const [chaptersGaps, setChaptersGaps] = useState<{
+    min: number;
+    max: number;
+  }>({ min: 0, max: 0 });
 
   const supabase = useSupabase();
 
@@ -35,7 +36,9 @@ function Read() {
 
     supabase
       .from("book_focus")
-      .select("chapter_id, excerpt_id, chapters(id, title), books(title)")
+      .select(
+        "chapter_id, excerpt_id, chapters(id, title, number), books(id, title, start_chapter, end_chapter)"
+      )
       .eq("book_id", id)
       .limit(1)
       .then(({ data, error }) => {
@@ -52,13 +55,36 @@ function Read() {
           return;
         }
 
-        setTitle(data[0].chapters?.title || "");
-        setBookTitle(data[0].books?.title || "");
-        setData(data[0]);
+        const info = data[0];
+
+        setCurrentChapterNumber(info.chapters?.number || 0);
+        setChaptersGaps({
+          min: info.books.start_chapter || 0,
+          max: info.books.end_chapter || 0,
+        });
+        setTitle(info.chapters?.title || "");
+        setBookTitle(info.books?.title || "");
       });
   }, [id, supabase]);
 
-  useEffect(() => {}, []);
+  const handleChapterChange = useCallback(
+    (page: number) => {
+      console.log(page);
+      const idToast = toast.loading(`Changing to chapter number: ${page}`);
+
+      supabase
+        .rpc("set_book_focus", {
+          p_book_id: id!,
+          p_chapter_number: page,
+        })
+        .then(() => {
+          toast.success(`Changed to chapter number: ${page}`);
+          toast.dismiss(idToast);
+          setCurrentChapterNumber(page);
+        });
+    },
+    [supabase]
+  );
 
   if (isLoading) {
     return <Skeleton className="h-64 w-full" />;
@@ -82,10 +108,20 @@ function Read() {
 
       <h1 className="text-2xl font-bold mb-4 text-center">{title}</h1>
       <div className="flex items-center flex-col w-full">
-        {data?.chapter_id && (
-          <ChapterExcerpts bookId={id!} chapterId={data.chapter_id} />
+        {currentChapterNumber && (
+          <ChapterExcerpts bookId={id!} chapterNumber={currentChapterNumber} />
         )}
       </div>
+
+      {chaptersGaps.max === 0 ? null : (
+        <div className="flex items-center flex-col my-4">
+          <PaginationBuilder
+            currentPage={currentChapterNumber}
+            totalPages={chaptersGaps.max - 1}
+            onPageChange={handleChapterChange}
+          />
+        </div>
+      )}
     </div>
   );
 }
@@ -94,10 +130,10 @@ export default Read;
 
 const ChapterExcerpts = ({
   bookId,
-  chapterId,
+  chapterNumber,
 }: {
   bookId: string;
-  chapterId: string;
+  chapterNumber: number;
 }) => {
   const supabase = useSupabase();
   const [excerpts, setExcerpts] = useState<
@@ -109,25 +145,46 @@ const ChapterExcerpts = ({
   useEffect(() => {
     if (isLoadingRef.current) return;
     isLoadingRef.current = true;
+    (async () => {
+      setIsLoading(true);
+      const chapterId = await supabase
+        .from("chapters")
+        .select("id")
+        .eq("book_id", bookId)
+        .eq("number", chapterNumber)
+        .limit(1)
+        .then(({ data, error }) => {
+          if (error) {
+            console.error("Error fetching chapter ID:", error);
+            return null;
+          }
+          return data && data.length > 0 ? data[0].id : null;
+        });
 
-    setIsLoading(true);
-    supabase
-      .from("excerpts")
-      .select("content, id")
-      .eq("book_id", bookId)
-      .eq("chapter_id", chapterId)
-      .order("order_index", { ascending: true })
-      .then(({ data, error }) => {
+      if (!chapterId) {
         isLoadingRef.current = false;
         setIsLoading(false);
+        return;
+      }
 
-        if (error) {
-          console.error("Error fetching excerpts:", error);
-        } else {
-          setExcerpts(data || []);
-        }
-      });
-  }, [bookId, chapterId, supabase]);
+      supabase
+        .from("excerpts")
+        .select("content, id")
+        .eq("book_id", bookId)
+        .eq("chapter_id", chapterId)
+        .order("order_index", { ascending: true })
+        .then(({ data, error }) => {
+          isLoadingRef.current = false;
+          setIsLoading(false);
+
+          if (error) {
+            console.error("Error fetching excerpts:", error);
+          } else {
+            setExcerpts(data || []);
+          }
+        });
+    })();
+  }, [bookId, chapterNumber, supabase]);
 
   if (isLoading) {
     return Array.from({ length: 10 }, (_, i) => (

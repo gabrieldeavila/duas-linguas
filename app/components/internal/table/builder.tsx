@@ -306,7 +306,7 @@ function TableBuilder<T extends TableName>({
                   {visibleCols.map((column) => (
                     <TableCell key={column.id}>
                       <Link
-                        to={`${routeTo}/edit/${row.id}`}
+                        to={`${routeTo}/edit/${"id" in row ? row.id : ""}`}
                         className="flex w-full"
                       >
                         {row[column.name] != null

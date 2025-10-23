@@ -74,7 +74,7 @@ create table if not exists book_focus (
 
 create or replace function public.set_book_focus(
   p_book_id uuid,
-  p_chapter_id uuid default null,
+  p_chapter_number int default null,
   p_excerpt_id uuid default null
 )
 returns void
@@ -94,30 +94,32 @@ begin
 
   if found then
     -- if record exists, only update if new values were provided
-    v_chapter_id := coalesce(p_chapter_id, v_existing.chapter_id);
     v_excerpt_id := coalesce(p_excerpt_id, v_existing.excerpt_id);
-  else
-    -- find first chapter/excerpt if not provided
-    if p_chapter_id is null then
+  end if;
+  
+  -- find first chapter/excerpt if not provided
+  if p_chapter_number is null then
       select id into v_chapter_id
       from chapters
       where book_id = p_book_id
       and status = 'done'
       order by number asc, created_at asc
       limit 1;
-    else
-      v_chapter_id := p_chapter_id;
-    end if;
+  else
+      select id into v_chapter_id
+      from chapters
+      where book_id = p_book_id
+      and number = p_chapter_number;
+  end if;
 
-    if p_excerpt_id is null then
+  if p_excerpt_id is null then
       select id into v_excerpt_id
       from excerpts
       where chapter_id = v_chapter_id
       order by order_index asc, created_at asc
       limit 1;
-    else
+  else
       v_excerpt_id := p_excerpt_id;
-    end if;
   end if;
 
   insert into book_focus (user_id, book_id, chapter_id, excerpt_id, updated_at)
@@ -131,3 +133,45 @@ end;
 $$;
 
 drop table if exists excerpt_read;
+
+-- add rls to book_focus
+alter table book_focus enable row level security;
+
+create policy "Users can manage their book focus" on book_focus
+  for all
+  using (user_id = auth.uid());
+
+-- add col "start_chapter" and "end_chapter" to table books, its an integer
+ALTER TABLE books
+ADD COLUMN IF NOT EXISTS start_chapter INT,
+ADD COLUMN IF NOT EXISTS end_chapter INT;
+
+-- update start_chapter and end_chapter based on chapters table
+UPDATE books b
+SET start_chapter = sub.min_number,
+    end_chapter = sub.max_number
+FROM (
+  SELECT book_id,
+         MIN(number) AS min_number,
+         MAX(number) AS max_number
+  FROM chapters
+  GROUP BY book_id
+) sub
+WHERE b.id = sub.book_id;
+
+-- add trigger to update start_chapter and end_chapter on chapters insert
+CREATE OR REPLACE FUNCTION update_book_chapter_range()
+RETURNS TRIGGER AS $$
+BEGIN
+  UPDATE books
+  SET start_chapter = LEAST(COALESCE(start_chapter, NEW.number), NEW.number),
+      end_chapter = GREATEST(COALESCE(end_chapter, NEW.number), NEW.number)
+  WHERE id = NEW.book_id;
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER trg_update_book_chapter_range
+AFTER INSERT ON chapters
+FOR EACH ROW
+EXECUTE FUNCTION update_book_chapter_range();

@@ -147,10 +147,12 @@ export type Database = {
           description: string
           difficulty_level: Database["public"]["Enums"]["difficulty_level"]
           embedding: string | null
+          end_chapter: number | null
           error_message: string | null
           id: string
           language: Database["public"]["Enums"]["language"]
           published_date: string | null
+          start_chapter: number | null
           status: Database["public"]["Enums"]["status"]
           title: string
           updated_at: string | null
@@ -164,10 +166,12 @@ export type Database = {
           description: string
           difficulty_level: Database["public"]["Enums"]["difficulty_level"]
           embedding?: string | null
+          end_chapter?: number | null
           error_message?: string | null
           id?: string
           language: Database["public"]["Enums"]["language"]
           published_date?: string | null
+          start_chapter?: number | null
           status?: Database["public"]["Enums"]["status"]
           title: string
           updated_at?: string | null
@@ -181,10 +185,12 @@ export type Database = {
           description?: string
           difficulty_level?: Database["public"]["Enums"]["difficulty_level"]
           embedding?: string | null
+          end_chapter?: number | null
           error_message?: string | null
           id?: string
           language?: Database["public"]["Enums"]["language"]
           published_date?: string | null
+          start_chapter?: number | null
           status?: Database["public"]["Enums"]["status"]
           title?: string
           updated_at?: string | null
@@ -284,32 +290,6 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "vw_book_categories"
             referencedColumns: ["book_id"]
-          },
-        ]
-      }
-      excerpt_read: {
-        Row: {
-          created_at: string | null
-          excerpt_id: string
-          user_id: string
-        }
-        Insert: {
-          created_at?: string | null
-          excerpt_id: string
-          user_id?: string
-        }
-        Update: {
-          created_at?: string | null
-          excerpt_id?: string
-          user_id?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "excerpt_read_excerpt_id_fkey"
-            columns: ["excerpt_id"]
-            isOneToOne: false
-            referencedRelation: "excerpts"
-            referencedColumns: ["id"]
           },
         ]
       }
@@ -660,11 +640,13 @@ export type Database = {
         Returns: string
       }
       set_book_focus: {
-        Args: {
-          p_book_id: string
-          p_chapter_id?: string
-          p_excerpt_id?: string
-        }
+        Args:
+          | { p_book_id: string; p_chapter_id?: string; p_excerpt_id?: string }
+          | {
+              p_book_id: string
+              p_chapter_number?: number
+              p_excerpt_id?: string
+            }
         Returns: undefined
       }
       sparsevec_out: {
