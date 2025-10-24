@@ -139,7 +139,7 @@ function Read() {
         <div className="flex items-center flex-col my-4">
           <PaginationBuilder
             currentPage={currentChapterNumber}
-            totalPages={chaptersGaps.max}
+            totalPages={chaptersGaps.max - chaptersGaps.min + 1}
             onPageChange={handleChapterChange}
           />
         </div>
