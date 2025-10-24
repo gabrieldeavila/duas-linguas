@@ -103,14 +103,14 @@ Deno.serve(async (req) => {
       const readingLevel = chapter.difficulty_level || "Intermediate";
 
       const prompt = `
-You are an expert copywriter who writes tweet-style hooks that sound as if they were written by the book’s author.
+You are an expert copywriter who writes tweet-style hooks.
 
 Book: "${bookTitle}" by ${author}
 Chapter ${chapterNumber}: "${chapterTitle}"
 Language: "${language}"
 
 🎯 Task:
-Generate 10–15 short, emotionally charged snippets that express the *ideas and tone of the author himself*, as if he were speaking directly to the reader.
+Generate 10–15 short, emotionally charged snippets that express the ideas of the chapter in a compelling way to engage readers.
 
 🧠 Guidelines:
 - Each snippet: 150–280 characters (including spaces)
@@ -214,7 +214,7 @@ Create 4–8 multiple-choice questions that test understanding and language awar
     "explanation": "Short explanation of the answer"
     },
     ...
-  ]
+    ]
 }
 `;
       const chapterQuestions = await generateObject({
