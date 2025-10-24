@@ -102,40 +102,31 @@ Deno.serve(async (req) => {
       const language = chapter.books?.language;
       const readingLevel = chapter.difficulty_level || "Intermediate";
 
-      const chapterPromptLevel = {
-        beginner:
-          "Use only common, everyday words. Keep sentences short (max 10–12 words). No idioms, no figurative or abstract ideas. Simple cause–effect or descriptive statements only.",
-        intermediate:
-          "Use natural, conversational tone with some variety in sentence structure. Include mild emotion or reflection, but avoid heavy metaphors or literary expressions.",
-        advanced:
-          "Use rich, expressive language with figurative elements, varied rhythm, and complex syntax. Allow for subtle emotions, metaphors, and layered meaning.",
-      };
+  const prompt = `
+You are an expert copywriter who writes tweet-style hooks that sound as if they were written by the book’s author.
 
-      const prompt = `
-You are an assistant that creates tweet-style hooks for a book chapter.
-The book is "${bookTitle}" by ${author}.
-Chapter ${chapterNumber} is titled "${chapterTitle}".
+Book: "${bookTitle}" by ${author}
+Chapter ${chapterNumber}: "${chapterTitle}"
+Language: "${language}"
 
-Generate 10–15 snippets that explain or capture this chapter.
+🎯 Task:
+Generate 10–15 short, emotionally charged snippets that express the *ideas and tone of the author himself*, as if he were speaking directly to the reader.
 
-Requirements:
-- Each between 150 and 280 characters (like a tweet), including spaces
-- 1–2 sentences max — short, punchy, emotionally engaging
-- Must spark curiosity, create suspense, or leave an emotional pull
-- Begin directly with the idea, no intros or fillers
-- Written in the language of the book: "${language}"
-- Avoid repeating words, phrases, or sentence structures
-- Make it fun and scroll-stopping
-- Use the ${readingLevel} style: ${chapterPromptLevel[readingLevel.toLowerCase() as keyof typeof chapterPromptLevel]}
-- Each snippet must stand alone and make sense without context
-- Avoid clichés and generic inspiration
+🧠 Guidelines:
+- Each snippet: 150–280 characters (including spaces)
+- 1–2 sentences max — concise, rhythmic, and impactful
+- Write in first-person or authoritative voice that feels like the author’s own 
+- Start directly with the idea — no fillers, intros
+- Should spark curiosity, provoke thought, or evoke emotion
+- Avoid repeating words, structures, or tone
+- Match the book’s style and language: "${language}"
 
-Before returning, review all snippets to ensure:
-- Diversity in tone, rhythm, and ideas
-- No repetition
-- Compliance with reading level
+🧩 Quality check before returning:
+- No repetition or similar phrasing
+- Varied tone: some reflective, some assertive, some provocative
+- All sound like authentic author insights
 
-Return only this JSON array:
+📦 Output only this JSON array:
 [
   { "snippet": "Snippet text" },
   { "snippet": "Snippet text" },
@@ -156,7 +147,10 @@ Return only this JSON array:
         }),
       });
 
-      console.log("finished generating excerpts!", chapterExcerpts.object.snippets);
+      console.log(
+        "finished generating excerpts!",
+        chapterExcerpts.object.snippets
+      );
 
       // insert excerpts into excerpts table
       const { error } = await supabaseClient.from("excerpts").insert(
