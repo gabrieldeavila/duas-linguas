@@ -204,15 +204,18 @@ Create 4–8 multiple-choice questions that test understanding and language awar
 - Include meta explanations or extra text outside the JSON
 
 📦 Output format:
-[
-  {
-    "question": "Question text",
+{
+  "questions":
+  [
+    {
+      "question": "Question text",
     "options": ["A) Option 1", "B) Option 2", "C) Option 3", "D) Option 4"],
     "answer": "A",
     "explanation": "Short explanation of the answer"
-  },
-  ...
-]
+    },
+    ...
+  ]
+}
 `;
       const chapterQuestions = await generateObject({
         model: model(aiType),
