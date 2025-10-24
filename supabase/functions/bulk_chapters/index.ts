@@ -102,7 +102,7 @@ Deno.serve(async (req) => {
       const language = chapter.books?.language;
       const readingLevel = chapter.difficulty_level || "Intermediate";
 
-  const prompt = `
+      const prompt = `
 You are an expert copywriter who writes tweet-style hooks that sound as if they were written by the book’s author.
 
 Book: "${bookTitle}" by ${author}
@@ -137,7 +137,6 @@ Generate 10–15 short, emotionally charged snippets that express the *ideas and
       const chapterExcerpts = await generateObject({
         model: model(aiType),
         prompt,
-        temperature: 0.75,
         schema: z.object({
           snippets: z.array(
             z.object({
@@ -173,47 +172,58 @@ Generate 10–15 short, emotionally charged snippets that express the *ideas and
       };
 
       const promptQuestions = `
-You are an assistant that creates multiple-choice questions based on a book chapter.
-The book is "${bookTitle}" by ${author}.
-Chapter ${chapterNumber} is titled "${chapterTitle}".
-Use the following snippets from the chapter as context:
+You are a skilled educator who designs engaging multiple-choice questions based on book chapters.
+
+Book: "${bookTitle}" by ${author}
+Chapter ${chapterNumber}: "${chapterTitle}"
+Language: "${language}"
+
+Context snippets from the chapter:
 ${chapterSnippets.map((s) => `- ${s.snippet}`).join("\n")}
 
-Generate 4 - 8 multiple-choice questions about this chapter:
-- 5 comprehension questions about the content
-- 3 grammar or vocabulary questions based on the language used in the snippets
+🎯 Task:
+Create 4–8 multiple-choice questions that test understanding and language awareness:
+- 5 comprehension questions about the ideas, logic, or key details
+- 3 grammar or vocabulary questions inspired by the writing style in the snippets
 
-Each question should include:
-- "question": the question text
-- "options": an array of 4 possible answers labeled with letters A, B, C, D
-- "answer": the letter corresponding to the correct option (A, B, C, or D)
-- "why": a short explanation of why this answer is correct
+🧠 Guidelines:
+- Each question must include:
+  • "question": the question text  
+  • "options": 4 distinct answer choices labeled A, B, C, D  
+  • "answer": the correct option letter (A–D)  
+  • "explanation": a brief explanation of why that answer is correct  
+
 - Use the ${readingLevel} style: ${questionsStyle[readingLevel.toLowerCase() as keyof typeof questionsStyle]}
+- All text must be written in "${language}"
+- Keep the tone natural — like a teacher guiding students, not an exam generator
+- Vary the structure of the questions (e.g., some inferential, some direct, some stylistic)
+- Don’t repeat the same correct answer letter across all questions
 
-All questions and answers must be written in the language of the book ("${language}").
-Return an array of objects like this:
+🚫 Do NOT:
+- Repeat identical question structures
+- Include meta explanations or extra text outside the JSON
+
+📦 Output format:
 [
   {
     "question": "Question text",
     "options": ["A) Option 1", "B) Option 2", "C) Option 3", "D) Option 4"],
-    "answer": "A"
+    "answer": "A",
+    "explanation": "Short explanation of the answer"
   },
   ...
 ]
-Do not return the same answer letter for all questions.
-
-Do not include explanations.
 `;
       const chapterQuestions = await generateObject({
         model: model(aiType),
         prompt: promptQuestions,
-        temperature: 0.6,
         schema: z.object({
           questions: z.array(
             z.object({
               question: z.string().min(1).max(300),
               options: z.array(z.string().min(1).max(150)).length(4),
               answer: z.enum(["A", "B", "C", "D"]),
+              explanation: z.string(),
             })
           ),
         }),
@@ -228,11 +238,13 @@ Do not include explanations.
               question: string;
               options: string[];
               answer: string;
+              explanation: string;
             }) => ({
               chapter_id: chapter.id,
               question: question.question,
               options: question.options,
               answer: question.answer,
+              explanation: question.explanation,
             })
           )
         );
