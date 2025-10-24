@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useParams } from "react-router";
 import { toast } from "sonner";
 import { PaginationBuilder } from "~/components/internal/pagination/builder";
@@ -25,6 +26,7 @@ function Read() {
     min: number;
     max: number;
   }>({ min: 0, max: 0 });
+  const { t } = useTranslation("pages");
 
   const supabase = useSupabase();
 
@@ -69,8 +71,9 @@ function Read() {
 
   const handleChapterChange = useCallback(
     (page: number) => {
-      console.log(page);
-      const idToast = toast.loading(`Changing to chapter number: ${page}`);
+      const idToast = toast.loading(
+        t("read.loadingChapter", { chapterNumber: page })
+      );
 
       supabase
         .rpc("set_book_focus", {
@@ -78,12 +81,31 @@ function Read() {
           p_chapter_number: page,
         })
         .then(() => {
-          toast.success(`Changed to chapter number: ${page}`);
+          // get the updated chapter title
+          supabase
+            .from("chapters")
+            .select("title")
+            .eq("book_id", id!)
+            .eq("number", page)
+            .limit(1)
+            .then(({ data, error }) => {
+              if (error) {
+                console.error("Error fetching chapter title:", error);
+                return;
+              }
+
+              if (data && data.length > 0) {
+                setTitle(data[0].title);
+              }
+            });
+
+          // scroll to window top
+          toast.success(t("read.changedChapterTo", { chapterNumber: page }));
           toast.dismiss(idToast);
           setCurrentChapterNumber(page);
         });
     },
-    [supabase]
+    [id, supabase, t]
   );
 
   if (isLoading) {
@@ -117,7 +139,7 @@ function Read() {
         <div className="flex items-center flex-col my-4">
           <PaginationBuilder
             currentPage={currentChapterNumber}
-            totalPages={chaptersGaps.max - 1}
+            totalPages={chaptersGaps.max - chaptersGaps.min + 1}
             onPageChange={handleChapterChange}
           />
         </div>
@@ -181,15 +203,20 @@ const ChapterExcerpts = ({
             console.error("Error fetching excerpts:", error);
           } else {
             setExcerpts(data || []);
+            window.scrollTo({ top: 0, behavior: "instant" });
           }
         });
     })();
   }, [bookId, chapterNumber, supabase]);
 
   if (isLoading) {
-    return Array.from({ length: 10 }, (_, i) => (
-      <Skeleton key={i} className="h-10 w-full" />
-    ));
+    return (
+      <div className="flex items-center flex-col gap-2 w-full max-w-5xl">
+        {Array.from({ length: 25 }, (_, i) => (
+          <Skeleton key={i} className="h-10 w-full" />
+        ))}
+      </div>
+    );
   }
 
   return (

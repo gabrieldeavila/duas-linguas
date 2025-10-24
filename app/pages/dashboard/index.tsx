@@ -161,14 +161,6 @@ const Recommendation = ({ book }: { book: RecommendationProps }) => {
         >
           {t("by", { author: book.author })}
         </p>
-        <p
-          className="text-sm"
-          style={{
-            textShadow: "1px 1px 2px rgba(0, 0, 0, 0.7)",
-          }}
-        >
-          {t(`levels.${book.difficulty_level}`)}
-        </p>
       </div>
     </button>
   );
