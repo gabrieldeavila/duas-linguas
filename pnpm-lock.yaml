@@ -96,8 +96,8 @@ importers:
         specifier: ^19.1.0
         version: 19.1.0(react@19.1.0)
       react-form-krafter:
-        specifier: ^0.0.67
-        version: 0.0.67(@standard-schema/spec@1.0.0)(react@19.1.0)
+        specifier: ^0.0.68
+        version: 0.0.68(@standard-schema/spec@1.0.0)(react@19.1.0)
       react-i18next:
         specifier: ^15.6.1
         version: 15.6.1(i18next@25.3.6(typescript@5.8.3))(react-dom@19.1.0(react@19.1.0))(react@19.1.0)(typescript@5.8.3)
@@ -2415,8 +2415,8 @@ packages:
     peerDependencies:
       react: ^19.1.0
 
-  react-form-krafter@0.0.67:
-    resolution: {integrity: sha512-u9YXhlIe5Nm7T6qx1/yTrEU9dSw5nLqcoK0brbXc+gLdXwkVD2DR0KbCZBEmPOGS+4unm+xQNCi9SR01LtE54w==}
+  react-form-krafter@0.0.68:
+    resolution: {integrity: sha512-b4qAUxoJMpsx/n3KvrHoRtXnPco9mA2cPepah9mbO5i1KgY0UGj7fJUWmLBRPegvgdlJmUCDK59LGB7KKHfERg==}
     peerDependencies:
       '@standard-schema/spec': ^1.0.0
       react: ^16.8.0 || ^17 || ^18 || ^19
@@ -5135,7 +5135,7 @@ snapshots:
       react: 19.1.0
       scheduler: 0.26.0
 
-  react-form-krafter@0.0.67(@standard-schema/spec@1.0.0)(react@19.1.0):
+  react-form-krafter@0.0.68(@standard-schema/spec@1.0.0)(react@19.1.0):
     dependencies:
       '@standard-schema/spec': 1.0.0
       react: 19.1.0
