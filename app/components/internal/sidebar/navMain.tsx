@@ -1,4 +1,4 @@
-import { Home, Shield } from "lucide-react";
+import { Home, Settings2, Shield } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router";
 
@@ -25,6 +25,15 @@ export function NavMain() {
         >
           <Home />
           <span>{t("home")}</span>
+        </SidebarMenuButton>
+
+        <SidebarMenuButton
+          tooltip={t("preferences.title")}
+          customComp={Link}
+          to="/preferences"
+        >
+          <Settings2 />
+          <span>{t("preferences.title")}</span>
         </SidebarMenuButton>
 
         {isAdmin && (

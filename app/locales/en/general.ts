@@ -23,10 +23,12 @@ export default {
   success: {
     deleting: "Deleted successfully!",
     saving: "Saved successfully!",
+    updating: "Updated successfully!",
   },
   error: {
     deleting: "Error deleting items.",
     saving: "Error saving.",
+    updating: "Error updating.",
   },
   category: {
     label: "Category",

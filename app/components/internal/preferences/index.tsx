@@ -91,35 +91,35 @@ function Preferences() {
 
 export default Preferences;
 
-const LANGUAGE_FIELD = [
+export const LANGUAGE_FIELD = [
   {
-    name: "language",
-    label: "language.label",
+    name: "language_learning",
+    label: "language_learning.label",
     type: "select",
-    placeholder: "language.placeholder",
+    placeholder: "language_learning.placeholder",
     initialValue: "en",
     options: [
       { label: "Spanish", value: "es" },
       { label: "English", value: "en" },
     ],
   },
-  {
-    name: "difficulty_level",
-    label: "difficulty_level.label",
-    placeholder: "difficulty_level.placeholder",
-    required: true,
-    type: "select",
-    options: [
-      { label: "difficulty_level.beginner", value: "beginner" },
-      { label: "difficulty_level.intermediate", value: "intermediate" },
-      { label: "difficulty_level.advanced", value: "advanced" },
-    ],
-    initialValue: "beginner",
-  },
+  // {
+  //   name: "difficulty_level",
+  //   label: "difficulty_level.label",
+  //   placeholder: "difficulty_level.placeholder",
+  //   required: true,
+  //   type: "select",
+  //   options: [
+  //     { label: "difficulty_level.beginner", value: "beginner" },
+  //     { label: "difficulty_level.intermediate", value: "intermediate" },
+  //     { label: "difficulty_level.advanced", value: "advanced" },
+  //   ],
+  //   initialValue: "beginner",
+  // },
 ];
 
 export const schemaBook = z.object({
-  language: z.enum(["en", "pt", "es"]),
+  language_learning: z.enum(["en", "pt", "es"]),
   difficulty_level: z.enum(["beginner", "intermediate", "advanced"]),
 });
 
@@ -140,7 +140,7 @@ const ChooseLanguageToLearn = ({
 
   const onNext = useCallback(() => {
     const values = formApi.current?.fieldsState;
-    const language = values?.language;
+    const language = values?.language_learning;
     const difficultyLevel = values?.difficulty_level;
 
     if (!language) {

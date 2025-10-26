@@ -39,6 +39,10 @@ export default {
     placeholder: "Digite o idioma",
     label: "Idioma",
   },
+  language_learning: {
+    placeholder: "Selecione o idioma para aprender",
+    label: "Idioma para Aprender",
+  },
   difficulty_level: {
     placeholder: "Selecione o nível de dificuldade",
     label: "Nível de Dificuldade",
