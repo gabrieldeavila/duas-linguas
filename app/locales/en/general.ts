@@ -16,6 +16,7 @@ export default {
   saveChanges: "Save Changes",
   more_pages: "More pages",
   deleteSelected: "Delete Selected",
+  selectAtLeastOne: "Please select at least one item.",
   loading: {
     deleting: "Deleting...",
     saving: "Saving...",

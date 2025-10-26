@@ -248,6 +248,8 @@ const FavoriteCategories = ({ language }: { language: LanguageEnum }) => {
     [supabase, t]
   );
 
+  const [isOpen, setIsOpen] = useState(false);
+
   return (
     <div>
       <h2>{t("favorite_categories.title")}</h2>
@@ -272,7 +274,7 @@ const FavoriteCategories = ({ language }: { language: LanguageEnum }) => {
       </div>
 
       {/* modal to add favorite category */}
-      <Dialog>
+      <Dialog open={isOpen} onOpenChange={setIsOpen}>
         <DialogTrigger asChild>
           <Button variant="outline">{t("favorite_categories.add")}</Button>
         </DialogTrigger>
@@ -280,7 +282,10 @@ const FavoriteCategories = ({ language }: { language: LanguageEnum }) => {
         <DialogContent className="sm:max-w-4xl">
           <PreferencesCategories
             language={language}
-            onSave={() => setRefresh((prev) => prev + 1)}
+            onSave={() => {
+              setRefresh((prev) => prev + 1);
+              setIsOpen(false);
+            }}
           />
         </DialogContent>
       </Dialog>

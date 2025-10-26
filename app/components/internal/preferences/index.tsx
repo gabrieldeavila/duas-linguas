@@ -103,6 +103,7 @@ export const LANGUAGE_FIELD = [
       { label: "English", value: "en" },
     ],
   },
+  // temporarily removed difficulty level selection
   // {
   //   name: "difficulty_level",
   //   label: "difficulty_level.label",
@@ -221,6 +222,11 @@ export const PreferencesCategories = ({
   }, [language, supabase]);
 
   const handleSave = useCallback(() => {
+    if (selectedCategories.length === 0) {
+      toast.error(t("selectAtLeastOne"));
+      return;
+    }
+
     const toastId = toast.loading(t("loading.saving"));
     setIsSaving(true);
 
@@ -280,11 +286,9 @@ export const PreferencesCategories = ({
       </div>
 
       <DialogFooter>
-        <DialogClose asChild onClick={handleSave}>
-          <Button disabled={isSaving} variant="outline">
-            {t("preferences.buttonText")}
-          </Button>
-        </DialogClose>
+        <Button disabled={isSaving} variant="outline" onClick={handleSave}>
+          {t("preferences.buttonText")}
+        </Button>
       </DialogFooter>
     </div>
   );
