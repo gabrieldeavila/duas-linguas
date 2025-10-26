@@ -39,6 +39,10 @@ export default {
     placeholder: "Enter the language",
     label: "Language",
   },
+  language_learning: {
+    placeholder: "Select the language to learn",
+    label: "Reading Language",
+  },
   name: {
     placeholder: "Enter the name",
     label: "Name",

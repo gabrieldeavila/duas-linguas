@@ -8,6 +8,7 @@ import login from "./login";
 import general from "./general";
 import pages from "./pages";
 import dashboard from "./dashboard";
+import alert from "./alert";
 
 export default {
   notFound,
@@ -17,6 +18,7 @@ export default {
   fields,
   login,
   general,
+  alert,
   pages,
   dashboard,
 } satisfies Resource;

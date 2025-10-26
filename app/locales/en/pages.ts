@@ -40,5 +40,13 @@ export default {
   read: {
     changedChapterTo: "Changed to chapter number: {{chapterNumber}}",
     loadingChapter: "Loading chapter number: {{chapterNumber}}",
-  }
+  },
+  preferences: {
+    title: "Preferences",
+    description: "Manage your application preferences.",
+  },
+  dashboard: {
+    title: "Dashboard",
+    description: "Welcome to the Dashboard!",
+  },
 };

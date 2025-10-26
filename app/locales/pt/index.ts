@@ -8,11 +8,13 @@ import login from "./login";
 import general from "./general";
 import pages from "./pages";
 import dashboard from "./dashboard";
+import alert from "./alert";
 
 export default {
   notFound,
   translation,
   landing,
+  alert,
   zod,
   fields,
   login,

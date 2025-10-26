@@ -16,6 +16,7 @@ export default {
   more_pages: "Mais páginas",
   saveChanges: "Salvar alterações",
   deleteSelected: "Excluir selecionados",
+  selectAtLeastOne: "Por favor, selecione pelo menos um item.",
   loading: {
     deleting: "Deletando...",
     saving: "Salvando...",
@@ -58,5 +59,9 @@ export default {
       description: "Selecione suas categorias preferidas",
     },
     buttonText: "Salvar Preferências",
+  },
+  favorite_categories: {
+    title: "Categorias Favoritas",
+    add: "Adicionar nova categoria",
   },
 };

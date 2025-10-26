@@ -20,6 +20,7 @@ export default {
   errors: {
     bad_json: "Something went wrong. Please try again later.",
     bad_jwt: "Invalid token. Please log in again.",
+    fix_errors: "Please fix the errors before submitting.",
     user_already_exists: "User already exists with this email.",
     email_address_invalid: "Email address is invalid",
     unknown: "An unknown error occurred",

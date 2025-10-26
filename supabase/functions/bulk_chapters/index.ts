@@ -14,7 +14,7 @@ Deno.serve(async (req) => {
 
   const { secretKey } = await req.json();
 
-  if (secretKey && secretKey !== Deno.env.get("INTERNAL_SECRET_KEY")) {
+  if (secretKey !== Deno.env.get("INTERNAL_SECRET_KEY")) {
     console.error("Unauthorized: Invalid secret key");
     return new Response("Unauthorized", { status: 401 });
   }
@@ -26,7 +26,7 @@ Deno.serve(async (req) => {
     // Supabase API URL - env var exported by default.
     Deno.env.get("SUPABASE_URL")!,
     // Supabase API ANON KEY - env var exported by default.
-    secretKey ? SUPABASE_SERVICE_ROLE_KEY! : Deno.env.get("SUPABASE_ANON_KEY")!,
+    SUPABASE_SERVICE_ROLE_KEY!,
     // Create client with Auth context of the user that called the function.
     // This way your row-level-security (RLS) policies are applied.
     secretKey
@@ -109,17 +109,19 @@ Book: "${bookTitle}" by ${author}
 Chapter ${chapterNumber}: "${chapterTitle}"
 Language: "${language}"
 
+❌ Do NOT mention the author or refer to the author in any way.
+
 🎯 Task:
 Generate 10–15 short, emotionally charged snippets that express the ideas of the chapter in a compelling way to engage readers.
 
 🧠 Guidelines:
-- Each snippet: 150–280 characters (including spaces)
-- 1–2 sentences max — concise, rhythmic, and impactful
-- Write in first-person or authoritative voice that feels like the author’s own 
-- Start directly with the idea — no fillers, intros
-- Should spark curiosity, provoke thought, or evoke emotion
-- Avoid repeating words, structures, or tone
-- Match the book’s style and language: "${language}"
+- Each snippet should be 150–280 characters, 1–2 short sentences (15–30 words)
+- Start directly with the idea; no fillers or introductions
+- Each snippet should convey a **key lesson, insight, event, concept, or character action** from the chapter
+- Include references to important events, names, characters, or concepts from the chapter
+- Vary the tone: reflective, provocative, assertive, or intriguing
+- Make the snippets spark curiosity or emotion, engaging the reader
+- Each snippet must be unique; avoid repeating words, sentence structures, or ideas
 
 🧩 Quality check before returning:
 - No repetition or similar phrasing

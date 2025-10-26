@@ -118,10 +118,10 @@ function SignUp({ className, ...props }: React.ComponentProps<"div">) {
                         data.state.password
                       );
                     } else {
-                      toast.error(t("errors.bad_json"));
+                      toast.error(t("errors.fix_errors"));
                     }
                   }}
-                  onUpdate={(data) => {
+                  onChange={(data) => {
                     if (formApi.current === null) return;
 
                     if (

@@ -5,12 +5,22 @@ import { useSupabase } from "~/components/internal/supabaseAuth";
 import { Skeleton } from "~/components/ui/skeleton";
 import getPastelColors from "~/lib/color";
 import { cn } from "~/lib/utils";
-import type { RecommendationProps } from "~/types/table.types";
+import type {
+  RecommendationProps,
+  SuggestionsProps,
+} from "~/types/table.types";
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbList,
+  BreadcrumbPage,
+} from "~/components/ui/breadcrumb";
+import i18next from "i18next";
 
 export function meta() {
   return [
-    { title: "Dashboard" },
-    { name: "description", content: "Welcome to the Dashboard!" },
+    { title: i18next.t("pages:dashboard.title") },
+    { name: "description", content: i18next.t("pages:dashboard.description") },
   ];
 }
 
@@ -18,6 +28,7 @@ const LIMIT_PER_PAGE = 20;
 
 function Dashboard() {
   const supabase = useSupabase();
+  const { t } = useTranslation("dashboard");
   const isFetching = useRef(false);
   const [isLoading, setIsLoading] = useState(false);
   const [recommendations, setRecommendations] = useState<RecommendationProps[]>(
@@ -51,7 +62,6 @@ function Dashboard() {
           }
 
           if (!data || data.length === 0) {
-            console.log("No more recommendations to load.");
             didPaginateEnd.current = false;
             return;
           }
@@ -86,26 +96,48 @@ function Dashboard() {
 
   return (
     <div>
-      <h1 className="text-2xl font-bold mb-4">Your Feed</h1>
+      <Breadcrumb className="mb-4">
+        <BreadcrumbList>
+          <BreadcrumbItem className="hidden md:block">
+            <BreadcrumbPage>{t("title")}</BreadcrumbPage>
+          </BreadcrumbItem>
+        </BreadcrumbList>
+      </Breadcrumb>
+
+      <ReadingList />
+
+      {recommendations.length > 0 && (
+        <h2 className="text-xl font-bold my-4">
+          {t("based_on_your_preferences")}
+        </h2>
+      )}
+
       <div className="flex items-center flex-col gap-5">
         {isLoading &&
           Array.from({ length: LIMIT_PER_PAGE }).map((_, index) => (
             <Skeleton key={index} className="h-24 w-full sm:w-lg rounded-md" />
           ))}
-
-        <div className="flex flex-wrap justify-center gap-5 w-full">
-          {recommendations.map((rec) => (
-            <Recommendation key={rec.id} book={rec} />
-          ))}
-        </div>
+        {recommendations.length > 0 && (
+          <div className="flex flex-wrap justify-center gap-5 w-full">
+            {recommendations.map((rec) => (
+              <Recommendation key={rec.id} book={rec} />
+            ))}
+          </div>
+        )}
       </div>
+
+      <MayAlsoLike />
     </div>
   );
 }
 
 export default Dashboard;
 
-const Recommendation = ({ book }: { book: RecommendationProps }) => {
+const Recommendation = ({
+  book,
+}: {
+  book: Omit<RecommendationProps, "difficulty_level">;
+}) => {
   const colors = useMemo(() => getPastelColors(book.id, 3), [book.id]);
   const { t } = useTranslation("dashboard");
   const supabase = useSupabase();
@@ -163,5 +195,95 @@ const Recommendation = ({ book }: { book: RecommendationProps }) => {
         </p>
       </div>
     </button>
+  );
+};
+
+const ReadingList = () => {
+  const { t } = useTranslation("dashboard");
+  const supabase = useSupabase();
+  const [readingList, setReadingList] = useState<
+    Omit<RecommendationProps, "difficulty_level">[]
+  >([]);
+  const isLoadingRef = useRef(false);
+
+  useEffect(() => {
+    if (isLoadingRef.current) return;
+    isLoadingRef.current = true;
+
+    supabase
+      .from("book_focus")
+      .select("book:books(id, title, cover_image_url, description, author)")
+      .then(({ data, error }) => {
+        isLoadingRef.current = false;
+
+        if (error) {
+          console.error("Error fetching reading list:", error);
+          return;
+        }
+        if (!data) return;
+
+        setReadingList(
+          data
+            .map((item) => item.book)
+            .filter(
+              (book): book is Omit<RecommendationProps, "difficulty_level"> =>
+                book !== null
+            )
+        );
+      });
+  }, [supabase]);
+
+  if (!readingList || readingList.length === 0) {
+    return null;
+  }
+
+  return (
+    <div>
+      <h2 className="text-xl font-bold mb-4">{t("reading_list")}</h2>
+      <div className="flex flex-wrap justify-center gap-5 w-full mb-8">
+        {readingList.map((book) => (
+          <Recommendation key={book.id} book={book} />
+        ))}
+      </div>
+    </div>
+  );
+};
+
+const MayAlsoLike = () => {
+  const { t } = useTranslation("dashboard");
+  const supabase = useSupabase();
+  const isLoadingRef = useRef(false);
+  const [suggestions, setSuggestions] = useState<SuggestionsProps[]>([]);
+
+  useEffect(() => {
+    if (isLoadingRef.current) return;
+    isLoadingRef.current = true;
+
+    supabase.rpc("match_book_suggestions").then(({ data, error }) => {
+      isLoadingRef.current = false;
+
+      if (error) {
+        console.error("Error fetching 'May Also Like' books:", error);
+        return;
+      }
+
+      setSuggestions(data || []);
+    });
+  }, [supabase]);
+
+  if (!suggestions || suggestions.length === 0) {
+    return null;
+  }
+
+  return (
+    <div>
+      <h2 className="text-xl font-bold mt-8 mb-4">{t("may_also_like")}</h2>
+      {/* Placeholder for "May Also Like" books */}
+      <div className="flex flex-wrap justify-center gap-5 w-full">
+        {suggestions.map((suggestion) => (
+          <Recommendation key={suggestion.id} book={suggestion} />
+        ))}
+      </div>
+    </div>
   );
 };
