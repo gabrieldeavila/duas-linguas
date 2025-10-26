@@ -1,6 +1,7 @@
+import i18next from "i18next";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { useParams } from "react-router";
+import { useParams, type LoaderFunctionArgs } from "react-router";
 import { toast } from "sonner";
 import { PaginationBuilder } from "~/components/internal/pagination/builder";
 import { useSupabase } from "~/components/internal/supabaseAuth";
@@ -13,7 +14,38 @@ import {
   BreadcrumbSeparator,
 } from "~/components/ui/breadcrumb";
 import { Skeleton } from "~/components/ui/skeleton";
+import { supabase } from "~/lib/supabase";
 import type { ExcerptTable } from "~/types";
+
+export async function loader({ params }: LoaderFunctionArgs) {
+  let title = "";
+
+  await supabase
+    .from("books")
+    .select("title")
+    .eq("id", params.id!)
+    .maybeSingle()
+    .then(({ data, error }) => {
+      if (error) {
+        console.error("Error fetching book focus:", error);
+        return;
+      }
+      title = data?.title || "";
+      console.log("Book focus data:", data, params.id!);
+    });
+
+  return { title };
+}
+
+export function meta({ data }: { data: { title: string } }) {
+  return [
+    { title: data.title },
+    {
+      name: "description",
+      content: i18next.t("pages:read.reading", { bookTitle: data.title }),
+    },
+  ];
+}
 
 function Read() {
   const { id } = useParams<{ id: string }>();

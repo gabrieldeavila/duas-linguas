@@ -144,17 +144,13 @@ const Recommendation = ({
   const navigate = useNavigate();
 
   const handleClick = useCallback(() => {
-    supabase
-      .rpc("set_book_focus", { p_book_id: book.id })
-      .then(({ error, data }) => {
-        if (error) {
-          console.error("Error setting book focus:", error);
-        } else {
-          console.log(data);
-          // window.location.href = `/books/${book.id}`;
-          navigate(`/book/read/${book.id}`);
-        }
-      });
+    supabase.rpc("set_book_focus", { p_book_id: book.id }).then(({ error }) => {
+      if (error) {
+        console.error("Error setting book focus:", error);
+      } else {
+        navigate(`/book/read/${book.id}`);
+      }
+    });
   }, [book.id, navigate, supabase]);
 
   return (
