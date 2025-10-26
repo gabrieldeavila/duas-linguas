@@ -442,6 +442,7 @@ export type Database = {
           difficulty_level:
             | Database["public"]["Enums"]["difficulty_level"]
             | null
+          explanation: string | null
           id: string
           language: Database["public"]["Enums"]["language"] | null
           options: Json
@@ -457,6 +458,7 @@ export type Database = {
           difficulty_level?:
             | Database["public"]["Enums"]["difficulty_level"]
             | null
+          explanation?: string | null
           id?: string
           language?: Database["public"]["Enums"]["language"] | null
           options: Json
@@ -472,6 +474,7 @@ export type Database = {
           difficulty_level?:
             | Database["public"]["Enums"]["difficulty_level"]
             | null
+          explanation?: string | null
           id?: string
           language?: Database["public"]["Enums"]["language"] | null
           options?: Json
@@ -639,14 +642,30 @@ export type Database = {
         Args: { "": string } | { "": unknown } | { "": unknown }
         Returns: string
       }
+      match_book_suggestions: {
+        Args: Record<PropertyKey, never>
+        Returns: {
+          author: string
+          cover_image_url: string
+          description: string
+          id: string
+          similarity: number
+          title: string
+        }[]
+      }
+      match_table_embeddings: {
+        Args: { embedding: string; lang: string; table_name: string }
+        Returns: {
+          id: string
+          similarity: number
+        }[]
+      }
       set_book_focus: {
-        Args:
-          | { p_book_id: string; p_chapter_id?: string; p_excerpt_id?: string }
-          | {
-              p_book_id: string
-              p_chapter_number?: number
-              p_excerpt_id?: string
-            }
+        Args: {
+          p_book_id: string
+          p_chapter_number?: number
+          p_excerpt_id?: string
+        }
         Returns: undefined
       }
       sparsevec_out: {

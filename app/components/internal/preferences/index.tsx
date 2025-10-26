@@ -41,14 +41,16 @@ function Preferences() {
       .from("preferences")
       .select("id, did_setup")
       .eq("did_setup", false)
-      .single()
       .then(({ data, error }) => {
         if (error) {
           console.error("Error fetching preferences:", error);
           return;
         }
 
-        setHasPreference(!!data.did_setup);
+        const info = data[0];
+        if (!info) return;
+
+        setHasPreference(!!info?.did_setup);
         isFetching.current = false;
       });
   }, [supabase]);
@@ -188,7 +190,13 @@ const ChooseLanguageToLearn = ({
   );
 };
 
-const PreferencesCategories = ({ onSave, language }: { onSave?: () => void, language: LanguageEnum }) => {
+const PreferencesCategories = ({
+  onSave,
+  language,
+}: {
+  onSave?: () => void;
+  language: LanguageEnum;
+}) => {
   const [categories, setCategories] = useState<
     Pick<CategoriesProps, "id" | "name" | "color">[]
   >([]);

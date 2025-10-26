@@ -5,4 +5,6 @@ export default {
     intermediate: "intermediário",
     advanced: "avançado",
   },
+  may_also_like: "Você também pode gostar",
+  reading_list: "Lista de leitura",
 };

@@ -55,3 +55,5 @@ export type PreferenceProps = TableRowProps<"preferences">;
 export type CategoriesProps = TableRowProps<"categories">;
 
 export type RecommendationProps = Functions["get_recommendations"]["Returns"][number];
+
+export type SuggestionsProps = Functions["match_book_suggestions"]["Returns"][number];
