@@ -128,7 +128,6 @@ export type ValidatorBook = z.infer<SchemaBook>;
 
 const ChooseLanguageToLearn = ({
   onLanguageSelect,
-  onDifficultyLevelChange,
   onNext: onNextFn,
 }: {
   onLanguageSelect: (language: LanguageEnum) => void;
@@ -141,24 +140,18 @@ const ChooseLanguageToLearn = ({
   const onNext = useCallback(() => {
     const values = formApi.current?.fieldsState;
     const language = values?.language_learning;
-    const difficultyLevel = values?.difficulty_level;
 
     if (!language) {
       toast.error(t("preferences.language.description"));
       return;
     }
 
-    if (!difficultyLevel) {
-      toast.error(t("preferences.difficulty_level.description"));
-      return;
-    }
-
     onNextFn();
 
-    onDifficultyLevelChange(difficultyLevel as LanguageLevelEnum);
+    // onDifficultyLevelChange(difficultyLevel as LanguageLevelEnum);
     onLanguageSelect(language as LanguageEnum);
     // Proceed to the next step or save the preference
-  }, [onDifficultyLevelChange, onLanguageSelect, onNextFn, t]);
+  }, [onLanguageSelect, onNextFn, t]);
 
   return (
     <div>
@@ -190,7 +183,7 @@ const ChooseLanguageToLearn = ({
   );
 };
 
-const PreferencesCategories = ({
+export const PreferencesCategories = ({
   onSave,
   language,
 }: {
@@ -214,9 +207,8 @@ const PreferencesCategories = ({
     isFetching.current = true;
 
     supabase
-      .from("categories")
+      .rpc("get_unfavorited_categories", { p_language: language })
       .select("id, name, color")
-      .eq("language", language)
       .then(({ data, error }) => {
         if (error) {
           console.error("Error fetching categories:", error);

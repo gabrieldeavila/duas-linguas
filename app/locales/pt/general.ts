@@ -59,4 +59,8 @@ export default {
     },
     buttonText: "Salvar Preferências",
   },
+  favorite_categories: {
+    title: "Categorias Favoritas",
+    add: "Adicionar nova categoria",
+  },
 };

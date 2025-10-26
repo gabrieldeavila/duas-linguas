@@ -586,6 +586,22 @@ export type Database = {
           title: string
         }[]
       }
+      get_unfavorited_categories: {
+        Args: {
+          p_language?: Database["public"]["Enums"]["language"]
+          p_limit?: number
+          p_offset?: number
+        }
+        Returns: {
+          color: string
+          created_at: string | null
+          description: string | null
+          id: string
+          language: Database["public"]["Enums"]["language"]
+          name: string
+          updated_at: string | null
+        }[]
+      }
       halfvec_avg: {
         Args: { "": number[] }
         Returns: unknown
@@ -654,7 +670,13 @@ export type Database = {
         }[]
       }
       match_table_embeddings: {
-        Args: { embedding: string; lang: string; table_name: string }
+        Args:
+          | {
+              embedding: string
+              lang: Database["public"]["Enums"]["language"]
+              table_name: string
+            }
+          | { embedding: string; lang: string; table_name: string }
         Returns: {
           id: string
           similarity: number

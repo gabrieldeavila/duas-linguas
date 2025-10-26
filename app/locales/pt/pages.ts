@@ -41,4 +41,12 @@ export default {
     changedChapterTo: "Mudou para o capítulo número: {{chapterNumber}}",
     loadingChapter: "Carregando o capítulo número: {{chapterNumber}}",
   },
+  preferences: {
+    title: "Preferências",
+    description: "Gerencie suas preferências de aplicação.",
+  },
+  dashboard: {
+    title: "Dashboard",
+    description: "Bem-vindo ao Painel de Controle!",
+  },
 };

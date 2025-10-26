@@ -70,4 +70,8 @@ export default {
     },
     buttonText: "Save Preferences",
   },
+  favorite_categories: {
+    title: "Favorite Categories",
+    add: "Add new category",
+  },
 };

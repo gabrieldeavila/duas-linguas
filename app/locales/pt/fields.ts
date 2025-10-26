@@ -40,8 +40,8 @@ export default {
     label: "Idioma",
   },
   language_learning: {
-    placeholder: "Selecione o idioma para aprender",
-    label: "Idioma para Aprender",
+    placeholder: "Selecione o idioma de leitura",
+    label: "Idioma de Leitura",
   },
   difficulty_level: {
     placeholder: "Selecione o nível de dificuldade",

@@ -166,3 +166,21 @@ as $$
   limit p_limit
   offset p_offset;
 $$;
+
+-- function categories not present in user's favorite categories
+create or replace function public.get_unfavorited_categories(p_limit int default 20, p_offset
+  int default 0, p_language public.language default null) 
+returns setof public.categories
+language sql
+as $$
+  select *
+  from categories c
+  where c.language = coalesce(p_language, c.language)
+  and c.id not in (
+    select fc.category_id
+    from favorite_categories fc
+    where fc.user_id = auth.uid()
+  )
+  limit p_limit
+  offset p_offset;
+$$; 

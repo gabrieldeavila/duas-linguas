@@ -9,11 +9,18 @@ import type {
   RecommendationProps,
   SuggestionsProps,
 } from "~/types/table.types";
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbList,
+  BreadcrumbPage,
+} from "~/components/ui/breadcrumb";
+import i18next from "i18next";
 
 export function meta() {
   return [
-    { title: "Dashboard" },
-    { name: "description", content: "Welcome to the Dashboard!" },
+    { title: i18next.t("pages:dashboard.title") },
+    { name: "description", content: i18next.t("pages:dashboard.description") },
   ];
 }
 
@@ -21,6 +28,7 @@ const LIMIT_PER_PAGE = 20;
 
 function Dashboard() {
   const supabase = useSupabase();
+  const { t } = useTranslation("dashboard");
   const isFetching = useRef(false);
   const [isLoading, setIsLoading] = useState(false);
   const [recommendations, setRecommendations] = useState<RecommendationProps[]>(
@@ -54,7 +62,6 @@ function Dashboard() {
           }
 
           if (!data || data.length === 0) {
-            console.log("No more recommendations to load.");
             didPaginateEnd.current = false;
             return;
           }
@@ -89,20 +96,34 @@ function Dashboard() {
 
   return (
     <div>
-      <h1 className="text-2xl font-bold mb-4">Your Feed</h1>
+      <Breadcrumb className="mb-4">
+        <BreadcrumbList>
+          <BreadcrumbItem className="hidden md:block">
+            <BreadcrumbPage>{t("title")}</BreadcrumbPage>
+          </BreadcrumbItem>
+        </BreadcrumbList>
+      </Breadcrumb>
+
       <ReadingList />
+
+      {recommendations.length > 0 && (
+        <h2 className="text-xl font-bold my-4">
+          {t("based_on_your_preferences")}
+        </h2>
+      )}
 
       <div className="flex items-center flex-col gap-5">
         {isLoading &&
           Array.from({ length: LIMIT_PER_PAGE }).map((_, index) => (
             <Skeleton key={index} className="h-24 w-full sm:w-lg rounded-md" />
           ))}
-
-        <div className="flex flex-wrap justify-center gap-5 w-full">
-          {recommendations.map((rec) => (
-            <Recommendation key={rec.id} book={rec} />
-          ))}
-        </div>
+        {recommendations.length > 0 && (
+          <div className="flex flex-wrap justify-center gap-5 w-full">
+            {recommendations.map((rec) => (
+              <Recommendation key={rec.id} book={rec} />
+            ))}
+          </div>
+        )}
       </div>
 
       <MayAlsoLike />
@@ -211,6 +232,10 @@ const ReadingList = () => {
         );
       });
   }, [supabase]);
+
+  if (!readingList || readingList.length === 0) {
+    return null;
+  }
 
   return (
     <div>

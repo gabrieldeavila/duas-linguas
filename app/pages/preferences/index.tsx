@@ -1,3 +1,4 @@
+import i18next from "i18next";
 import { Trash } from "lucide-react";
 import React, {
   useCallback,
@@ -17,6 +18,7 @@ import { toast } from "sonner";
 import KrafterRegister from "~/components/internal/krafter/register";
 import {
   LANGUAGE_FIELD,
+  PreferencesCategories,
   schemaBook,
   type SchemaBook,
   type ValidatorBook,
@@ -31,9 +33,23 @@ import {
   BreadcrumbPage,
 } from "~/components/ui/breadcrumb";
 import { Button } from "~/components/ui/button";
+import { Dialog, DialogContent, DialogTrigger } from "~/components/ui/dialog";
 import { Skeleton } from "~/components/ui/skeleton";
 import { cn } from "~/lib/utils";
+import type { LanguageEnum } from "~/types/enums.types";
 import type { CategoriesProps } from "~/types/table.types";
+
+export function meta() {
+  i18next.loadNamespaces("pages");
+
+  return [
+    { title: i18next.t("pages:preferences.title") },
+    {
+      name: "description",
+      content: i18next.t("pages:preferences.description"),
+    },
+  ];
+}
 
 function Preferences() {
   const formApi = useRef<FormApi<ValidatorBook> | null>(null);
@@ -74,6 +90,10 @@ function Preferences() {
       });
   }, [supabase]);
 
+  const languageEnum = useMemo(() => {
+    return initialState?.language_learning as LanguageEnum;
+  }, [initialState?.language_learning]);
+
   return (
     <div>
       <Breadcrumb className="mb-4">
@@ -103,7 +123,7 @@ function Preferences() {
         </Form>
       </KrafterRegister>
 
-      <FavoriteCategories />
+      {languageEnum && <FavoriteCategories language={languageEnum} />}
     </div>
   );
 }
@@ -165,18 +185,26 @@ const UpdateForm = ({
   );
 };
 
-const FavoriteCategories = () => {
+const FavoriteCategories = ({ language }: { language: LanguageEnum }) => {
   const supabase = useSupabase();
   const [favoriteCategories, setFavoriteCategories] = useState<
     Pick<CategoriesProps, "id" | "name" | "color">[]
   >([]);
   const { t } = useTranslation("general");
+  const [refresh, setRefresh] = useState(0);
+  const isLoadingRef = useRef(false);
 
   useEffect(() => {
+    if (isLoadingRef.current) return;
+
+    isLoadingRef.current = true;
+
     supabase
       .from("favorite_categories")
       .select("id, category:categories(id, name, color)")
       .then(({ data, error }) => {
+        isLoadingRef.current = false;
+
         if (error) {
           console.error("Error fetching favorite categories:", error);
           return;
@@ -191,9 +219,8 @@ const FavoriteCategories = () => {
           .filter((item) => item?.id !== undefined);
 
         setFavoriteCategories(categories);
-        console.log("Favorite categories:", categories);
       });
-  }, [supabase]);
+  }, [supabase, refresh]);
 
   const handleDelete = useCallback(
     (categoryId: string) => {
@@ -223,14 +250,17 @@ const FavoriteCategories = () => {
 
   return (
     <div>
-      <h2>Favorite Categories</h2>
+      <h2>{t("favorite_categories.title")}</h2>
 
       <div className="flex flex-wrap gap-2 mt-2">
         {favoriteCategories.map((category) => (
           <div
             key={category.id}
             style={{ backgroundColor: category.color }}
-            className={cn("p-2 my-2 rounded-md text-white w-fit", "flex gap-4 items-center")}
+            className={cn(
+              "p-2 my-2 rounded-md text-white w-fit",
+              "flex gap-4 items-center"
+            )}
           >
             <p>{category.name}</p>
 
@@ -240,6 +270,20 @@ const FavoriteCategories = () => {
           </div>
         ))}
       </div>
+
+      {/* modal to add favorite category */}
+      <Dialog>
+        <DialogTrigger asChild>
+          <Button variant="outline">{t("favorite_categories.add")}</Button>
+        </DialogTrigger>
+
+        <DialogContent className="sm:max-w-4xl">
+          <PreferencesCategories
+            language={language}
+            onSave={() => setRefresh((prev) => prev + 1)}
+          />
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
