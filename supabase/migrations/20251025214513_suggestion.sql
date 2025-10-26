@@ -30,7 +30,6 @@ begin
     where user_id = auth.uid();
   else
     -- Weighted decay blend:
-    -- v_result;
     select AVG(embedding) into v_result
     from (
       select 
