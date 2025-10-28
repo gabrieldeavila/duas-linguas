@@ -575,6 +575,14 @@ export type Database = {
         Args: { event: Json }
         Returns: Json
       }
+      get_quiz_questions: {
+        Args: { p_book_id: string; p_chapter_id: string }
+        Returns: {
+          id: string
+          options: Json
+          question: string
+        }[]
+      }
       get_recommendations: {
         Args: { p_limit?: number; p_offset?: number }
         Returns: {

@@ -9,6 +9,7 @@ import general from "./general";
 import pages from "./pages";
 import dashboard from "./dashboard";
 import alert from "./alert";
+import quiz from "./quiz";
 
 export default {
   notFound,
@@ -21,4 +22,5 @@ export default {
   alert,
   pages,
   dashboard,
+  quiz,
 } satisfies Resource;

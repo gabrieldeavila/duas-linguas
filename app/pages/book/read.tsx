@@ -16,6 +16,7 @@ import {
 import { Skeleton } from "~/components/ui/skeleton";
 import { supabase } from "~/lib/supabase";
 import type { ExcerptTable } from "~/types";
+import Quiz from "./quiz";
 
 export async function loader({ params }: LoaderFunctionArgs) {
   let title = "";
@@ -31,7 +32,6 @@ export async function loader({ params }: LoaderFunctionArgs) {
         return;
       }
       title = data?.title || "";
-      console.log("Book focus data:", data, params.id!);
     });
 
   return { title };
@@ -54,6 +54,7 @@ function Read() {
   const [title, setTitle] = useState<string>("");
   const [bookTitle, setBookTitle] = useState<string>("");
   const [currentChapterNumber, setCurrentChapterNumber] = useState<number>(0);
+  const [chapterId, setChapterId] = useState<string>("");
   const [chaptersGaps, setChaptersGaps] = useState<{
     min: number;
     max: number;
@@ -163,9 +164,15 @@ function Read() {
       <h1 className="text-2xl font-bold mb-4 text-center">{title}</h1>
       <div className="flex items-center flex-col w-full">
         {currentChapterNumber && (
-          <ChapterExcerpts bookId={id!} chapterNumber={currentChapterNumber} />
+          <ChapterExcerpts
+            bookId={id!}
+            chapterNumber={currentChapterNumber}
+            setChapterId={setChapterId}
+          />
         )}
       </div>
+
+      {chapterId && <Quiz bookId={id!} chapterId={chapterId} />}
 
       {chaptersGaps.max === 0 ? null : (
         <div className="flex items-center flex-col my-4">
@@ -185,9 +192,11 @@ export default Read;
 const ChapterExcerpts = ({
   bookId,
   chapterNumber,
+  setChapterId,
 }: {
   bookId: string;
   chapterNumber: number;
+  setChapterId: React.Dispatch<React.SetStateAction<string>>;
 }) => {
   const supabase = useSupabase();
   const [excerpts, setExcerpts] = useState<
@@ -212,6 +221,8 @@ const ChapterExcerpts = ({
             console.error("Error fetching chapter ID:", error);
             return null;
           }
+          setChapterId(data[0].id);
+
           return data && data.length > 0 ? data[0].id : null;
         });
 
@@ -239,7 +250,7 @@ const ChapterExcerpts = ({
           }
         });
     })();
-  }, [bookId, chapterNumber, supabase]);
+  }, [bookId, chapterNumber, setChapterId, supabase]);
 
   if (isLoading) {
     return (
