@@ -90,17 +90,42 @@ const QuizContent = ({
     }));
   };
 
+  const numberToLetter = (num: number) => {
+    return String.fromCharCode(65 + num); // 0 -> A, 1 -> B, 2 -> C, etc.
+  };
+
   const handleSubmitQuiz = useCallback(() => {
-    console.log("QuizContent rendered", quizQuestions);
     const isAllAnswered = quizQuestions.every(
       (q) => questionsAnswers[q.id] !== undefined
     );
 
     if (!isAllAnswered) {
       toast.error(t("answer_all_questions"));
-      return;
+      // return;
     }
-  }, [questionsAnswers, quizQuestions, t]);
+
+    console.log();
+
+    supabase
+      .rpc("submit_quiz_answers", {
+        p_book_id: bookId,
+        p_chapter_id: chapterId,
+        p_answers: Object.entries(questionsAnswers).map(
+          ([questionId, answer]) => ({
+            id: questionId,
+            answer: numberToLetter(parseInt(answer, 10)),
+          })
+        ),
+      })
+      .then(({ data, error }) => {
+        if (error) {
+          console.error("Error submitting quiz answers:", error);
+          toast.error(t("submit_error"));
+          return;
+        }
+        console.log(data);
+      });
+  }, [bookId, chapterId, questionsAnswers, quizQuestions, supabase, t]);
 
   return (
     <div>
