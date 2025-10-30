@@ -16,6 +16,7 @@ import {
   BreadcrumbPage,
 } from "~/components/ui/breadcrumb";
 import i18next from "i18next";
+import UserStats from "./utils/stats";
 
 export function meta() {
   return [
@@ -103,6 +104,8 @@ function Dashboard() {
           </BreadcrumbItem>
         </BreadcrumbList>
       </Breadcrumb>
+
+      <UserStats />
 
       <ReadingList />
 

@@ -55,7 +55,7 @@ CREATE TABLE IF NOT EXISTS user_levels (
   level int NOT NULL DEFAULT 1,
   current_streak int NOT NULL DEFAULT 0,
   longest_streak int NOT NULL DEFAULT 0,
-  last_activity_date date,
+  last_activity_date timestamptz,
   updated_at timestamptz DEFAULT now()
 );
 
@@ -121,8 +121,8 @@ DECLARE
   v_level int := 1;
   v_current_streak int := 0;
   v_longest_streak int := 0;
-  v_last_activity date;
-  v_today date := current_date;
+  v_last_activity timestamptz;
+  v_today timestamptz := date_trunc('day', now());
   v_attempt_number int := 1;
   v_first_time boolean := true;
 BEGIN
