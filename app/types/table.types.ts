@@ -61,5 +61,6 @@ export type SuggestionsProps =
   Functions["match_book_suggestions"]["Returns"][number];
 
 export type QuizProps = Functions["get_quiz_questions"]["Returns"][number];
+export type QuizReturnProps = Functions["submit_quiz_answers"]["Returns"];
 
 export type UserStatsProps = TableRowProps<"user_levels">;

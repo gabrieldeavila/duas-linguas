@@ -202,9 +202,9 @@ BEGIN
     );
 
     -- Fetch level info
-    SELECT xp, level, current_streak, longest_streak, last_activity_date
+    SELECT ul.xp, ul.level, ul.current_streak, ul.longest_streak, ul.last_activity_date
     INTO v_total_xp, v_level, v_current_streak, v_longest_streak, v_last_activity
-    FROM user_levels
+    FROM user_levels as ul
     WHERE user_id = p_user_id
     FOR UPDATE;
 
@@ -216,9 +216,9 @@ BEGIN
     END IF;
 
     -- Streak logic
-    IF v_last_activity IS NULL OR v_last_activity < v_today - 1 THEN
+    IF v_last_activity IS NULL OR v_last_activity < v_today - interval '1 day' THEN
       v_current_streak := 1;
-    ELSIF v_last_activity = v_today - 1 THEN
+    ELSIF v_last_activity = v_today - interval '1 day' THEN
       v_current_streak := v_current_streak + 1;
     END IF;
 
@@ -244,12 +244,12 @@ BEGIN
     VALUES (p_user_id, v_total_xp, v_level, v_current_streak, v_longest_streak, v_today)
     ON CONFLICT (user_id)
     DO UPDATE SET
-      user_levels.xp = EXCLUDED.xp,
-      user_levels.level = EXCLUDED.level,
-      user_levels.current_streak = EXCLUDED.current_streak,
-      user_levels.longest_streak = EXCLUDED.longest_streak,
-      user_levels.last_activity_date = EXCLUDED.last_activity_date,
-      user_levels.updated_at = now();
+      xp = EXCLUDED.xp,
+      level = EXCLUDED.level,
+      current_streak = EXCLUDED.current_streak,
+      longest_streak = EXCLUDED.longest_streak,
+      last_activity_date = EXCLUDED.last_activity_date,
+      updated_at = now();
   ELSE
     -- If not first attempt, fetch current stats
     SELECT xp, level, current_streak, longest_streak
