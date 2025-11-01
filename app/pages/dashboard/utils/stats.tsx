@@ -1,8 +1,16 @@
+import { eachDayOfInterval, endOfYear, format, startOfYear } from "date-fns";
 import { Award, Calendar, Flame, Zap } from "lucide-react";
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import ActivityCalendar, { type Activity } from "react-activity-calendar";
 import { useTranslation } from "react-i18next";
 import { useSupabase } from "~/components/internal/supabaseAuth";
 import { Skeleton } from "~/components/ui/skeleton";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "~/components/ui/tooltip";
 import { cn } from "~/lib/utils";
 import type { UserStatsProps } from "~/types/table.types";
 
@@ -84,6 +92,8 @@ const StatsInfoBox = ({ stats }: { stats: UserStatsProps }) => {
 
   return (
     <div className={cn("px-4 mb-4", "flex flex-col gap-2 items-center w-full")}>
+      <ActivityStatsBox />
+
       <div
         className={cn(
           "relative",
@@ -140,6 +150,101 @@ const StatsInfoBox = ({ stats }: { stats: UserStatsProps }) => {
           </div>
         </div>
       </div>
+    </div>
+  );
+};
+
+const today = new Date();
+const startDate = startOfYear(today);
+const allDays = eachDayOfInterval({ start: startDate, end: endOfYear(today) });
+
+const rawData = [
+  { date: "2025-10-01", count: 3 },
+  { date: "2025-10-02", count: 55 },
+  { date: "2025-10-04", count: 15 },
+];
+
+const greatestCount = Math.max(...rawData.map((d) => d.count), 1);
+
+const data: Activity[] = allDays.map((day) => {
+  const date = format(day, "yyyy-MM-dd");
+  const found = rawData.find((d) => d.date === date);
+  return {
+    date,
+    count: found ? found.count : 0,
+    level: found ? Math.ceil((found.count / greatestCount) * 4) : 0,
+  };
+});
+
+const ActivityStatsBox = () => {
+  const { t } = useTranslation("dashboard");
+  const quizCount = useMemo(
+    () => data.reduce((sum, day) => sum + day.count, 0),
+    []
+  );
+
+  return (
+    <div
+      className={cn(
+        "mb-4",
+        "w-full",
+        "max-w-sm sm:max-w-2xl lg:max-w-2xl xl:max-w-fit"
+      )}
+    >
+      <TooltipProvider delayDuration={0}>
+        <ActivityCalendar
+          data={data}
+          labels={{
+            months: [
+              t("stats.activity_calendar.months.jan"),
+              t("stats.activity_calendar.months.feb"),
+              t("stats.activity_calendar.months.mar"),
+              t("stats.activity_calendar.months.apr"),
+              t("stats.activity_calendar.months.may"),
+              t("stats.activity_calendar.months.jun"),
+              t("stats.activity_calendar.months.jul"),
+              t("stats.activity_calendar.months.aug"),
+              t("stats.activity_calendar.months.sep"),
+              t("stats.activity_calendar.months.oct"),
+              t("stats.activity_calendar.months.nov"),
+              t("stats.activity_calendar.months.dec"),
+            ],
+            legend: {
+              less: t("stats.activity_calendar.legend.less"),
+              more: t("stats.activity_calendar.legend.more"),
+            },
+            totalCount: t("stats.activity_calendar.total_count", {
+              count: quizCount,
+            }),
+          }}
+          theme={{
+            light: [
+              "var(--accent)",
+              "var(--sidebar-border)",
+              "var(--primary)",
+              "var(--sidebar-ring)",
+              "var(--destructive)",
+            ],
+            dark: [
+              "var(--accent)",
+              "var(--sidebar-border)",
+              "var(--primary)",
+              "var(--sidebar-ring)",
+              "var(--destructive)",
+            ],
+          }}
+          renderBlock={(block, activity) => {
+            return (
+              <Tooltip>
+                <TooltipTrigger asChild className="cursor-default">{block}</TooltipTrigger>
+                <TooltipContent side="right" align="center">
+                  {t("stats.activity_calendar.total_count", { count: activity.count })}
+                </TooltipContent>
+              </Tooltip>
+            );
+          }}
+        />
+      </TooltipProvider>
     </div>
   );
 };

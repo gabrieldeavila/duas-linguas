@@ -278,3 +278,14 @@ BEGIN
          v_current_streak, v_longest_streak, v_attempt_number, v_did_level_up;
 END;
 $$;
+
+-- add cron job to set streaks to 0 for users who missed a day
+SELECT cron.schedule(
+  'reset_user_streaks',
+  '0 0 * * *',  -- every day at midnight
+  $$
+  UPDATE user_levels
+  SET current_streak = 0
+  WHERE last_activity_date < date_trunc('day', now()) - interval '1 day';
+  $$
+);

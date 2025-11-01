@@ -214,6 +214,7 @@ const ReadingList = () => {
     supabase
       .from("book_focus")
       .select("book:books(id, title, cover_image_url, description, author)")
+      .order("updated_at", { ascending: false })
       .then(({ data, error }) => {
         isLoadingRef.current = false;
 

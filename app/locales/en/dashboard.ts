@@ -19,5 +19,27 @@ export default {
     last_day: "Last Active: ",
     no_streak_warning:
       "You have no active streak. Start reading daily to build your streak!",
+    activity_calendar: {
+      legend: {
+        less: "Less",
+        more: "More",
+      },
+      total_count_one: "{{count}} quiz taken",
+      total_count_other: "{{count}} quizzes taken",
+      months: {
+        jan: "Jan",
+        feb: "Feb",
+        mar: "Mar",
+        apr: "Apr",
+        may: "May",
+        jun: "Jun",
+        jul: "Jul",
+        aug: "Aug",
+        sep: "Sep",
+        oct: "Oct",
+        nov: "Nov",
+        dec: "Dec",
+      },
+    },
   },
 };
