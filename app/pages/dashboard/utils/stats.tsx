@@ -12,7 +12,10 @@ import {
   TooltipTrigger,
 } from "~/components/ui/tooltip";
 import { cn } from "~/lib/utils";
-import type { UserStatsProps } from "~/types/table.types";
+import {
+  type UserStatsActivityProps,
+  type UserStatsProps,
+} from "~/types/table.types";
 
 function UserStats() {
   const [stats, setStats] = useState<UserStatsProps | null>(null);
@@ -154,34 +157,65 @@ const StatsInfoBox = ({ stats }: { stats: UserStatsProps }) => {
   );
 };
 
-const today = new Date();
-const startDate = startOfYear(today);
-const allDays = eachDayOfInterval({ start: startDate, end: endOfYear(today) });
-
-const rawData = [
-  { date: "2025-10-01", count: 3 },
-  { date: "2025-10-02", count: 55 },
-  { date: "2025-10-04", count: 15 },
-];
-
-const greatestCount = Math.max(...rawData.map((d) => d.count), 1);
-
-const data: Activity[] = allDays.map((day) => {
-  const date = format(day, "yyyy-MM-dd");
-  const found = rawData.find((d) => d.date === date);
-  return {
-    date,
-    count: found ? found.count : 0,
-    level: found ? Math.ceil((found.count / greatestCount) * 4) : 0,
-  };
-});
-
 const ActivityStatsBox = () => {
   const { t } = useTranslation("dashboard");
+  const [quizzesTaken, setQuizzesTaken] =
+    useState<UserStatsActivityProps | null>(null);
+  const activityData: Activity[] = useMemo(() => {
+    if (!quizzesTaken) return [];
+    const today = new Date();
+    const startDate = startOfYear(today);
+    const allDays = eachDayOfInterval({
+      start: startDate,
+      end: endOfYear(today),
+    });
+
+    const greatestCount = Math.max(
+      ...quizzesTaken.map((d) => d.total_quizzes_taken),
+      1
+    );
+
+    return allDays.map((day) => {
+      const date = format(day, "yyyy-MM-dd");
+      const found = quizzesTaken.find((d) => format(d.day, "yyyy-MM-dd") === date);
+      return {
+        date,
+        count: found ? found.total_quizzes_taken : 0,
+        level: found
+          ? Math.ceil((found.total_quizzes_taken / greatestCount) * 4)
+          : 0,
+      };
+    });
+  }, [quizzesTaken]);
+
   const quizCount = useMemo(
-    () => data.reduce((sum, day) => sum + day.count, 0),
-    []
+    () => activityData.reduce((sum, day) => sum + day.count, 0),
+    [activityData]
   );
+  const supabase = useSupabase();
+  const isLoadingRef = useRef(false);
+
+  useEffect(() => {
+    if (isLoadingRef.current) return;
+
+    const startOfYearTimestamp = startOfYear(new Date()).toISOString();
+    const endOfYearTimestamp = endOfYear(new Date()).toISOString();
+
+    supabase
+      .rpc("get_quiz_stats", {
+        p_start_date: startOfYearTimestamp,
+        p_end_date: endOfYearTimestamp,
+      })
+      .then(({ data, error }) => {
+        if (error || !data) {
+          console.error("Error fetching quiz stats:", error);
+        } else {
+          // Handle fetched data if needed
+          console.log("Fetched quiz stats:", data);
+          setQuizzesTaken(data);
+        }
+      });
+  }, [supabase]);
 
   return (
     <div
@@ -193,7 +227,7 @@ const ActivityStatsBox = () => {
     >
       <TooltipProvider delayDuration={0}>
         <ActivityCalendar
-          data={data}
+          data={activityData}
           labels={{
             months: [
               t("stats.activity_calendar.months.jan"),
@@ -233,12 +267,17 @@ const ActivityStatsBox = () => {
               "var(--destructive)",
             ],
           }}
+          loading={!activityData.length}
           renderBlock={(block, activity) => {
             return (
               <Tooltip>
-                <TooltipTrigger asChild className="cursor-default">{block}</TooltipTrigger>
+                <TooltipTrigger asChild className="cursor-default">
+                  {block}
+                </TooltipTrigger>
                 <TooltipContent side="right" align="center">
-                  {t("stats.activity_calendar.total_count", { count: activity.count })}
+                  {t("stats.activity_calendar.total_count", {
+                    count: activity.count,
+                  })}
                 </TooltipContent>
               </Tooltip>
             );

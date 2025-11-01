@@ -289,3 +289,31 @@ SELECT cron.schedule(
   WHERE last_activity_date < date_trunc('day', now()) - interval '1 day';
   $$
 );
+
+-- creates function to know how many quizzes were taken in a given timeframe
+CREATE OR REPLACE FUNCTION get_quiz_stats(
+  p_start_date timestamptz,
+  p_end_date timestamptz
+)
+RETURNS TABLE(
+  day timestamptz,
+  total_quizzes_taken bigint
+)
+LANGUAGE plpgsql
+SECURITY DEFINER
+AS $$
+DECLARE
+  p_user_id uuid := auth.uid();
+BEGIN
+  RETURN QUERY
+  SELECT
+    date_trunc('day', created_at) AS day,
+    COUNT(*) AS total_quizzes_taken
+  FROM quiz_results
+  WHERE user_id = p_user_id
+    AND created_at >= p_start_date
+    AND created_at < p_end_date
+  GROUP BY day
+  ORDER BY day;
+END;
+$$;  

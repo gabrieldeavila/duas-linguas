@@ -726,6 +726,13 @@ export type Database = {
           question: string
         }[]
       }
+      get_quiz_stats: {
+        Args: { p_end_date: string; p_start_date: string }
+        Returns: {
+          day: string
+          total_quizzes_taken: number
+        }[]
+      }
       get_recommendations: {
         Args: { p_limit?: number; p_offset?: number }
         Returns: {

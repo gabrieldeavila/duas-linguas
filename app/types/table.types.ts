@@ -64,3 +64,4 @@ export type QuizProps = Functions["get_quiz_questions"]["Returns"][number];
 export type QuizReturnProps = Functions["submit_quiz_answers"]["Returns"];
 
 export type UserStatsProps = TableRowProps<"user_levels">;
+export type UserStatsActivityProps = Functions["get_quiz_stats"]["Returns"];
