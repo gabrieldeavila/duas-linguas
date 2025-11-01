@@ -1,4 +1,3 @@
-import i18next from "i18next";
 import { useCallback, useRef, useState } from "react";
 import { Form, type Field, type FormApi } from "react-form-krafter";
 import { Trans, useTranslation } from "react-i18next";
@@ -15,12 +14,12 @@ import {
   CardTitle,
 } from "~/components/ui/card";
 import { supabase } from "~/lib/supabase";
-import { cn } from "~/lib/utils";
+import { cn, tmeta } from "~/lib/utils";
 
 export function meta() {
   return [
-    { title: i18next.t("login:signIn.title") },
-    { name: "description", content: i18next.t("login:signIn.description") },
+    { title: tmeta("login:signIn.title") },
+    { name: "description", content: tmeta("login:signIn.description") },
   ];
 }
 

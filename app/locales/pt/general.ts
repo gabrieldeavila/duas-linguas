@@ -16,6 +16,7 @@ export default {
   more_pages: "Mais páginas",
   saveChanges: "Salvar alterações",
   deleteSelected: "Excluir selecionados",
+  close: "Fechar",
   selectAtLeastOne: "Por favor, selecione pelo menos um item.",
   loading: {
     deleting: "Deletando...",

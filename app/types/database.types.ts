@@ -508,6 +508,7 @@ export type Database = {
       }
       quiz_results: {
         Row: {
+          attempt_number: number | null
           book_id: string
           chapter_id: string
           correct_answers: number
@@ -519,6 +520,7 @@ export type Database = {
           user_id: string
         }
         Insert: {
+          attempt_number?: number | null
           book_id: string
           chapter_id: string
           correct_answers: number
@@ -530,6 +532,7 @@ export type Database = {
           user_id?: string
         }
         Update: {
+          attempt_number?: number | null
           book_id?: string
           chapter_id?: string
           correct_answers?: number
@@ -581,6 +584,58 @@ export type Database = {
           role?: Database["public"]["Enums"]["app_role"]
         }
         Relationships: []
+      }
+      user_contributions: {
+        Row: {
+          book_id: string | null
+          chapter_id: string | null
+          contribution_type: string
+          created_at: string | null
+          id: string
+          user_id: string
+          xp_earned: number
+        }
+        Insert: {
+          book_id?: string | null
+          chapter_id?: string | null
+          contribution_type: string
+          created_at?: string | null
+          id?: string
+          user_id: string
+          xp_earned?: number
+        }
+        Update: {
+          book_id?: string | null
+          chapter_id?: string | null
+          contribution_type?: string
+          created_at?: string | null
+          id?: string
+          user_id?: string
+          xp_earned?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_contributions_book_id_fkey"
+            columns: ["book_id"]
+            isOneToOne: false
+            referencedRelation: "books"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "user_contributions_book_id_fkey"
+            columns: ["book_id"]
+            isOneToOne: false
+            referencedRelation: "vw_book_categories"
+            referencedColumns: ["book_id"]
+          },
+          {
+            foreignKeyName: "user_contributions_chapter_id_fkey"
+            columns: ["chapter_id"]
+            isOneToOne: false
+            referencedRelation: "chapters"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       user_levels: {
         Row: {
@@ -804,6 +859,7 @@ export type Database = {
           attempt_number: number
           correct_answers: number
           current_streak: number
+          did_level_up: boolean
           explanation: Json
           longest_streak: number
           new_level: number

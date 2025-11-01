@@ -101,7 +101,8 @@ RETURNS TABLE(
   new_level int,
   current_streak int,
   longest_streak int,
-  attempt_number int
+  attempt_number int,
+  did_level_up boolean
 )
 LANGUAGE plpgsql
 SECURITY DEFINER
@@ -125,6 +126,8 @@ DECLARE
   v_today timestamptz := date_trunc('day', now());
   v_attempt_number int := 1;
   v_first_time boolean := true;
+  v_current_level int;
+  v_did_level_up boolean := false;
 BEGIN
   -- Count previous attempts for this quiz
   SELECT COUNT(*) + 1
@@ -138,6 +141,12 @@ BEGIN
   IF v_attempt_number > 1 THEN
     v_first_time := false;
   END IF;
+
+  -- Fetch current level
+  SELECT level
+  INTO v_current_level
+  FROM user_levels
+  WHERE user_id = p_user_id;
 
   -- Compute quiz results
   FOR v_question IN
@@ -258,9 +267,14 @@ BEGIN
     WHERE user_id = p_user_id;
   END IF;
 
+  -- Check if leveled up
+  IF v_level > v_current_level THEN
+    v_did_level_up := true;
+  END IF;
+
   RETURN QUERY
   SELECT v_correct, v_total, v_score, v_passed, v_explanations,
          (v_xp_gain + v_bonus_xp), v_total_xp, v_level,
-         v_current_streak, v_longest_streak, v_attempt_number;
+         v_current_streak, v_longest_streak, v_attempt_number, v_did_level_up;
 END;
 $$;

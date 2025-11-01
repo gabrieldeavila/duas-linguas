@@ -4,7 +4,7 @@ import { useNavigate } from "react-router";
 import { useSupabase } from "~/components/internal/supabaseAuth";
 import { Skeleton } from "~/components/ui/skeleton";
 import getPastelColors from "~/lib/color";
-import { cn } from "~/lib/utils";
+import { cn, tmeta } from "~/lib/utils";
 import type {
   RecommendationProps,
   SuggestionsProps,
@@ -19,9 +19,11 @@ import i18next from "i18next";
 import UserStats from "./utils/stats";
 
 export function meta() {
+  i18next.loadNamespaces("pages");
+
   return [
-    { title: i18next.t("pages:dashboard.title") },
-    { name: "description", content: i18next.t("pages:dashboard.description") },
+    { title: tmeta("pages:dashboard.title") },
+    { name: "description", content: tmeta("pages:dashboard.description") },
   ];
 }
 
