@@ -35,7 +35,7 @@ import {
 import { Button } from "~/components/ui/button";
 import { Dialog, DialogContent, DialogTrigger } from "~/components/ui/dialog";
 import { Skeleton } from "~/components/ui/skeleton";
-import { cn } from "~/lib/utils";
+import { cn, tmeta } from "~/lib/utils";
 import type { LanguageEnum } from "~/types/enums.types";
 import type { CategoriesProps } from "~/types/table.types";
 
@@ -43,10 +43,10 @@ export function meta() {
   i18next.loadNamespaces("pages");
 
   return [
-    { title: i18next.t("pages:preferences.title") },
+    { title: tmeta("pages:preferences.title") },
     {
       name: "description",
-      content: i18next.t("pages:preferences.description"),
+      content: tmeta("pages:preferences.description"),
     },
   ];
 }

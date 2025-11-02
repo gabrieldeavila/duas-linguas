@@ -4,7 +4,7 @@ import { useNavigate } from "react-router";
 import { useSupabase } from "~/components/internal/supabaseAuth";
 import { Skeleton } from "~/components/ui/skeleton";
 import getPastelColors from "~/lib/color";
-import { cn } from "~/lib/utils";
+import { cn, tmeta } from "~/lib/utils";
 import type {
   RecommendationProps,
   SuggestionsProps,
@@ -16,11 +16,14 @@ import {
   BreadcrumbPage,
 } from "~/components/ui/breadcrumb";
 import i18next from "i18next";
+import UserStats from "./utils/stats";
 
 export function meta() {
+  i18next.loadNamespaces("pages");
+
   return [
-    { title: i18next.t("pages:dashboard.title") },
-    { name: "description", content: i18next.t("pages:dashboard.description") },
+    { title: tmeta("pages:dashboard.title") },
+    { name: "description", content: tmeta("pages:dashboard.description") },
   ];
 }
 
@@ -104,6 +107,8 @@ function Dashboard() {
         </BreadcrumbList>
       </Breadcrumb>
 
+      <UserStats />
+
       <ReadingList />
 
       {recommendations.length > 0 && (
@@ -144,17 +149,13 @@ const Recommendation = ({
   const navigate = useNavigate();
 
   const handleClick = useCallback(() => {
-    supabase
-      .rpc("set_book_focus", { p_book_id: book.id })
-      .then(({ error, data }) => {
-        if (error) {
-          console.error("Error setting book focus:", error);
-        } else {
-          console.log(data);
-          // window.location.href = `/books/${book.id}`;
-          navigate(`/book/read/${book.id}`);
-        }
-      });
+    supabase.rpc("set_book_focus", { p_book_id: book.id }).then(({ error }) => {
+      if (error) {
+        console.error("Error setting book focus:", error);
+      } else {
+        navigate(`/book/read/${book.id}`);
+      }
+    });
   }, [book.id, navigate, supabase]);
 
   return (
@@ -213,6 +214,7 @@ const ReadingList = () => {
     supabase
       .from("book_focus")
       .select("book:books(id, title, cover_image_url, description, author)")
+      .order("updated_at", { ascending: false })
       .then(({ data, error }) => {
         isLoadingRef.current = false;
 

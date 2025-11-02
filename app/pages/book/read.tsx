@@ -1,6 +1,7 @@
+import i18next from "i18next";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { useParams } from "react-router";
+import { useParams, type LoaderFunctionArgs } from "react-router";
 import { toast } from "sonner";
 import { PaginationBuilder } from "~/components/internal/pagination/builder";
 import { useSupabase } from "~/components/internal/supabaseAuth";
@@ -13,7 +14,38 @@ import {
   BreadcrumbSeparator,
 } from "~/components/ui/breadcrumb";
 import { Skeleton } from "~/components/ui/skeleton";
+import { supabase } from "~/lib/supabase";
 import type { ExcerptTable } from "~/types";
+import Quiz from "./quiz";
+
+export async function loader({ params }: LoaderFunctionArgs) {
+  let title = "";
+
+  await supabase
+    .from("books")
+    .select("title")
+    .eq("id", params.id!)
+    .maybeSingle()
+    .then(({ data, error }) => {
+      if (error) {
+        console.error("Error fetching book focus:", error);
+        return;
+      }
+      title = data?.title || "";
+    });
+
+  return { title };
+}
+
+export function meta({ data }: { data: { title: string } }) {
+  return [
+    { title: data.title },
+    {
+      name: "description",
+      content: i18next.t("pages:read.reading", { bookTitle: data.title }),
+    },
+  ];
+}
 
 function Read() {
   const { id } = useParams<{ id: string }>();
@@ -22,6 +54,7 @@ function Read() {
   const [title, setTitle] = useState<string>("");
   const [bookTitle, setBookTitle] = useState<string>("");
   const [currentChapterNumber, setCurrentChapterNumber] = useState<number>(0);
+  const [chapterId, setChapterId] = useState<string>("");
   const [chaptersGaps, setChaptersGaps] = useState<{
     min: number;
     max: number;
@@ -131,9 +164,15 @@ function Read() {
       <h1 className="text-2xl font-bold mb-4 text-center">{title}</h1>
       <div className="flex items-center flex-col w-full">
         {currentChapterNumber && (
-          <ChapterExcerpts bookId={id!} chapterNumber={currentChapterNumber} />
+          <ChapterExcerpts
+            bookId={id!}
+            chapterNumber={currentChapterNumber}
+            setChapterId={setChapterId}
+          />
         )}
       </div>
+
+      {chapterId && <Quiz bookId={id!} chapterId={chapterId} />}
 
       {chaptersGaps.max === 0 ? null : (
         <div className="flex items-center flex-col my-4">
@@ -153,9 +192,11 @@ export default Read;
 const ChapterExcerpts = ({
   bookId,
   chapterNumber,
+  setChapterId,
 }: {
   bookId: string;
   chapterNumber: number;
+  setChapterId: React.Dispatch<React.SetStateAction<string>>;
 }) => {
   const supabase = useSupabase();
   const [excerpts, setExcerpts] = useState<
@@ -180,6 +221,8 @@ const ChapterExcerpts = ({
             console.error("Error fetching chapter ID:", error);
             return null;
           }
+          setChapterId(data[0].id);
+
           return data && data.length > 0 ? data[0].id : null;
         });
 
@@ -207,7 +250,7 @@ const ChapterExcerpts = ({
           }
         });
     })();
-  }, [bookId, chapterNumber, supabase]);
+  }, [bookId, chapterNumber, setChapterId, supabase]);
 
   if (isLoading) {
     return (

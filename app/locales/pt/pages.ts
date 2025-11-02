@@ -40,6 +40,7 @@ export default {
   read: {
     changedChapterTo: "Mudou para o capítulo número: {{chapterNumber}}",
     loadingChapter: "Carregando o capítulo número: {{chapterNumber}}",
+    reading: "Lendo o livro: {{bookTitle}}",
   },
   preferences: {
     title: "Preferências",

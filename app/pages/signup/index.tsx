@@ -1,4 +1,3 @@
-import i18next from "i18next";
 import { useCallback, useRef, useState } from "react";
 import { Form, type Field, type FormApi } from "react-form-krafter";
 import { Trans, useTranslation } from "react-i18next";
@@ -15,7 +14,7 @@ import {
   CardTitle,
 } from "~/components/ui/card";
 import { supabase } from "~/lib/supabase";
-import { cn } from "~/lib/utils";
+import { cn, tmeta } from "~/lib/utils";
 
 const SIGNUP_FIELDS: Field[] = [
   {
@@ -61,8 +60,8 @@ type Validator = z.infer<Schema>;
 
 export function meta() {
   return [
-    { title: i18next.t("login:signUp.title") },
-    { name: "description", content: i18next.t("login:signUp.description") },
+    { title: tmeta("login:signUp.title") },
+    { name: "description", content: tmeta("login:signUp.description") },
   ];
 }
 

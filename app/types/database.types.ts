@@ -89,6 +89,7 @@ export type Database = {
           book_id: string
           chapter_id: string | null
           excerpt_id: string | null
+          num_quiz_taken: number | null
           updated_at: string | null
           user_id: string
         }
@@ -96,6 +97,7 @@ export type Database = {
           book_id: string
           chapter_id?: string | null
           excerpt_id?: string | null
+          num_quiz_taken?: number | null
           updated_at?: string | null
           user_id?: string
         }
@@ -103,6 +105,7 @@ export type Database = {
           book_id?: string
           chapter_id?: string | null
           excerpt_id?: string | null
+          num_quiz_taken?: number | null
           updated_at?: string | null
           user_id?: string
         }
@@ -506,6 +509,67 @@ export type Database = {
           },
         ]
       }
+      quiz_results: {
+        Row: {
+          attempt_number: number | null
+          book_id: string
+          chapter_id: string
+          correct_answers: number
+          created_at: string | null
+          id: string
+          passed: boolean
+          score_percentage: number
+          total_questions: number
+          user_id: string
+        }
+        Insert: {
+          attempt_number?: number | null
+          book_id: string
+          chapter_id: string
+          correct_answers: number
+          created_at?: string | null
+          id?: string
+          passed: boolean
+          score_percentage: number
+          total_questions: number
+          user_id?: string
+        }
+        Update: {
+          attempt_number?: number | null
+          book_id?: string
+          chapter_id?: string
+          correct_answers?: number
+          created_at?: string | null
+          id?: string
+          passed?: boolean
+          score_percentage?: number
+          total_questions?: number
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "quiz_results_book_id_fkey"
+            columns: ["book_id"]
+            isOneToOne: false
+            referencedRelation: "books"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "quiz_results_book_id_fkey"
+            columns: ["book_id"]
+            isOneToOne: false
+            referencedRelation: "vw_book_categories"
+            referencedColumns: ["book_id"]
+          },
+          {
+            foreignKeyName: "quiz_results_chapter_id_fkey"
+            columns: ["chapter_id"]
+            isOneToOne: false
+            referencedRelation: "chapters"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       role_permissions: {
         Row: {
           id: number
@@ -521,6 +585,88 @@ export type Database = {
           id?: number
           permission?: Database["public"]["Enums"]["app_permission"]
           role?: Database["public"]["Enums"]["app_role"]
+        }
+        Relationships: []
+      }
+      user_contributions: {
+        Row: {
+          book_id: string | null
+          chapter_id: string | null
+          contribution_type: string
+          created_at: string | null
+          id: string
+          user_id: string
+          xp_earned: number
+        }
+        Insert: {
+          book_id?: string | null
+          chapter_id?: string | null
+          contribution_type: string
+          created_at?: string | null
+          id?: string
+          user_id: string
+          xp_earned?: number
+        }
+        Update: {
+          book_id?: string | null
+          chapter_id?: string | null
+          contribution_type?: string
+          created_at?: string | null
+          id?: string
+          user_id?: string
+          xp_earned?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_contributions_book_id_fkey"
+            columns: ["book_id"]
+            isOneToOne: false
+            referencedRelation: "books"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "user_contributions_book_id_fkey"
+            columns: ["book_id"]
+            isOneToOne: false
+            referencedRelation: "vw_book_categories"
+            referencedColumns: ["book_id"]
+          },
+          {
+            foreignKeyName: "user_contributions_chapter_id_fkey"
+            columns: ["chapter_id"]
+            isOneToOne: false
+            referencedRelation: "chapters"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      user_levels: {
+        Row: {
+          current_streak: number
+          last_activity_date: string | null
+          level: number
+          longest_streak: number
+          updated_at: string | null
+          user_id: string
+          xp: number
+        }
+        Insert: {
+          current_streak?: number
+          last_activity_date?: string | null
+          level?: number
+          longest_streak?: number
+          updated_at?: string | null
+          user_id: string
+          xp?: number
+        }
+        Update: {
+          current_streak?: number
+          last_activity_date?: string | null
+          level?: number
+          longest_streak?: number
+          updated_at?: string | null
+          user_id?: string
+          xp?: number
         }
         Relationships: []
       }
@@ -574,6 +720,21 @@ export type Database = {
       custom_access_token_hook: {
         Args: { event: Json }
         Returns: Json
+      }
+      get_quiz_questions: {
+        Args: { p_book_id: string; p_chapter_id: string }
+        Returns: {
+          id: string
+          options: Json
+          question: string
+        }[]
+      }
+      get_quiz_stats: {
+        Args: { p_end_date: string; p_start_date: string }
+        Returns: {
+          day: string
+          total_quizzes_taken: number
+        }[]
       }
       get_recommendations: {
         Args: { p_limit?: number; p_offset?: number }
@@ -701,6 +862,24 @@ export type Database = {
       sparsevec_typmod_in: {
         Args: { "": unknown[] }
         Returns: number
+      }
+      submit_quiz_answers: {
+        Args: { p_answers: Json; p_book_id: string; p_chapter_id: string }
+        Returns: {
+          attempt_number: number
+          correct_answers: number
+          current_streak: number
+          did_finish_book: boolean
+          did_level_up: boolean
+          explanation: Json
+          longest_streak: number
+          new_level: number
+          passed: boolean
+          score_percentage: number
+          total_questions: number
+          total_xp: number
+          xp_earned: number
+        }[]
       }
       supabase_url: {
         Args: Record<PropertyKey, never>

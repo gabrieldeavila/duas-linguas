@@ -13,6 +13,7 @@ export default {
   next: "Next",
   previous: "Previous",
   cancel: "Cancel",
+  close: "Close",
   saveChanges: "Save Changes",
   more_pages: "More pages",
   deleteSelected: "Delete Selected",
