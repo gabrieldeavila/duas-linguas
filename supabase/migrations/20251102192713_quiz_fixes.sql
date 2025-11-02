@@ -153,7 +153,7 @@ BEGIN
     END IF;
 
     -- Bonus XP for today's first contribution
-    IF v_last_activity IS DISTINCT FROM v_today THEN
+    IF date_trunc('day', v_last_activity) IS DISTINCT FROM date_trunc('day', v_today) THEN
       v_bonus_xp := 5;
     END IF;
 
