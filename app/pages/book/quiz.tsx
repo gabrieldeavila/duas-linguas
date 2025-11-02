@@ -5,6 +5,7 @@ import { toast } from "sonner";
 import { useSupabase } from "~/components/internal/supabaseAuth";
 import { Button } from "~/components/ui/button";
 import { Dialog, DialogContent, DialogTrigger } from "~/components/ui/dialog";
+import { Skeleton } from "~/components/ui/skeleton";
 import { cn, numberToLetter } from "~/lib/utils";
 import type { QuizProps, QuizReturnProps } from "~/types/table.types";
 
@@ -57,6 +58,7 @@ const QuizContent = ({
   const [quizSubmitResult, setQuizSubmitResult] = useState<
     QuizReturnProps[0] | null
   >(null);
+  const [isLoading, setIsLoading] = useState(true);
 
   const isLoadingRef = useRef(false);
   const supabase = useSupabase();
@@ -92,6 +94,8 @@ const QuizContent = ({
       })
       .then(({ data, error }) => {
         isLoadingRef.current = false;
+        setIsLoading(false);
+
         if (error) {
           console.error("Error fetching quiz questions:", error);
           return;
@@ -167,6 +171,10 @@ const QuizContent = ({
 
     return answerRecord || null;
   }, [quizSubmitResult, question]);
+
+  if (isLoading) {
+    return <Skeleton className="h-48 w-full mt-5" />;
+  }
 
   return (
     <div>
@@ -272,17 +280,20 @@ const QuestionOption = ({
     <li>
       <button
         className={cn(
-          "flex items-center space-x-4 p-1 rounded-md",
+          "flex items-center gap-5 p-1 rounded-md",
           backgroundColor
         )}
         onClick={() => handleAnswerSelect(index.toString())}
       >
-        {currentQuestionAnswer === index.toString() ? (
-          <SquareCheck />
-        ) : (
-          <Square />
-        )}
-        <p>{option?.toString()}</p>
+        <div>
+          {currentQuestionAnswer === index.toString() ? (
+            <SquareCheck size={20} />
+          ) : (
+            <Square size={20} />
+          )}
+        </div>
+
+        <p className="text-left flex-grow">{option?.toString()}</p>
       </button>
     </li>
   );

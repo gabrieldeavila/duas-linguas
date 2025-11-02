@@ -161,6 +161,9 @@ const ActivityStatsBox = () => {
   const { t } = useTranslation("dashboard");
   const [quizzesTaken, setQuizzesTaken] =
     useState<UserStatsActivityProps | null>(null);
+  const supabase = useSupabase();
+  const isLoadingRef = useRef(false);
+
   const activityData: Activity[] = useMemo(() => {
     if (!quizzesTaken) return [];
     const today = new Date();
@@ -177,7 +180,9 @@ const ActivityStatsBox = () => {
 
     return allDays.map((day) => {
       const date = format(day, "yyyy-MM-dd");
-      const found = quizzesTaken.find((d) => format(d.day, "yyyy-MM-dd") === date);
+      const found = quizzesTaken.find(
+        (d) => format(d.day, "yyyy-MM-dd") === date
+      );
       return {
         date,
         count: found ? found.total_quizzes_taken : 0,
@@ -192,11 +197,10 @@ const ActivityStatsBox = () => {
     () => activityData.reduce((sum, day) => sum + day.count, 0),
     [activityData]
   );
-  const supabase = useSupabase();
-  const isLoadingRef = useRef(false);
 
   useEffect(() => {
     if (isLoadingRef.current) return;
+    isLoadingRef.current = true;
 
     const startOfYearTimestamp = startOfYear(new Date()).toISOString();
     const endOfYearTimestamp = endOfYear(new Date()).toISOString();
@@ -205,6 +209,7 @@ const ActivityStatsBox = () => {
       .rpc("get_quiz_stats", {
         p_start_date: startOfYearTimestamp,
         p_end_date: endOfYearTimestamp,
+        p_timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
       })
       .then(({ data, error }) => {
         if (error || !data) {
@@ -273,9 +278,13 @@ const ActivityStatsBox = () => {
                   {block}
                 </TooltipTrigger>
                 <TooltipContent side="right" align="center">
-                  {t("stats.activity_calendar.total_count", {
-                    count: activity.count,
-                  })}
+                  <p>{new Date(activity.date).toLocaleDateString()}</p>
+
+                  <p>
+                    {t("stats.activity_calendar.total_count", {
+                      count: activity.count,
+                    })}
+                  </p>
                 </TooltipContent>
               </Tooltip>
             );
