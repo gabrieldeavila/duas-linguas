@@ -141,10 +141,11 @@ BEGIN
     END IF;
 
     -- Streak logic
-    IF v_last_activity IS NULL OR v_last_activity < v_today - interval '1 day' THEN
+    IF v_last_activity IS NULL OR date_trunc('day', v_last_activity) < date_trunc('day', v_today - interval '1 day') THEN
       v_current_streak := 1;
-    ELSIF v_last_activity = v_today - interval '1 day' THEN
+    ELSIF date_trunc('day', v_last_activity) = date_trunc('day', v_today - interval '1 day') THEN
       v_current_streak := v_current_streak + 1;
+    -- If last activity is today, streak remains unchanged
     END IF;
 
     IF v_current_streak > v_longest_streak THEN
