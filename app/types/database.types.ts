@@ -730,7 +730,7 @@ export type Database = {
         }[]
       }
       get_quiz_stats: {
-        Args: { p_end_date: string; p_start_date: string }
+        Args: { p_end_date: string; p_start_date: string; p_timezone: string }
         Returns: {
           day: string
           total_quizzes_taken: number
