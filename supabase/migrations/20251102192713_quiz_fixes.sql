@@ -174,7 +174,7 @@ BEGIN
       IF EXISTS (
         SELECT 1
         FROM books b
-        WHERE v_num_quiz_taken >= chapter_end 
+        WHERE v_num_quiz_taken >= b.chapter_end 
         AND b.id = p_book_id
       ) THEN
         v_did_finish_book := true;
