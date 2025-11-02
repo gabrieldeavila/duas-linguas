@@ -210,8 +210,6 @@ const ActivityStatsBox = () => {
         if (error || !data) {
           console.error("Error fetching quiz stats:", error);
         } else {
-          // Handle fetched data if needed
-          console.log("Fetched quiz stats:", data);
           setQuizzesTaken(data);
         }
       });

@@ -85,6 +85,10 @@ CREATE POLICY "Allow users to see their own contributions" ON user_contributions
   TO public
   USING (user_id = auth.uid());
 
+-- alter table book_focus to contain num_quiz_taken int default 0
+ALTER TABLE book_focus
+ADD COLUMN IF NOT EXISTS num_quiz_taken INT DEFAULT 0;
+
 CREATE OR REPLACE FUNCTION submit_quiz_answers(
   p_book_id uuid,
   p_chapter_id uuid,
@@ -102,7 +106,8 @@ RETURNS TABLE(
   current_streak int,
   longest_streak int,
   attempt_number int,
-  did_level_up boolean
+  did_level_up boolean,
+  did_finish_book boolean
 )
 LANGUAGE plpgsql
 SECURITY DEFINER
@@ -128,6 +133,8 @@ DECLARE
   v_first_time boolean := true;
   v_current_level int;
   v_did_level_up boolean := false;
+  v_did_finish_book boolean := false;
+  v_num_quiz_taken int := 0;
 BEGIN
   -- Count previous attempts for this quiz
   SELECT COUNT(*) + 1
@@ -240,6 +247,34 @@ BEGIN
       v_bonus_xp := 5;
     END IF;
 
+    IF v_passed THEN
+      -- Update book_focus num_quiz_taken
+      UPDATE book_focus
+      SET num_quiz_taken = num_quiz_taken + 1
+      WHERE user_id = p_user_id
+        AND book_id = p_book_id;
+
+      SELECT num_quiz_taken
+      INTO v_num_quiz_taken
+      FROM book_focus
+      WHERE user_id = p_user_id
+        AND book_id = p_book_id;
+
+      -- Check if user finished all chapters in the book
+      IF EXISTS (
+        SELECT 1
+        FROM books b
+        WHERE chapter_end >= v_num_quiz_taken
+        AND b.id = p_book_id
+      ) THEN
+        v_did_finish_book := true;
+      END IF;
+    END IF;
+
+    IF v_did_finish_book THEN
+      v_bonus_xp := v_bonus_xp + 5 * v_num_quiz_taken;
+    END IF;
+
     v_total_xp := v_total_xp + v_xp_gain + v_bonus_xp;
 
     -- Level recalculation
@@ -275,7 +310,7 @@ BEGIN
   RETURN QUERY
   SELECT v_correct, v_total, v_score, v_passed, v_explanations,
          (v_xp_gain + v_bonus_xp), v_total_xp, v_level,
-         v_current_streak, v_longest_streak, v_attempt_number, v_did_level_up;
+         v_current_streak, v_longest_streak, v_attempt_number, v_did_level_up, v_did_finish_book;
 END;
 $$;
 

@@ -14,4 +14,7 @@ export default {
   failed: "Infelizmente, você não passou no quiz. Boa sorte na próxima!",
   level_up: "Top! Você subiu para o nível {{level}}.",
   attempt_number: "Esta foi sua tentativa número {{count}}. Apenas a primeira tentativa concede XP extra.",
+  explanation: "Explicação",
+  congratulations_on_finishing_the_book:
+    "Parabéns! Você completou todos os quizzes deste livro",
 };

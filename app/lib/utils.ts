@@ -12,5 +12,5 @@ export const numberToLetter = (num: number) => {
 
 export const tmeta = (key: unknown) => {
   // @ts-expect-error - key can be any type
-  return i18next.t(key) ?? "...";
+  return i18next.t(key) ?? "Duas Linguas";
 };

@@ -89,6 +89,7 @@ export type Database = {
           book_id: string
           chapter_id: string | null
           excerpt_id: string | null
+          num_quiz_taken: number | null
           updated_at: string | null
           user_id: string
         }
@@ -96,6 +97,7 @@ export type Database = {
           book_id: string
           chapter_id?: string | null
           excerpt_id?: string | null
+          num_quiz_taken?: number | null
           updated_at?: string | null
           user_id?: string
         }
@@ -103,6 +105,7 @@ export type Database = {
           book_id?: string
           chapter_id?: string | null
           excerpt_id?: string | null
+          num_quiz_taken?: number | null
           updated_at?: string | null
           user_id?: string
         }
@@ -866,6 +869,7 @@ export type Database = {
           attempt_number: number
           correct_answers: number
           current_streak: number
+          did_finish_book: boolean
           did_level_up: boolean
           explanation: Json
           longest_streak: number

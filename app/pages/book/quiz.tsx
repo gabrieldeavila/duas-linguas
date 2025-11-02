@@ -56,7 +56,78 @@ const QuizContent = ({
   const [quizQuestions, setQuizQuestions] = useState<QuizProps[]>([]);
   const [quizSubmitResult, setQuizSubmitResult] = useState<
     QuizReturnProps[0] | null
-  >(null);
+  >({
+    correct_answers: 8,
+    total_questions: 8,
+    score_percentage: 100,
+    passed: true,
+    explanation: [
+      {
+        id: "461d13ff-0bfc-4a86-8506-9ce8a7c3e37f",
+        is_correct: true,
+        explanation: null,
+        user_answer: "A",
+        correct_answer: "A",
+      },
+      {
+        id: "2396d9b5-0558-41af-9265-31f03713482b",
+        is_correct: true,
+        explanation: null,
+        user_answer: "B",
+        correct_answer: "B",
+      },
+      {
+        id: "ec7d7c27-7831-40a1-b967-7f259bb65c5b",
+        is_correct: true,
+        explanation: null,
+        user_answer: "B",
+        correct_answer: "B",
+      },
+      {
+        id: "428300e8-ec35-49ba-84ab-513a2391c423",
+        is_correct: true,
+        explanation: null,
+        user_answer: "A",
+        correct_answer: "A",
+      },
+      {
+        id: "235cb549-3bd7-457a-a53b-b1e680e0ef18",
+        is_correct: true,
+        explanation: null,
+        user_answer: "C",
+        correct_answer: "C",
+      },
+      {
+        id: "28b6683d-d8d9-4e18-beaa-ee307ff965e1",
+        is_correct: true,
+        explanation: null,
+        user_answer: "A",
+        correct_answer: "A",
+      },
+      {
+        id: "954871e0-3b92-4a17-8f52-e1f852fca50b",
+        is_correct: true,
+        explanation: null,
+        user_answer: "B",
+        correct_answer: "B",
+      },
+      {
+        id: "0b9d3e65-6e72-4b67-a552-fc31832ca773",
+        is_correct: true,
+        explanation: null,
+        user_answer: "D",
+        correct_answer: "D",
+      },
+    ],
+    xp_earned: 30,
+    total_xp: 70,
+    new_level: 1,
+    current_streak: 1,
+    longest_streak: 1,
+    attempt_number: 1,
+    did_level_up: false,
+    did_finish_book: true,
+  });
 
   const isLoadingRef = useRef(false);
   const supabase = useSupabase();
@@ -196,6 +267,13 @@ const QuizContent = ({
                 />
               ))}
           </ul>
+          {currentQuestionExplanation &&
+            currentQuestionExplanation.explanation && (
+              <div className="mt-4">
+                <p className="font-bold">{t("explanation")}</p>
+                <p className="mt-2">{currentQuestionExplanation.explanation}</p>
+              </div>
+            )}
         </div>
       )}
       <div className="flex justify-between mt-4">
@@ -310,6 +388,12 @@ const SubmitAnswersResult = ({ result }: { result: QuizReturnProps[0] }) => {
           xp: result.xp_earned,
         })}
       </p>
+
+      {result.did_finish_book && (
+        <p className="mt-2 font-bold">
+          🎉 {t("congratulations_on_finishing_the_book")}
+        </p>
+      )}
     </div>
   );
 };
