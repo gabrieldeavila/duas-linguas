@@ -101,6 +101,7 @@ export const LANGUAGE_FIELD = [
     options: [
       { label: "Spanish", value: "es" },
       { label: "English", value: "en" },
+      { label: "Portuguese", value: "pt" },
     ],
   },
   // temporarily removed difficulty level selection
