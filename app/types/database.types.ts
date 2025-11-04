@@ -864,7 +864,12 @@ export type Database = {
         Returns: number
       }
       submit_quiz_answers: {
-        Args: { p_answers: Json; p_book_id: string; p_chapter_id: string }
+        Args: {
+          p_answers: Json
+          p_book_id: string
+          p_chapter_id: string
+          p_user_timezone: string
+        }
         Returns: {
           attempt_number: number
           correct_answers: number

@@ -9,7 +9,15 @@ import { Skeleton } from "~/components/ui/skeleton";
 import { cn, numberToLetter } from "~/lib/utils";
 import type { QuizProps, QuizReturnProps } from "~/types/table.types";
 
-function Quiz({ bookId, chapterId }: { bookId: string; chapterId: string }) {
+function Quiz({
+  bookId,
+  chapterId,
+  goToNextChapter,
+}: {
+  bookId: string;
+  chapterId: string;
+  goToNextChapter: () => void;
+}) {
   const [isOpen, setIsOpen] = useState(false);
 
   const { t } = useTranslation("quiz");
@@ -27,6 +35,7 @@ function Quiz({ bookId, chapterId }: { bookId: string; chapterId: string }) {
               bookId,
               chapterId,
               setIsOpen,
+              goToNextChapter,
             }}
           />
         </DialogContent>
@@ -49,10 +58,12 @@ const QuizContent = ({
   bookId,
   chapterId,
   setIsOpen,
+  goToNextChapter,
 }: {
   bookId: string;
   chapterId: string;
   setIsOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  goToNextChapter: () => void;
 }) => {
   const [quizQuestions, setQuizQuestions] = useState<QuizProps[]>([]);
   const [quizSubmitResult, setQuizSubmitResult] = useState<
@@ -133,6 +144,7 @@ const QuizContent = ({
       .rpc("submit_quiz_answers", {
         p_book_id: bookId,
         p_chapter_id: chapterId,
+        p_user_timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
         p_answers: Object.entries(questionsAnswers).map(
           ([questionId, answer]) => ({
             id: questionId,
@@ -142,12 +154,10 @@ const QuizContent = ({
       })
       .then(({ data, error }) => {
         if (error) {
-          console.error("Error submitting quiz answers:", error);
           toast.error(t("submit_error"));
           return;
         }
 
-        console.log(data);
         setQuizSubmitResult(data[0] || null);
       });
   }, [
@@ -172,6 +182,14 @@ const QuizContent = ({
     return answerRecord || null;
   }, [quizSubmitResult, question]);
 
+  const handleClose = useCallback(() => {
+    setIsOpen(false);
+
+    if (quizSubmitResult?.passed) {
+      goToNextChapter();
+    }
+  }, [goToNextChapter, quizSubmitResult?.passed, setIsOpen]);
+
   if (isLoading) {
     return <Skeleton className="h-48 w-full mt-5" />;
   }
@@ -181,7 +199,7 @@ const QuizContent = ({
       {quizSubmitResult && <SubmitAnswersResult result={quizSubmitResult} />}
 
       {question && (
-        <div key={question.id} className="my-4">
+        <div key={question.id} className={cn("my-4", "max-h-[65dvh] overflow-auto")}>
           <p className="font-bold">
             {t("question_of", {
               current: currentQuestionIndex + 1,
@@ -213,7 +231,7 @@ const QuizContent = ({
             )}
         </div>
       )}
-      <div className="flex justify-between mt-4">
+      <div className={cn("flex justify-between mt-4 flex-wrap gap-2")}>
         <Button
           variant="outline"
           disabled={currentQuestionIndex === 0}
@@ -223,13 +241,12 @@ const QuizContent = ({
         >
           {tg("previous")}
         </Button>
+
         {currentQuestionIndex === quizQuestions.length - 1 && !didSubmit && (
           <Button onClick={handleSubmitQuiz}>{t("submit_quiz")}</Button>
         )}
 
-        {didSubmit && (
-          <Button onClick={() => setIsOpen(false)}>{tg("close")}</Button>
-        )}
+        {didSubmit && <Button onClick={handleClose}>{tg("close")}</Button>}
 
         <Button
           variant="outline"

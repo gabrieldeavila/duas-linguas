@@ -141,6 +141,12 @@ function Read() {
     [id, supabase, t]
   );
 
+  const goToNextChapter = useCallback(() => {
+    if (currentChapterNumber < chaptersGaps.max) {
+      handleChapterChange(currentChapterNumber + 1);
+    }
+  }, [currentChapterNumber, chaptersGaps.max, handleChapterChange]);
+
   if (isLoading) {
     return <Skeleton className="h-64 w-full" />;
   }
@@ -172,7 +178,13 @@ function Read() {
         )}
       </div>
 
-      {chapterId && <Quiz bookId={id!} chapterId={chapterId} />}
+      {chapterId && (
+        <Quiz
+          goToNextChapter={goToNextChapter}
+          bookId={id!}
+          chapterId={chapterId}
+        />
+      )}
 
       {chaptersGaps.max === 0 ? null : (
         <div className="flex items-center flex-col my-4">
