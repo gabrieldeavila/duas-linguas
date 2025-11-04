@@ -1,0 +1,229 @@
+drop function if exists submit_quiz_answers;
+
+CREATE OR REPLACE FUNCTION submit_quiz_answers(
+  p_book_id uuid,
+  p_chapter_id uuid,
+  p_answers jsonb,
+  p_user_timezone text 
+)
+RETURNS TABLE(
+  correct_answers int,
+  total_questions int,
+  score_percentage float,
+  passed boolean,
+  explanation jsonb,
+  xp_earned int,
+  total_xp int,
+  new_level int,
+  current_streak int,
+  longest_streak int,
+  attempt_number int,
+  did_level_up boolean,
+  did_finish_book boolean
+)
+LANGUAGE plpgsql
+SECURITY DEFINER
+AS $$
+DECLARE
+  v_total int := 0;
+  p_user_id uuid := auth.uid();
+  v_correct int := 0;
+  v_explanations jsonb := '[]'::jsonb;
+  v_question record;
+  v_answer text;
+  v_passed boolean;
+  v_score float;
+  v_xp_gain int := 0;
+  v_bonus_xp int := 0;
+  v_total_xp int := 0;
+  v_level int := 1;
+  v_current_streak int := 0;
+  v_longest_streak int := 0;
+  v_last_activity timestamptz;
+  v_today timestamptz;
+  v_attempt_number int := 1;
+  v_first_time boolean := true;
+  v_current_level int;
+  v_did_level_up boolean := false;
+  v_did_finish_book boolean := false;
+  v_num_quiz_taken int := 0;
+  v_required_xp int;
+BEGIN
+  -- Count previous attempts
+  SELECT COUNT(*) + 1 INTO v_attempt_number
+  FROM quiz_results
+  WHERE user_id = p_user_id
+    AND book_id = p_book_id
+    AND chapter_id = p_chapter_id;
+
+  IF v_attempt_number > 1 THEN
+    v_first_time := false;
+  END IF;
+
+  -- Fetch current level
+  SELECT level INTO v_current_level
+  FROM user_levels
+  WHERE user_id = p_user_id;
+
+  -- Compute quiz results
+  FOR v_question IN
+    SELECT q.id, q.answer, q.explanation
+    FROM questions q
+    WHERE q.book_id = p_book_id
+      AND q.chapter_id = p_chapter_id
+  LOOP
+    v_total := v_total + 1;
+
+    v_answer := (
+      SELECT a->>'answer'
+      FROM jsonb_array_elements(p_answers) AS a
+      WHERE (a->>'id')::uuid = v_question.id
+      LIMIT 1
+    );
+
+    IF v_answer IS NOT NULL AND trim(lower(v_answer)) = trim(lower(v_question.answer)) THEN
+      v_correct := v_correct + 1;
+    END IF;
+
+    v_explanations := v_explanations || jsonb_build_array(
+      jsonb_build_object(
+        'id', v_question.id,
+        'correct_answer', v_question.answer,
+        'user_answer', v_answer,
+        'is_correct', trim(lower(v_answer)) = trim(lower(v_question.answer)),
+        'explanation', v_question.explanation
+      )
+    );
+  END LOOP;
+
+  v_score := CASE WHEN v_total > 0 THEN (v_correct::float / v_total::float) * 100 ELSE 0 END;
+  v_passed := v_score >= 60.0;
+
+  -- XP gain rules
+  IF v_first_time THEN
+    v_xp_gain := CASE WHEN v_passed THEN 20 ELSE 10 END;
+  ELSE
+    v_xp_gain := 0;
+  END IF;
+
+  -- Insert quiz result
+  INSERT INTO quiz_results (
+    user_id, book_id, chapter_id, correct_answers, total_questions,
+    score_percentage, passed, attempt_number
+  )
+  VALUES (
+    p_user_id, p_book_id, p_chapter_id, v_correct, v_total,
+    v_score, v_passed, v_attempt_number
+  );
+
+  IF v_first_time THEN
+    INSERT INTO user_contributions (
+      user_id, book_id, chapter_id, contribution_type, xp_earned
+    )
+    VALUES (
+      p_user_id, p_book_id, p_chapter_id,
+      CASE WHEN v_passed THEN 'quiz_passed' ELSE 'quiz_completed' END,
+      v_xp_gain
+    );
+
+    -- Fetch level info
+    SELECT ul.xp, ul.level, ul.current_streak, ul.longest_streak, ul.last_activity_date
+    INTO v_total_xp, v_level, v_current_streak, v_longest_streak, v_last_activity
+    FROM user_levels ul
+    WHERE user_id = p_user_id
+    FOR UPDATE;
+
+    IF NOT FOUND THEN
+      v_total_xp := 0;
+      v_level := 1;
+      v_current_streak := 0;
+      v_longest_streak := 0;
+    END IF;
+
+    v_today := now() AT TIME ZONE p_user_timezone;
+
+    IF v_last_activity IS NULL
+       OR date_trunc('day', v_last_activity AT TIME ZONE p_user_timezone)
+          < date_trunc('day', v_today - interval '1 day') THEN
+      v_current_streak := 1;
+
+    ELSIF date_trunc('day', v_last_activity AT TIME ZONE p_user_timezone)
+          = date_trunc('day', v_today - interval '1 day') THEN
+      v_current_streak := v_current_streak + 1;
+    END IF;
+
+    IF v_current_streak > v_longest_streak THEN
+      v_longest_streak := v_current_streak;
+    END IF;
+
+    -- Daily bonus (only once per local day)
+    IF date_trunc('day', v_last_activity AT TIME ZONE p_user_timezone)
+       IS DISTINCT FROM date_trunc('day', v_today) THEN
+      v_bonus_xp := 5;
+    END IF;
+
+    -- Book completion logic
+    IF v_passed THEN
+      UPDATE book_focus
+      SET num_quiz_taken = num_quiz_taken + 1
+      WHERE user_id = p_user_id
+        AND book_id = p_book_id;
+
+      SELECT num_quiz_taken
+      INTO v_num_quiz_taken
+      FROM book_focus
+      WHERE user_id = p_user_id
+        AND book_id = p_book_id;
+
+      IF EXISTS (
+        SELECT 1
+        FROM books b
+        WHERE v_num_quiz_taken >= b.chapter_end 
+        AND b.id = p_book_id
+      ) THEN
+        v_did_finish_book := true;
+      END IF;
+    END IF;
+
+    IF v_did_finish_book THEN
+      v_bonus_xp := v_bonus_xp + 5 * v_num_quiz_taken;
+    END IF;
+
+    v_total_xp := v_total_xp + v_xp_gain + v_bonus_xp;
+
+    LOOP
+      v_required_xp := 100 * v_level;
+      EXIT WHEN v_total_xp < v_required_xp;
+      v_total_xp := v_total_xp - v_required_xp;
+      v_level := v_level + 1;
+    END LOOP;
+
+    -- Save progress
+    INSERT INTO user_levels (user_id, xp, level, current_streak, longest_streak, last_activity_date)
+    VALUES (p_user_id, v_total_xp, v_level, v_current_streak, v_longest_streak, v_today)
+    ON CONFLICT (user_id)
+    DO UPDATE SET
+      xp = EXCLUDED.xp,
+      level = EXCLUDED.level,
+      current_streak = EXCLUDED.current_streak,
+      longest_streak = EXCLUDED.longest_streak,
+      last_activity_date = EXCLUDED.last_activity_date,
+      updated_at = now();
+  ELSE
+    SELECT xp, level, current_streak, longest_streak
+    INTO v_total_xp, v_level, v_current_streak, v_longest_streak
+    FROM user_levels
+    WHERE user_id = p_user_id;
+  END IF;
+
+  IF v_level > v_current_level THEN
+    v_did_level_up := true;
+  END IF;
+
+  RETURN QUERY
+  SELECT v_correct, v_total, v_score, v_passed, v_explanations,
+         (v_xp_gain + v_bonus_xp), v_total_xp, v_level,
+         v_current_streak, v_longest_streak, v_attempt_number,
+         v_did_level_up, v_did_finish_book;
+END;
+$$;
