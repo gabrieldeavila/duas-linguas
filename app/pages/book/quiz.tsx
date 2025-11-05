@@ -70,6 +70,7 @@ const QuizContent = ({
     QuizReturnProps[0] | null
   >(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [isSubmiting, setIsSubmiting] = useState(false);
 
   const isLoadingRef = useRef(false);
   const supabase = useSupabase();
@@ -140,6 +141,7 @@ const QuizContent = ({
       return;
     }
 
+    setIsSubmiting(true);
     supabase
       .rpc("submit_quiz_answers", {
         p_book_id: bookId,
@@ -153,6 +155,7 @@ const QuizContent = ({
         ),
       })
       .then(({ data, error }) => {
+        setIsSubmiting(false);
         if (error) {
           toast.error(t("submit_error"));
           return;
@@ -199,7 +202,10 @@ const QuizContent = ({
       {quizSubmitResult && <SubmitAnswersResult result={quizSubmitResult} />}
 
       {question && (
-        <div key={question.id} className={cn("my-4", "max-h-[65dvh] overflow-auto")}>
+        <div
+          key={question.id}
+          className={cn("my-4", "max-h-[65dvh] overflow-auto")}
+        >
           <p className="font-bold">
             {t("question_of", {
               current: currentQuestionIndex + 1,
@@ -243,7 +249,9 @@ const QuizContent = ({
         </Button>
 
         {currentQuestionIndex === quizQuestions.length - 1 && !didSubmit && (
-          <Button onClick={handleSubmitQuiz}>{t("submit_quiz")}</Button>
+          <Button onClick={handleSubmitQuiz} disabled={isSubmiting}>
+            {t("submit_quiz")}
+          </Button>
         )}
 
         {didSubmit && <Button onClick={handleClose}>{tg("close")}</Button>}
