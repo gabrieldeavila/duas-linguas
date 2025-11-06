@@ -64,7 +64,7 @@ Deno.serve(async (req: Request) => {
     const bookChapters = await generateObject({
       model: model(aiType),
       prompt: `
-You are an assistant that generates chapter names for books.
+You are an assistant that accuratelly generates chapter names for books.
 The book "${bookTitle}" has chapters from number ${chapterStart} to ${chapterEnd}.
 The author of the book is ${author}.
 Generate chapter names in the language of the book, which is "${language}".
