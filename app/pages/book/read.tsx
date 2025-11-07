@@ -1,6 +1,6 @@
 import i18next from "i18next";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { useTranslation } from "react-i18next";
+import { Trans, useTranslation } from "react-i18next";
 import { useParams, type LoaderFunctionArgs } from "react-router";
 import { toast } from "sonner";
 import { PaginationBuilder } from "~/components/internal/pagination/builder";
@@ -55,6 +55,7 @@ function Read() {
   const [bookTitle, setBookTitle] = useState<string>("");
   const [currentChapterNumber, setCurrentChapterNumber] = useState<number>(0);
   const [chapterId, setChapterId] = useState<string>("");
+  const [referralLink, setRefferalLink] = useState<string>("");
   const [chaptersGaps, setChaptersGaps] = useState<{
     min: number;
     max: number;
@@ -72,7 +73,7 @@ function Read() {
     supabase
       .from("book_focus")
       .select(
-        "chapter_id, excerpt_id, chapters(id, title, number), books(id, title, start_chapter, end_chapter)"
+        "chapter_id, excerpt_id, chapters(id, title, number), books(id, title, start_chapter, end_chapter, referral_link)"
       )
       .eq("book_id", id)
       .limit(1)
@@ -97,6 +98,7 @@ function Read() {
           min: info.books.start_chapter || 0,
           max: info.books.end_chapter || 0,
         });
+        setRefferalLink(info.books?.referral_link || "");
         setTitle(info.chapters?.title || "");
         setBookTitle(info.books?.title || "");
       });
@@ -195,6 +197,8 @@ function Read() {
           />
         </div>
       )}
+
+      {referralLink && <WarningRead referral={referralLink} />}
     </div>
   );
 }
@@ -281,6 +285,21 @@ const ChapterExcerpts = ({
           <p>{excerpt.content}</p>
         </div>
       ))}
+    </div>
+  );
+};
+
+const WarningRead = ({ referral }: { referral: string }) => {
+  const { t } = useTranslation("pages");
+
+  return (
+    <div className="mt-4">
+      <p className="opacity-50 text-xs">{t("read.warning_first")}</p>
+      <p className="opacity-50 text-xs mt-2">
+        <Trans t={t} i18nKey="read.warning_second">
+          <a href={referral} className="underline underline-offset-4" />
+        </Trans>
+      </p>
     </div>
   );
 };

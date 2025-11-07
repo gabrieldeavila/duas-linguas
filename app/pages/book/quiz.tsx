@@ -198,14 +198,11 @@ const QuizContent = ({
   }
 
   return (
-    <div>
+  <div className={cn("my-4", "max-h-[65dvh] overflow-auto")}>
       {quizSubmitResult && <SubmitAnswersResult result={quizSubmitResult} />}
 
       {question && (
-        <div
-          key={question.id}
-          className={cn("my-4", "max-h-[65dvh] overflow-auto")}
-        >
+        <div key={question.id}>
           <p className="font-bold">
             {t("question_of", {
               current: currentQuestionIndex + 1,
