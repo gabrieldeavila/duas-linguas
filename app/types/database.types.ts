@@ -155,6 +155,7 @@ export type Database = {
           id: string
           language: Database["public"]["Enums"]["language"]
           published_date: string | null
+          referral_link: string | null
           start_chapter: number | null
           status: Database["public"]["Enums"]["status"]
           title: string
@@ -174,6 +175,7 @@ export type Database = {
           id?: string
           language: Database["public"]["Enums"]["language"]
           published_date?: string | null
+          referral_link?: string | null
           start_chapter?: number | null
           status?: Database["public"]["Enums"]["status"]
           title: string
@@ -193,6 +195,7 @@ export type Database = {
           id?: string
           language?: Database["public"]["Enums"]["language"]
           published_date?: string | null
+          referral_link?: string | null
           start_chapter?: number | null
           status?: Database["public"]["Enums"]["status"]
           title?: string
@@ -451,7 +454,6 @@ export type Database = {
           options: Json
           question: string
           updated_at: string | null
-          why: string | null
         }
         Insert: {
           answer: string
@@ -467,7 +469,6 @@ export type Database = {
           options: Json
           question: string
           updated_at?: string | null
-          why?: string | null
         }
         Update: {
           answer?: string
@@ -483,7 +484,6 @@ export type Database = {
           options?: Json
           question?: string
           updated_at?: string | null
-          why?: string | null
         }
         Relationships: [
           {
