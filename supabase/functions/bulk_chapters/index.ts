@@ -112,7 +112,7 @@ Language: "${language}"
 ❌ Do NOT mention the author or refer to the author in any way.
 
 🎯 Task:
-Generate 10–15 short, emotionally charged snippets that express the ideas of the chapter in a compelling way to engage readers.
+Generate 10–15 short, snippets that express the ideas of the chapter in a compelling way to engage readers.
 
 🧠 Guidelines:
 - Each snippet should be 150–280 characters, 1–2 short sentences (15–30 words)
@@ -125,7 +125,6 @@ Generate 10–15 short, emotionally charged snippets that express the ideas of t
 
 🧩 Quality check before returning:
 - No repetition or similar phrasing
-- Varied tone: some reflective, some assertive, some provocative
 - All sound like authentic author insights
 
 📦 Output only this JSON array:
