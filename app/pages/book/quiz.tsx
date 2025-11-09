@@ -70,7 +70,7 @@ const QuizContent = ({
     QuizReturnProps[0] | null
   >(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [isSubmiting, setIsSubmiting] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const isLoadingRef = useRef(false);
   const supabase = useSupabase();
