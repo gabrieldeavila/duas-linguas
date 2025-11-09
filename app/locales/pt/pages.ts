@@ -41,6 +41,10 @@ export default {
     changedChapterTo: "Mudou para o capítulo número: {{chapterNumber}}",
     loadingChapter: "Carregando o capítulo número: {{chapterNumber}}",
     reading: "Lendo o livro: {{bookTitle}}",
+    warning_first:
+      "Estes trechos criados por IA têm como objetivo resumir o livro e testar seu entendimento. Como são gerados automaticamente, podem conter erros.",
+    warning_second:
+      "Gostando da leitura? Você pode comprar o livro através <0>deste link</0> — isso nos ajuda sem nenhum custo adicional para você!",
   },
   preferences: {
     title: "Preferências",

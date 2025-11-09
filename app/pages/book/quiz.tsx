@@ -141,7 +141,7 @@ const QuizContent = ({
       return;
     }
 
-    setIsSubmiting(true);
+    setIsSubmitting(true);
     supabase
       .rpc("submit_quiz_answers", {
         p_book_id: bookId,
@@ -155,7 +155,7 @@ const QuizContent = ({
         ),
       })
       .then(({ data, error }) => {
-        setIsSubmiting(false);
+        setIsSubmitting(false);
         if (error) {
           toast.error(t("submit_error"));
           return;
@@ -246,7 +246,7 @@ const QuizContent = ({
         </Button>
 
         {currentQuestionIndex === quizQuestions.length - 1 && !didSubmit && (
-          <Button onClick={handleSubmitQuiz} disabled={isSubmiting}>
+          <Button onClick={handleSubmitQuiz} disabled={isSubmitting}>
             {t("submit_quiz")}
           </Button>
         )}

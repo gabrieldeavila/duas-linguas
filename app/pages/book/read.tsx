@@ -293,11 +293,15 @@ const WarningRead = ({ referral }: { referral: string }) => {
   const { t } = useTranslation("pages");
 
   return (
-    <div className="mt-4">
+    <div className="mt-4 flex items-center flex-col">
       <p className="opacity-50 text-xs">{t("read.warning_first")}</p>
       <p className="opacity-50 text-xs mt-2">
         <Trans t={t} i18nKey="read.warning_second">
-          <a href={referral} className="underline underline-offset-4" />
+          <a
+            href={referral}
+            target="_blank"
+            className="underline underline-offset-4"
+          />
         </Trans>
       </p>
     </div>
