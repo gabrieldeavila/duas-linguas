@@ -38,11 +38,19 @@ Deno.serve(async (req) => {
         }
   );
 
+  const bookIdToProcess = await supabaseClient
+    .from("books")
+    .select("id")
+    .neq("status", "done")
+    .order("created_at", { ascending: true })
+    .limit(1)
+    .single();
+
   const bulkChapters = await supabaseClient
     .from("chapters")
     .select("*, books(title, author, language)")
     .neq("status", "done")
-    .order("book_id", { ascending: true })
+    .eq("book_id", bookIdToProcess.data?.id)
     .order("number", { ascending: true })
     .limit(1);
 
