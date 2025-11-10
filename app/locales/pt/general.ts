@@ -61,6 +61,10 @@ export default {
     },
     buttonText: "Salvar Preferências",
   },
+  your_library: {
+    title: "Sua Biblioteca",
+    description: "Livros que você começou a ler, terminou ou favoritou.",
+  },
   favorite_categories: {
     title: "Categorias Favoritas",
     add: "Adicionar nova categoria",

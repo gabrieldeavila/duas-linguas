@@ -1,4 +1,4 @@
-import { Home, Settings2, Shield } from "lucide-react";
+import { Home, Settings2, Shield, SquareLibrary } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router";
 
@@ -25,6 +25,15 @@ export function NavMain() {
         >
           <Home />
           <span>{t("home")}</span>
+        </SidebarMenuButton>
+
+        <SidebarMenuButton
+          tooltip={t("your_library.title")}
+          customComp={Link}
+          to="/your-library"
+        >
+          <SquareLibrary />
+          <span>{t("your_library.title")}</span>
         </SidebarMenuButton>
 
         <SidebarMenuButton
