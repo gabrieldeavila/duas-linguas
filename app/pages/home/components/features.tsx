@@ -1,10 +1,10 @@
 import {
+  ChartNoAxesCombined,
   LibraryBig,
+  Milestone,
   Mouse,
   PenIcon,
-  Settings,
-  Target,
-  WifiOff,
+  Target
 } from "lucide-react";
 import { useTranslation } from "react-i18next";
 
@@ -65,9 +65,9 @@ export default function Features() {
             <Item name="parallel" icon={<LibraryBig />} />
             <Item name="quizzes" icon={<PenIcon />} />
             <Item name="progress" icon={<Target />} />
-            <Item name="difficulty" icon={<Settings />} />
+            <Item name="milestones" icon={<Milestone />} />
             <Item name="immersive" icon={<Mouse />} />
-            <Item name="offline" icon={<WifiOff />} />
+            <Item name="stats" icon={<ChartNoAxesCombined />} />
           </div>
         </div>
       </div>
@@ -83,9 +83,9 @@ const Item = ({
     | "parallel"
     | "quizzes"
     | "progress"
-    | "difficulty"
+    | "milestones"
     | "immersive"
-    | "offline";
+    | "stats";
   icon: React.ReactNode;
 }) => {
   const { t } = useTranslation("landing");

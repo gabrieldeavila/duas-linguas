@@ -2,9 +2,9 @@ export default {
   signIn: "Sign In",
   signUp: "Register",
   logo: "Logo",
-  header: "All the fun of scrolling, all the value of learning.",
+  header: "A better way to read online.",
   subtitle:
-    "Turn timeless stories into your language teacher — read, scroll, and practice while enjoying the world’s greatest books.",
+    "Turn your daily scroll into a learning moment — read, enjoy, and challenge your memory.",
   tryIt: "Try it now",
   tailored: "Read, Scroll, Improve",
   fluency: "Scroll to fluency",
@@ -13,7 +13,7 @@ export default {
   spotlightImmersive: {
     title: "Immersive Reading",
     description:
-      "Scroll through classic book excerpts and learn languages naturally.",
+      "Scroll through stories, answer quick quizzes, and watch your progress grow.",
   },
   spotlightInteractive: {
     title: "Interactive Practice",
@@ -23,16 +23,16 @@ export default {
   spotlightExperience: {
     title: "Seamless Experience",
     description:
-      "Enjoy a smooth, feed-like interface to read and practice effortlessly in two languages.",
+      "Turn reading into a game: earn points, track progress, and see how much you really remember.",
   },
   features: {
     title: "Smart Reading Tools",
-    subtitle: "Built for language learners",
+    subtitle: "Built for curious minds",
     description:
-      "Scroll, read, and answer questions with intuitive tools that make learning in two languages effortless.",
+      "Scroll, read, and answer questions with intuitive tools that make learning through stories effortless.",
     parallel: {
-      title: "Parallel Reading",
-      description: "Compare languages and improve naturally as you scroll.",
+      title: "Smart Reading",
+      description: "Read, recall, and see what sticks as you scroll.",
     },
     quizzes: {
       title: "Interactive Quizzes",
@@ -42,23 +42,23 @@ export default {
     progress: {
       title: "Track Your Progress",
       description:
-        "See how your skills improve over time, scroll by scroll, book by book.",
+        "Follow your reading streaks, milestones, and see how consistent you’ve been over time.",
     },
-    difficulty: {
-      title: "Adjustable Difficulty",
+    milestones: {
+      title: "Milestones",
       description:
-        "Adjust reading levels and questions to match your fluency and challenge yourself",
+        "Unlock achievements as you read, learn, and keep your streak alive.",
     },
     immersive: {
       title: "Immersive Scroll",
       description:
-        "Experience a new way to learn by scrolling through content that adapts to your language level.",
+        "Flow through stories in a clean, distraction-free space built for focus and reflection.",
     },
-    offline: {
-      title: "Offline Access",
+    stats: {
+      title: "Reading Stats",
       description:
-        "Practice and read anywhere, even without an internet connection",
+        "View your reading time, quiz accuracy, and completion rate in one clean dashboard.",
     },
   },
-  cta: "Join the Scroll-to-Fluency platform",
+  cta: "Join the Scroll-to-Learn platform",
 };
