@@ -101,12 +101,6 @@ Only provide the chapter numbers and titles, no extra explanations.
       )
     );
 
-    await supabaseClient
-      .from("books")
-      .update({ status: "done" })
-      .eq("id", bookId)
-      .select("id");
-
     return new Response(JSON.stringify({ data, error }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
       status: 200,
