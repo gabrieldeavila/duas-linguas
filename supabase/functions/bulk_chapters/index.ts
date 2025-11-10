@@ -279,6 +279,23 @@ Create 4–8 multiple-choice questions that test understanding and language awar
           .from("chapters")
           .update({ status: "done" })
           .eq("id", chapter.id);
+
+        // if all chapters for the book are done, set book status to done
+        const { data: remainingChapters } = await supabaseClient
+          .from("chapters")
+          .select("id")
+          .eq("book_id", chapter.book_id)
+          .neq("status", "done");
+
+        if (remainingChapters && remainingChapters.length === 0) {
+          await supabaseClient
+            .from("books")
+            .update({ status: "done" })
+            .eq("id", chapter.book_id);
+          console.log(
+            `All chapters for book ID ${chapter.book_id} are done. Book status set to done.`
+          );
+        }
       }
     } catch (err) {
       console.error("Error processing chapter:", err);

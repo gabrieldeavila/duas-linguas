@@ -116,7 +116,12 @@ const StatsInfoBox = ({ stats }: { stats: UserStatsProps }) => {
           }}
         />
 
-        <p className="absolute left-2 top-0.5 text-sm">
+        <p
+          className="absolute left-2 top-0.5 text-sm"
+          style={{
+            color: progressNextLevel > nextLevelXp / 2 ? "black" : "white",
+          }}
+        >
           {stats.xp} / {nextLevelXp} xp
         </p>
       </div>

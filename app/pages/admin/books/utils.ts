@@ -11,6 +11,7 @@ export const schemaBook = z.object({
   difficulty_level: z.enum(["beginner", "intermediate", "advanced"]),
   chapter_start: z.number().min(1),
   chapter_end: z.number().min(1),
+  referral_link: z.string().optional(),
 });
 
 export type SchemaBook = typeof schemaBook;
@@ -108,6 +109,13 @@ export const BOOK_FIELD: Field[] = [
     placeholder: "chapter_end.placeholder",
     required: true,
     type: "number",
+    wrapperClassName: "gap-3",
+  },
+  {
+    name: "referral_link",
+    label: "referral_link.label",
+    placeholder: "referral_link.placeholder",
+    type: "text",
     wrapperClassName: "gap-3",
   },
 ];

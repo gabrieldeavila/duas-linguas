@@ -58,4 +58,8 @@ export default {
     placeholder: "Digite o capítulo final",
     label: "Capítulo Final",
   },
+  referral_link: {
+    placeholder: "Digite o link de referência",
+    label: "Link de Referência",
+  }
 };
