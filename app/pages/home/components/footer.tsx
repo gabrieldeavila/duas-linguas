@@ -204,7 +204,7 @@ export default function Footer() {
               <div className="mb-3 text-[var(--muted-foreground)]">
                 © Dissolutus
                 <span className="text-[var(--muted)]"> · </span>
-                Duas Linguas
+                Duli
               </div>
               {/* <ul className="inline-flex gap-1">
                 <li>

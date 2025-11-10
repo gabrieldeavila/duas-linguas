@@ -1,7 +1,7 @@
 
 export default {
   signIn: {
-    title: "Duas Linguas - Sign In",
+    title: "Duli - Sign In",
     description: "Start speaking a new language today",
     headline: "Login to your account",
     subheading: "Enter your email below to login to your account",
@@ -9,7 +9,7 @@ export default {
     dontHaveAccount: "Don't have an account? <0>Sign up</0>",
   },
   signUp: {
-    title: "Duas Linguas - Sign Up",
+    title: "Duli - Sign Up",
     description: "Start speaking a new language today",
     headline: "Create your account",
     subheading: "Enter your email below to create a new account",

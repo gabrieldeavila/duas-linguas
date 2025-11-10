@@ -9,7 +9,7 @@ import Workflows from "./components/workflow";
 import { useNavigate } from "react-router";
 
 export function meta() {
-  return [{ title: "Duas Linguas" }];
+  return [{ title: "Duli" }];
 }
 
 function Home() {
