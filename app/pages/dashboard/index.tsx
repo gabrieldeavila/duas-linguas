@@ -199,7 +199,11 @@ const Recommendation = ({
   );
 };
 
-const ReadingList = () => {
+export const ReadingList = ({
+  isSearchingFinishedBooks = false,
+}: {
+  isSearchingFinishedBooks?: boolean;
+}) => {
   const { t } = useTranslation("dashboard");
   const supabase = useSupabase();
   const [readingList, setReadingList] = useState<
@@ -214,6 +218,7 @@ const ReadingList = () => {
     supabase
       .from("book_focus")
       .select("book:books(id, title, cover_image_url, description, author)")
+      .eq("did_finish_all_quizzes", isSearchingFinishedBooks)
       .order("updated_at", { ascending: false })
       .then(({ data, error }) => {
         isLoadingRef.current = false;
@@ -233,7 +238,7 @@ const ReadingList = () => {
             )
         );
       });
-  }, [supabase]);
+  }, [isSearchingFinishedBooks, supabase]);
 
   if (!readingList || readingList.length === 0) {
     return null;
@@ -241,7 +246,7 @@ const ReadingList = () => {
 
   return (
     <div>
-      <h2 className="text-xl font-bold mb-4">{t("reading_list")}</h2>
+      <h2 className="text-xl font-bold mb-4">{t("reading_finished")}</h2>
       <div className="flex flex-wrap justify-center gap-5 w-full mb-8">
         {readingList.map((book) => (
           <Recommendation key={book.id} book={book} />

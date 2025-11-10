@@ -294,8 +294,8 @@ const WarningRead = ({ referral }: { referral: string }) => {
 
   return (
     <div className="mt-4 flex items-center flex-col">
-      <p className="opacity-50 text-xs">{t("read.warning_first")}</p>
-      <p className="opacity-50 text-xs mt-2">
+      <p className="opacity-50 text-center text-xs">{t("read.warning_first")}</p>
+      <p className="opacity-50 text-center text-xs mt-2">
         <Trans t={t} i18nKey="read.warning_second">
           <a
             href={referral}

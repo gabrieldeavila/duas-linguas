@@ -8,6 +8,7 @@ export default {
   may_also_like: "You may also like",
   based_on_your_preferences: "Based on your preferences",
   reading_list: "Reading List",
+  reading_finished: "Reading Finished",
   title: "Dashboard",
   stats: {
     title: "Your Stats",

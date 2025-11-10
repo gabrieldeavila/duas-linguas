@@ -21,6 +21,7 @@ export default [
     route("dashboard", "pages/dashboard/index.tsx"),
     route("book/read/:id", "pages/book/read.tsx"),
     route("preferences", "pages/preferences/index.tsx"),
+    route("your-library", "pages/library/index.tsx"),
 
     layout("auth/admin.tsx", [
       route("admin", "pages/admin/index.tsx"),

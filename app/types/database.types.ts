@@ -88,6 +88,7 @@ export type Database = {
         Row: {
           book_id: string
           chapter_id: string | null
+          did_finish_all_quizzes: boolean | null
           excerpt_id: string | null
           num_quiz_taken: number | null
           updated_at: string | null
@@ -96,6 +97,7 @@ export type Database = {
         Insert: {
           book_id: string
           chapter_id?: string | null
+          did_finish_all_quizzes?: boolean | null
           excerpt_id?: string | null
           num_quiz_taken?: number | null
           updated_at?: string | null
@@ -104,6 +106,7 @@ export type Database = {
         Update: {
           book_id?: string
           chapter_id?: string | null
+          did_finish_all_quizzes?: boolean | null
           excerpt_id?: string | null
           num_quiz_taken?: number | null
           updated_at?: string | null
