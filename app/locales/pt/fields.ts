@@ -61,5 +61,9 @@ export default {
   referral_link: {
     placeholder: "Digite o link de referência",
     label: "Link de Referência",
+  },
+  book: {
+    title: "Livro",
+    placeholder: "Selecione um livro",
   }
 };
