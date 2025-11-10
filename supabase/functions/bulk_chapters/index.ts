@@ -42,7 +42,7 @@ Deno.serve(async (req) => {
     .from("chapters")
     .select("*, books(title, author, language)")
     .neq("status", "done")
-    .order("created_at", { ascending: true })
+    .order("number", { ascending: true })
     .limit(1);
 
   console.log(`Found ${bulkChapters.data?.length || 0} chapters to process.`);
