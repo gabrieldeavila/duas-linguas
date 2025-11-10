@@ -42,6 +42,7 @@ Deno.serve(async (req) => {
     .from("chapters")
     .select("*, books(title, author, language)")
     .neq("status", "done")
+    .order("book_id", { ascending: true })
     .order("number", { ascending: true })
     .limit(1);
 
