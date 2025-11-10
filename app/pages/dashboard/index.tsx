@@ -246,7 +246,11 @@ export const ReadingList = ({
 
   return (
     <div>
-      <h2 className="text-xl font-bold mb-4">{t("reading_finished")}</h2>
+      <h2 className="text-xl font-bold mb-4">
+        {t(
+          isSearchingFinishedBooks ? "reading_finished" : "reading_list"
+        )}
+      </h2>
       <div className="flex flex-wrap justify-center gap-5 w-full mb-8">
         {readingList.map((book) => (
           <Recommendation key={book.id} book={book} />
