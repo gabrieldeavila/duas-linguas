@@ -23,7 +23,7 @@ function Quiz({
   const { t } = useTranslation("quiz");
 
   return (
-    <div className={cn("flex my-8 justify-center")}>
+    <div className={cn("flex my-8 justify-center flex-col items-center gap-2")}>
       <Dialog open={isOpen} onOpenChange={setIsOpen}>
         <DialogTrigger asChild>
           <Button>{t("start_quiz")}</Button>
@@ -40,11 +40,61 @@ function Quiz({
           />
         </DialogContent>
       </Dialog>
+      <QuizTaken />
     </div>
   );
 }
 
 export default Quiz;
+
+const QuizTaken = () => {
+  const [hasTakenQuiz, setHasTakenQuiz] = useState<{
+    id: string;
+    score_percentage: number;
+    passed: boolean;
+  } | null>(null);
+  const isLoadingRef = useRef(false);
+  const supabase = useSupabase();
+  const { t } = useTranslation("quiz");
+
+  useEffect(() => {
+    if (isLoadingRef.current) return;
+    isLoadingRef.current = true;
+
+    supabase
+      .from("quiz_results")
+      .select("id, score_percentage, passed")
+      .order("score_percentage", { ascending: false })
+      .limit(1)
+      .single()
+      .then(({ data, error }) => {
+        isLoadingRef.current = false;
+
+        if (error) {
+          console.error("Error checking quiz taken:", error);
+          return;
+        }
+
+        setHasTakenQuiz(data || null);
+      });
+  }, [supabase]);
+
+  if (hasTakenQuiz === null) {
+    return <></>;
+  }
+
+  return (
+    <span className="ml-2 text-xs opacity-50">
+      {hasTakenQuiz.passed
+        ? t("quiz_taken.passed", {
+            percentage: hasTakenQuiz.score_percentage,
+          })
+        : t("quiz_taken.failed", {
+            percentage: hasTakenQuiz.score_percentage,
+          })}
+    </span>
+  );
+};
 
 type ExplanationProps = {
   id: string;
@@ -198,7 +248,7 @@ const QuizContent = ({
   }
 
   return (
-  <div className={cn("my-4", "max-h-[65dvh] overflow-auto")}>
+    <div className={cn("my-4", "max-h-[65dvh] overflow-auto")}>
       {quizSubmitResult && <SubmitAnswersResult result={quizSubmitResult} />}
 
       {question && (
