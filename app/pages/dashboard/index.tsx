@@ -247,9 +247,7 @@ export const ReadingList = ({
   return (
     <div>
       <h2 className="text-xl font-bold mb-4">
-        {t(
-          isSearchingFinishedBooks ? "reading_finished" : "reading_list"
-        )}
+        {t(isSearchingFinishedBooks ? "reading_finished" : "reading_list")}
       </h2>
       <div className="flex flex-wrap justify-center gap-5 w-full mb-8">
         {readingList.map((book) => (
