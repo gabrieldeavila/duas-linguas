@@ -70,4 +70,8 @@ export default {
     placeholder: "Select a book",
     label: "Book",
   },
+  referral_link: {
+    placeholder: "Enter the referral link",
+    label: "Referral Link",
+  }
 };
