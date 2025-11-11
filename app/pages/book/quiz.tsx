@@ -40,14 +40,14 @@ function Quiz({
           />
         </DialogContent>
       </Dialog>
-      <QuizTaken />
+      <QuizTaken chapterId={chapterId} />
     </div>
   );
 }
 
 export default Quiz;
 
-const QuizTaken = () => {
+const QuizTaken = ({ chapterId }: { chapterId: string }) => {
   const [hasTakenQuiz, setHasTakenQuiz] = useState<{
     id: string;
     score_percentage: number;
@@ -64,6 +64,7 @@ const QuizTaken = () => {
     supabase
       .from("quiz_results")
       .select("id, score_percentage, passed")
+      .eq("chapter_id", chapterId)
       .order("score_percentage", { ascending: false })
       .limit(1)
       .single()
@@ -77,7 +78,7 @@ const QuizTaken = () => {
 
         setHasTakenQuiz(data || null);
       });
-  }, [supabase]);
+  }, [chapterId, supabase]);
 
   if (hasTakenQuiz === null) {
     return <></>;
