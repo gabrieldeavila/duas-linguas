@@ -1,5 +1,5 @@
 # Lesson 1
-Welcome to the first lesson of Duas Linguas! In this lesson, we will set up the project and understand its structure.
+Welcome to the first lesson of Duli! In this lesson, we will set up the project and understand its structure.
 
 ## Setting Up
 First, make sure you have cloned the repository and installed the dependencies:
@@ -65,7 +65,7 @@ port = 55433
 api_url = "http://127.0.0.1"
 ```
 
-## Duas Linguas Structure
+## Duli Structure
 As of today there is no backend code in this project.
 
 Most of the code will be done on the "app" folder.

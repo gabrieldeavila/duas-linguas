@@ -1,4 +1,4 @@
-# Welcome to Duas Linguas
+# Welcome to Duli
 This is an Open Source project.
 
 We will build a step-by-step app so you can learn how to build a full-stack React application with type-safe forms. 
