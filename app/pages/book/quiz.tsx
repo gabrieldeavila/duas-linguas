@@ -67,7 +67,7 @@ const QuizTaken = ({ chapterId }: { chapterId: string }) => {
       .eq("chapter_id", chapterId)
       .order("score_percentage", { ascending: false })
       .limit(1)
-      .single()
+      .maybeSingle()
       .then(({ data, error }) => {
         isLoadingRef.current = false;
 
@@ -80,7 +80,7 @@ const QuizTaken = ({ chapterId }: { chapterId: string }) => {
       });
   }, [chapterId, supabase]);
 
-  if (hasTakenQuiz === null) {
+  if (hasTakenQuiz === null || hasTakenQuiz.passed === undefined) {
     return <></>;
   }
 
